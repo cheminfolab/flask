@@ -1,0 +1,37 @@
+name: Django Unit Tests
+on: [push]
+
+jobs:
+  test:
+
+    runs-on: ${{ matrix.os }}
+    strategy:
+      max-parallel: 4
+      matrix:
+        os: ["macos-10.15"]  # ["ubuntu-latest", "windows-latest"]
+        python-version: ["3.9.13"]
+
+    steps:
+
+    - name: Checkout
+      uses: actions/checkout@v3
+
+    - name: Set up miniconda environment
+      uses: conda-incubator/setup-miniconda@v2
+      with:
+        auto-update-conda: true
+        activate-environment: testenv
+        environment-file: environment.yml
+        python-version: ${{ matrix.python-version }}
+        auto-activate-base: false
+
+    - name: Conda status
+      shell: bash -l {0}
+      run: |
+        conda info
+        conda list
+
+    - name: Run django unit tests
+      shell: bash -l {0}
+      run: |
+        python3 backend/manage.py test
