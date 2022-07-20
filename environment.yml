@@ -109,4 +109,3 @@ dependencies:
     - djangorestframework-simplejwt==5.2.0
     - phonenumbers==8.12.51
     - pyjwt==2.4.0
-    - python-barcode==0.9.0
