@@ -79,7 +79,6 @@ dependencies:
   - pthread-stubs=0.4=hc929b4f_1001
   - pycairo=1.21.0=py310h5138a19_1
   - pyparsing=3.0.9=pyhd8ed1ab_0
-  - python=3.10.5=hdd68b96_0_cpython
   - python-dateutil=2.8.2=pyhd8ed1ab_0
   - python-decouple=3.6=pyhd8ed1ab_0
   - python_abi=3.10=2_cp310
