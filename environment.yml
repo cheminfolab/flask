@@ -104,7 +104,6 @@ dependencies:
   - zstd=1.5.2=ha9df2e0_2
   - pip:
     - django==4.0.6
-    - django-barcode==0.1.1
     - django-phonenumber-field==6.3.0
     - djangorestframework-simplejwt==5.2.0
     - phonenumbers==8.12.51
