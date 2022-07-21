@@ -200,6 +200,6 @@ MEDIA_URL = 'images/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-CORS_ALLOW_ALL_ORIGINS = config('CORS_ALLOW_ALL_ORIGINS', default=False)
+CORS_ALLOW_ALL_ORIGINS = config('CORS_ALLOW_ALL_ORIGINS', default=False, cast=bool)
 # CORS_ALLOWED_ORIGINS = config('CORS_ALLOWED_ORIGINS', default='127.0.0.1', cast=Csv())
 
