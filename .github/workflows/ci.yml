@@ -5,6 +5,7 @@ jobs:
   test:
 
     runs-on: ${{ matrix.os }}
+    environment: development
     strategy:
       max-parallel: 4
       matrix:
@@ -37,7 +38,7 @@ jobs:
         touch .env
         echo SECRET_KEY = ${{ secrets.DJANGO_SECRET_KEY }} >> backend/.env
         echo DEBUG = True >> backend/.env
-        echo ALLOWED_HOSTS = '127.0.0.1, ' >> backend/.env
+        echo ALLOWED_HOSTS = "127.0.0.1, " >> backend/.env
         echo TIME_ZONE = 'Europe/Berlin' >> backend/.env
         echo DB_NAME = 'userinterface_db' >> backend/.env
         echo DB_USER = ${{ secrets.POSTGRES_USER }} >> backend/.env
