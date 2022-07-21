@@ -1,7 +1,7 @@
 from django.db import models
 from django.contrib.postgres.fields import ArrayField
 from django.core.validators import MaxValueValidator, MinValueValidator
-from django_barcode.fields import BarcodeField
+from .fields import BarcodeField
 
 from accounts.models import WorkingGroup, User
 from locations.models import Storage
