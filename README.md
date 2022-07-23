@@ -28,7 +28,7 @@ DATABASES = {
 }
 ````
 
-In the terminal, initialize a postgres database by:
+In the terminal (backend), initialize a postgres database by:
 ````bash
 initdb -D database
 ````

@@ -7,8 +7,6 @@ from accounts.models import WorkingGroup, User
 from locations.models import Storage
 
 
-# Create your models here.
-
 # MISCELLANEOUS
 
 class Unit(models.Model):
@@ -135,7 +133,7 @@ class Substance(models.Model):
     # mfp2 = models.BfpField(null=True)
     # ffp2 = models.BfpField(null=True)
 
-    # wikipedia, CPDat, ChEMBL, ChemSpider, CHEMnetBASE, GESTIS(SDS), NFDI, SpectraBASE (slugfields?)
+    # wikipedia, CPDat, ChEMBL, ChemSpider, CHEMnetBASE, GESTIS(SDS), NFDI, SpectraBASE (slugfields?), Massbank!
     
     # spectra
 

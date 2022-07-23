@@ -48,8 +48,9 @@ jobs:
         echo CORS_ALLOW_ALL_ORIGINS = True >> backend/.env
         echo CORS_ALLOWED_ORIGINS = '127.0.0.1, ' >> backend/.env
         cat backend/.env
+      # todo: fix var types (str)
 
-    # - name: Set up database
+    # - name: Set up (postgres) database
 
     - name: Run django unit tests
       shell: bash -l {0}

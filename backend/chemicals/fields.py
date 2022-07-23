@@ -1,7 +1,7 @@
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
-from .core import Barcode
+from .core import Barcode  # todo: update project structure?
 from django.conf import settings
 from django.core import checks
 from django.utils.crypto import get_random_string
