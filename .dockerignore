@@ -1,0 +1,17 @@
+# Common
+README.md
+CHANGELOG.md
+.DS_Store
+
+# Docker
+Dockerfile
+docker-compose.yml
+.dockerignore
+
+# git
+.git
+.gitattributes
+.gitignore
+
+# JetBrains
+.idea
