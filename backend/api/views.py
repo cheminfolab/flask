@@ -5,7 +5,7 @@ from rest_framework.permissions import IsAuthenticated
 
 from rest_framework_simplejwt.views import TokenObtainPairView
 
-from .serializers import SubstanceSerializer, CompoundSerializer, UserSerializer, MyTokenObtainPairSerializer
+from .serializers import SubstanceSerializer, CompoundSerializer, RegisterUserSerializer, UserSerializer, MyTokenObtainPairSerializer
 from chemicals.models import Substance, Compound
 from accounts.models import User
 
@@ -34,6 +34,16 @@ def getCompounds(request):
 def getSubstances(request):
     substances = Substance.objects.all()
     serializer = SubstanceSerializer(substances, many=True)
+    return Response(serializer.data)
+
+@api_view(['POST'])
+@permission_classes([])
+def RegisterUser(request):
+    serializer = RegisterUserSerializer(data=request.data)
+    if serializer.is_valid():
+        newuser = serializer.save()
+        if newuser:
+            pass
     return Response(serializer.data)
 
 
