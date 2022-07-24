@@ -3,7 +3,7 @@ import AuthContext from "../context/AuthContext";
 
 export default function AuthPage() {
 
-  let {loginUser} = useContext(AuthContext)
+  let {loginUser, registerUser} = useContext(AuthContext)
 
   let [authMode, setAuthMode] = useState("login")
 
@@ -57,7 +57,7 @@ export default function AuthPage() {
 
   return (
     <div className="Auth-form-container">
-      <form className="Auth-form">
+      <form className="Auth-form"onSubmit={registerUser}>
         <div className="Auth-form-content">
           <h3 className="Auth-form-title">Register</h3>
           <div className="text-center">
@@ -87,7 +87,7 @@ export default function AuthPage() {
           <div className="form-group mt-3">
             <label>Username</label>
             <input
-              name="Username"
+              name="username"
               type="text"
               className="form-control mt-1"
               placeholder="Username"
@@ -105,7 +105,7 @@ export default function AuthPage() {
           <div className="form-group mt-3">
             <label>Status</label>
             <input
-              name="Status"
+              name="status"
               type="text"
               className="form-control mt-1"
               placeholder="e.g. student"

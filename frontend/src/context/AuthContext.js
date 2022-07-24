@@ -38,6 +38,32 @@ export const AuthProvider = ({children}) => {
         }
     }
 
+    let registerUser = async (e) => {
+        e.preventDefault()
+        let response = await fetch('http://127.0.0.1:8000/api/user/register/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                "first_name": e.target.first_name.value,
+                "last_name": e.target.last_name.value,
+                "username": e.target.username.value,
+                "email": e.target.email.value,
+                'password':e.target.password.value
+                // "working_group": e.target.working_group.value,
+            })
+        })
+
+        // let data = await response.json()
+        if (response.status === 200){
+            await loginUser(e)
+            navigate('/') // todo: add functionality (also for loginUser)
+        } else {
+            alert('Something went wrong!')
+        }
+    }
+
     let logoutUser = () => {
         setUser(null)
         setAuthTokens(null)
@@ -49,7 +75,8 @@ export const AuthProvider = ({children}) => {
         user:user,
         authTokens:authTokens,
         loginUser:loginUser,
-        logoutUser:logoutUser
+        logoutUser:logoutUser,
+        registerUser:registerUser
     }
 
     let updateToken = async () => {
