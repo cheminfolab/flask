@@ -54,6 +54,7 @@ INSTALLED_APPS = [
     'locations',
     'chemicals',
     'equipment',
+    'projects',
 ]
 
 REST_FRAMEWORK = {
