@@ -15,6 +15,7 @@ export const AuthProvider = ({children}) => {
 
     const navigate = useNavigate()
 
+    // todo: use axios
     let loginUser = async (e) => {
         e.preventDefault()
         let response = await fetch('http://127.0.0.1:8000/api/token/', {
@@ -32,12 +33,13 @@ export const AuthProvider = ({children}) => {
             setAuthTokens(data)
             setUser(jwt_decode(data.access))
             localStorage.setItem('authTokens', JSON.stringify(data))
-            navigate('/')
+            navigate(-2) // redirects to element from PrivateRoute
         } else {
             alert('Something went wrong!')
         }
     }
 
+    // todo: use axios
     let registerUser = async (e) => {
         e.preventDefault()
         let response = await fetch('http://127.0.0.1:8000/api/user/register/', {
@@ -50,15 +52,15 @@ export const AuthProvider = ({children}) => {
                 "last_name": e.target.last_name.value,
                 "username": e.target.username.value,
                 "email": e.target.email.value,
-                'password':e.target.password.value
-                // "working_group": e.target.working_group.value,
+                'password':e.target.password.value,
+                "working_group": e.target.working_group.value
             })
         })
 
         // let data = await response.json()
         if (response.status === 200){
             await loginUser(e)
-            navigate('/') // todo: add functionality (also for loginUser)
+            // todo: notification / redirection to user page (prompt user for additional info: phone etc.)
         } else {
             alert('Something went wrong!')
         }
@@ -68,15 +70,7 @@ export const AuthProvider = ({children}) => {
         setUser(null)
         setAuthTokens(null)
         localStorage.removeItem('authTokens')
-        navigate('/login')
-    }
-
-    let contextData = {
-        user:user,
-        authTokens:authTokens,
-        loginUser:loginUser,
-        logoutUser:logoutUser,
-        registerUser:registerUser
+        navigate('/')
     }
 
     let updateToken = async () => {
@@ -87,9 +81,7 @@ export const AuthProvider = ({children}) => {
             },
             body: JSON.stringify({'refresh':authTokens?.refresh})
         })
-
         let data = await response.json()
-
         if (response.status === 200){
             setAuthTokens(data)
             setUser(jwt_decode(data.access))
@@ -97,10 +89,17 @@ export const AuthProvider = ({children}) => {
         } else {
             logoutUser()
         }
-
         if (loading){
             setLoading(false)
         }
+    }
+
+    let contextData = {
+        user:user,
+        authTokens:authTokens,
+        loginUser:loginUser,
+        logoutUser:logoutUser,
+        registerUser:registerUser
     }
 
     useEffect(() => {
