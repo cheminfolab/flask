@@ -13,6 +13,7 @@ import {
 import { Link } from "react-router-dom";
 
 import AuthContext from "../context/AuthContext";
+import Logo from "../flask.png";
 
 
 const NavbarComp = () => {
@@ -23,11 +24,21 @@ const NavbarComp = () => {
         <div>
             <Navbar bg="light" expand="lg">
               <Container>
-                <Navbar.Brand as={Link} to={"/home"}>Notebook</Navbar.Brand>
+                <Navbar.Brand as={Link} to={"/"}>
+                    <img
+                      alt="Flask logo"
+                      src={Logo}
+                      width="30"
+                      height="30"
+                      className="d-inline-block align-top"
+                    />{' '}
+                    FLASK
+                </Navbar.Brand>
+                {/*<a href="https://www.flaticon.com/free-icons/experimentation" title="experimentation icons">Experimentation icons created by Freepik - Flaticon</a>*/}
                 <Navbar.Toggle aria-controls="basic-navbar-nav" />
                 <Navbar.Collapse id="basic-navbar-nav">
                   <Nav className="me-auto">
-                    <Nav.Link as={Link} to={"/reaction"}>Reaction</Nav.Link>
+                    <Nav.Link as={Link} to={"/projects"}>Projects</Nav.Link>
                     <NavDropdown title="Inventory" id="basic-nav-dropdown">
                         <NavDropdown.Item as={Link} to={"/chemicals"}>Chemicals</NavDropdown.Item>
                         <NavDropdown.Item as={Link} to={"/#"}>Equipment</NavDropdown.Item>
@@ -52,7 +63,7 @@ const NavbarComp = () => {
                       <DropdownButton
                         id={`dropdown-variants-secondary`}
                         variant={'secondary'}
-                        title={'Settings'}
+                        title={<i className="bi bi-gear"></i>}
                       >
                         <Dropdown.Item eventKey="1">Account</Dropdown.Item>
                         <Dropdown.Item eventKey="2">Another action</Dropdown.Item>

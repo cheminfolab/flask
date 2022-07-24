@@ -6,7 +6,7 @@ import HomePage from "../pages/HomePage";
 import AuthPage from "../pages/AuthPage";
 import '../pages/AuthPage.css'
 import ChemPage from "../pages/ChemPage";
-import ReactionPage from "../pages/ReactionPage";
+import ProjectPage from "../pages/ProjectPage";
 
 const RoutesComp = () => {
     return (
@@ -22,16 +22,12 @@ const RoutesComp = () => {
                     element={<AuthPage/>}
                 />
                 <Route
-                    path="/home"
-                    element={<PrivateRoute><HomePage/></PrivateRoute>}
-                />
-                <Route
                     path="/chemicals"
                     element={<PrivateRoute><ChemPage/></PrivateRoute>}
                 />
                 <Route
-                    path="/reaction"
-                    element={<PrivateRoute><ReactionPage/></PrivateRoute>}
+                    path="/projects"
+                    element={<PrivateRoute><ProjectPage/></PrivateRoute>}
                 />
             </Routes>
         </div>
