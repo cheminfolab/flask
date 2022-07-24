@@ -6,6 +6,8 @@ import RoutesComp from "./components/RoutesComp";
 
 import {AuthProvider} from "./context/AuthContext";
 import './App.css';
+import "bootstrap-icons/font/bootstrap-icons.css"
+
 
 function App() {
   return (

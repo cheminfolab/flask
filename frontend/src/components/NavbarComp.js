@@ -63,7 +63,7 @@ const NavbarComp = () => {
                       <DropdownButton
                         id={`dropdown-variants-secondary`}
                         variant={'secondary'}
-                        title={'Settings'}
+                        title={<i className="bi bi-gear"></i>}
                       >
                         <Dropdown.Item eventKey="1">Account</Dropdown.Item>
                         <Dropdown.Item eventKey="2">Another action</Dropdown.Item>
