@@ -1,30 +1,36 @@
 import {useContext, useEffect, useState} from "react";
 import AuthContext from "../context/AuthContext";
 import ChemTableComp from "../components/ChemTableComp";
+import useAxios from "../utils/useAxios";
 
 const ChemPage = () => {
 
     let {authTokens, logoutUser} = useContext(AuthContext)
     let [compounds, setCompounds] = useState([])
 
+    let api = useAxios()
+
     useEffect(() => {
         getCompounds();
     }, [])
 
+    // todo: use axios
     let getApiResponse = async (items, setState) => {
-        let response = await fetch('http://127.0.0.1:8000/api/'+String(items), {
-            method:'GET',
-            headers:{
-                'Content-Type':'application/json',
-                'Authorization':'Bearer ' + String(authTokens.access)
-            }
-        })
-        let data = await response.json()
+        let response = await api.get(`/api/${items}`)
+        // let response = await fetch('http://127.0.0.1:8000/api/'+String(items), {
+        //     method:'GET',
+        //     headers:{
+        //         'Content-Type':'application/json',
+        //         'Authorization':'Bearer ' + String(authTokens.access)
+        //     }
+        // })
+        // let data = await response.json()
         if(response.status === 200){
-            setState(data)
-        }else if(response.statusText === 'Unauthorized'){
-            logoutUser()
-        }
+            setState(response.data)
+            // setState(data)
+        } // else if(response.statusText === 'Unauthorized'){
+        //     logoutUser()
+        // }
     }
 
     let getCompounds = () => getApiResponse('compounds', setCompounds)

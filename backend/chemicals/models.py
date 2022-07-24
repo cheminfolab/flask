@@ -21,6 +21,7 @@ class Unit(models.Model):
             ('g', 'gram'), ('l', 'liter'), ('g/mol', 'gram per mol'), ('g/ml', 'gram per milliliter')
         ]
     )
+    # todo: change to lower case?
     type = models.CharField(blank=True, max_length=50)
 
     def __str__(self):
@@ -32,6 +33,7 @@ class Unit(models.Model):
 
 class Currency(models.Model):
     currency = models.CharField(max_length=10, choices=[('EUR', 'euro'), ('USD', 'us dollar')], unique=True)
+    # todo: change to name!
 
     def __str__(self):
         return self.currency

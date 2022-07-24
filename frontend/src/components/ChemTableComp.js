@@ -13,11 +13,12 @@ const ChemTableComp = ({compounds}) => {
                     <th>Name</th>
                     <th>Formula</th>
                     <th>Molecular weight</th>
-                    <th>Amount (left)</th>
+                    <th>Amount</th>
                     <th>Supplier</th>
                     <th>Purity</th>
                     <th>Density</th>
                     <th>Containment</th>
+                    <th>Tara (incl. cap)</th>
                     <th>Price</th>
                     <th>Annotation</th>
                     <th>Location</th>
@@ -48,12 +49,14 @@ const ChemTableComp = ({compounds}) => {
                         <td>{(image ? <SubstanceImage path={image}/>: null)}</td>
                         <td>{names}</td>
                         <td>{formula}</td>
-                        <td>{mol_weight} {mol_weight_unit.SI}</td>
-                        <td>{amount} ({amount_left}) {amount_unit.SI}</td>
+                        <td>{mol_weight} {mol_weight_unit.SI}</td> {/* todo: concat units (prefix, si) */}
+                        <td>{amount_left}/{amount} {amount_unit.SI}</td>
+                        {/* todo: add colored bar */}
                         <td>{supplier}</td>
                         <td>{purity}%</td>
                         <td>{density} {density_unit.SI}</td>
                         <td>{description}</td>
+                        <td>{tara} {tara_unit.SI}</td>
                         <td>{price} {currency.currency}</td>
                         <td>{annotation}</td>
                         <td>R{room} {name} ({compartment})</td>
