@@ -1,15 +1,14 @@
 from django.contrib import admin
-from django.contrib.auth.admin import UserAdmin
-from .forms import CustomUserCreationForm, CustomUserChangeForm
+from django.contrib.auth.admin import UserAdmin, GroupAdmin
+from django.contrib.auth.models import Group
+from .forms import MemberCreationForm, MemberChangeForm
 from .models import *
 
 
-# Register your models here.
-
 class CustomUserAdmin(UserAdmin):
-    model = User
-    add_form = CustomUserCreationForm
-    form = CustomUserChangeForm
+    model = Member
+    add_form = MemberCreationForm
+    form = MemberChangeForm
 
     fieldsets = (
         ('Personal Info', {
@@ -44,4 +43,7 @@ class CustomUserAdmin(UserAdmin):
 
 admin.site.register(PhoneNumber)
 admin.site.register(WorkingGroup)
-admin.site.register(User, CustomUserAdmin)
+
+admin.site.unregister(Group)
+admin.site.register(Role, GroupAdmin)
+admin.site.register(Member, CustomUserAdmin)

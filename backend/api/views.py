@@ -1,11 +1,11 @@
-from rest_framework import viewsets
 from rest_framework.response import Response
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
-
 from rest_framework_simplejwt.views import TokenObtainPairView
 
-from .serializers import SubstanceSerializer, CompoundSerializer, RegisterUserSerializer, MyTokenObtainPairSerializer
+from .serializers import MyTokenObtainPairSerializer
+from chemicals.serializers import SubstanceSerializer, CompoundSerializer
+from accounts.serializers import RegisterMemberSerializer
 from chemicals.models import Substance, Compound
 
 
@@ -34,7 +34,7 @@ def SubstanceList(request):
 @api_view(['POST'])
 @permission_classes([])
 def RegisterUser(request):
-    serializer = RegisterUserSerializer(data=request.data)
+    serializer = RegisterMemberSerializer(data=request.data)
     if serializer.is_valid():
         newuser = serializer.save()
         if newuser:

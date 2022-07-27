@@ -5,7 +5,7 @@ from locations.models import Room
 from .models import *
 
 
-class CustomUserCreationForm(UserCreationForm):
+class MemberCreationForm(UserCreationForm):
     rooms = forms.ModelMultipleChoiceField(
           queryset=Room.objects.all(),
           required=False,
@@ -25,11 +25,11 @@ class CustomUserCreationForm(UserCreationForm):
     )
 
     class Meta:
-        model = User
+        model = Member
         fields = '__all__'
 
 
-class CustomUserChangeForm(UserChangeForm):
+class MemberChangeForm(UserChangeForm):
     rooms = forms.ModelMultipleChoiceField(
           queryset=Room.objects.all(),
           required=False,
@@ -49,5 +49,5 @@ class CustomUserChangeForm(UserChangeForm):
     )
 
     class Meta:
-        model = User
+        model = Member
         fields = '__all__'
