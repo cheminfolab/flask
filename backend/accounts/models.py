@@ -1,5 +1,7 @@
 from django.db import models
-from django.contrib.auth.models import AbstractUser
+from django.contrib.auth.models import Group, AbstractUser
+from django.utils.translation import gettext_lazy as _
+
 from phonenumber_field.modelfields import PhoneNumberField
 from locations.models import Building, Room
 
@@ -25,13 +27,23 @@ class WorkingGroup(models.Model):
         return f"{self.name} group"
 
 
-# todo: rename to member
-class User(AbstractUser):
+class Member(AbstractUser):
     # academic title (legal/ordering)
     working_group = models.ForeignKey(WorkingGroup, null=True, on_delete=models.PROTECT, related_name='members')
     phones = models.ManyToManyField(PhoneNumber, blank=True, related_name='contacts')
     rooms = models.ManyToManyField(Room, blank=True, related_name='team')
+
     # # identifiers, links (ORCID, ResearchGate, etc.)
 
     def __str__(self):
         return self.username
+
+    class Meta:
+        verbose_name = "Member"
+
+
+class Role(Group):
+    class Meta:
+        proxy = True
+        # app_label = 'auth'
+        verbose_name = _('Role')
