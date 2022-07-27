@@ -5,36 +5,31 @@ from rest_framework.permissions import IsAuthenticated
 
 from rest_framework_simplejwt.views import TokenObtainPairView
 
-from .serializers import SubstanceSerializer, CompoundSerializer, RegisterUserSerializer, UserSerializer, MyTokenObtainPairSerializer
+from .serializers import SubstanceSerializer, CompoundSerializer, RegisterUserSerializer, MyTokenObtainPairSerializer
 from chemicals.models import Substance, Compound
-from accounts.models import User
 
 
 class MyTokenObtainPairView(TokenObtainPairView):
     serializer_class = MyTokenObtainPairSerializer
 
 
-# ViewSets define the view behavior.
-@permission_classes([])
-class UserViewSet(viewsets.ModelViewSet):
-    queryset = User.objects.all()
-    serializer_class = UserSerializer
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def CompoundList(request):
+    queryset = Compound.objects.all()
+    serializer = CompoundSerializer(queryset, many=True)
+    return Response(serializer.data)
+
+# todo: add detailed view
 
 
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
-def getCompounds(request):
-    compounds = Compound.objects.all()
-    serializer = CompoundSerializer(compounds, many=True)
+def SubstanceList(request):
+    queryset = Substance.objects.all()
+    serializer = SubstanceSerializer(queryset, many=True)
     return Response(serializer.data)
 
-
-@api_view(['GET'])
-@permission_classes([IsAuthenticated])
-def getSubstances(request):
-    substances = Substance.objects.all()
-    serializer = SubstanceSerializer(substances, many=True)
-    return Response(serializer.data)
 
 @api_view(['POST'])
 @permission_classes([])

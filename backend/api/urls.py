@@ -21,25 +21,16 @@ from rest_framework import routers
 
 from rest_framework_simplejwt.views import TokenRefreshView
 
-from .views import MyTokenObtainPairView, getSubstances, getCompounds, UserViewSet, RegisterUser
-
-
-# # Routers provide an easy way of automatically determining the URL conf.
-# router = routers.DefaultRouter()
-# router.register(r'users', UserViewSet)
-# # todo: clean !!!
+from .views import MyTokenObtainPairView, SubstanceList, CompoundList, RegisterUser
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-
     # API
-    # path('', include(router.urls)),
-    # path('api-auth/', include('rest_framework.urls', namespace='rest_framework')),
     path('api/user/register/', RegisterUser, name='register_user'),
     path('api/token/', MyTokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
-    path('api/substances', getSubstances, name='get_substances'),
-    path('api/compounds', getCompounds, name='get_compounds'),
+    path('api/substances', SubstanceList, name='get_substances'),
+    path('api/compounds', CompoundList, name='get_compounds'),
 ]
 
 if settings.DEBUG:
