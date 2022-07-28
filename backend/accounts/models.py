@@ -6,9 +6,6 @@ from phonenumber_field.modelfields import PhoneNumberField
 from locations.models import Building, Room
 
 
-# Create your models here.
-
-
 class PhoneNumber(models.Model):
     room = models.ForeignKey(Room, on_delete=models.PROTECT, related_name='phones')
     number = PhoneNumberField(unique=True)
