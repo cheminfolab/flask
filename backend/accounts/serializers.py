@@ -5,13 +5,13 @@ from .models import *
 class WorkingGroupSerializer(ModelSerializer):
     class Meta:
         model = WorkingGroup
-        fields = ('name',)
+        fields = ('id', 'name')
 
 
 class RegisterMemberSerializer(ModelSerializer):
     class Meta:
         model = Member
-        fields = ['first_name', 'last_name', 'username', 'email', 'password', 'working_group']  # todo: add user role
+        fields = ['first_name', 'last_name', 'email', 'password', 'working_group']  # todo: add user role
         extra_kwargs = {'password': {'write_only': True}}
 
     def create(self, validated_data):
@@ -23,7 +23,7 @@ class RegisterMemberSerializer(ModelSerializer):
         return instance
 
 
-class MemberSerializer(HyperlinkedModelSerializer):
+class MemberSerializer(ModelSerializer):
     class Meta:
         model = Member
-        fields = ['url', 'username', 'email', 'is_staff']
+        fields = ['first_name', 'last_name', 'username', 'email', 'is_staff']

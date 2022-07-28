@@ -6,3 +6,5 @@ from .models import *
 admin.site.register(Building)
 admin.site.register(Room)
 admin.site.register(Storage)
+admin.site.register(PhoneNumber)
+
