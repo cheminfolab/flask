@@ -9,7 +9,12 @@ const useAxios = () => {
     const { authTokens, setAuthTokens, setUser } = useContext(AuthContext)
     const axiosInstance = axios.create({
         baseURL,
-        headers:{'Authorization': `Bearer ${authTokens?.access}`}
+        timeout: 5000,
+        headers:{
+            'Authorization': `Bearer ${authTokens?.access}`,
+            'Content-Type': 'application/json',
+            accept: 'application/json'
+        }
     })
 
     axiosInstance.interceptors.request.use( async req => {

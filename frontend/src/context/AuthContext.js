@@ -24,7 +24,7 @@ export const AuthProvider = ({children}) => {
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({
-                'username':e.target.username.value,
+                'email':e.target.email.value,
                 'password':e.target.password.value
             })
         })
@@ -50,7 +50,6 @@ export const AuthProvider = ({children}) => {
             body: JSON.stringify({
                 "first_name": e.target.first_name.value,
                 "last_name": e.target.last_name.value,
-                "username": e.target.username.value,
                 "email": e.target.email.value,
                 'password':e.target.password.value,
                 "working_group": e.target.working_group.value

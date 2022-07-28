@@ -1,11 +1,33 @@
-import React, {useContext, useState} from 'react';
+import React, {useContext, useState, useEffect} from 'react';
 import AuthContext from "../context/AuthContext";
 
 export default function AuthPage() {
 
   let {loginUser, registerUser} = useContext(AuthContext)
-
   let [authMode, setAuthMode] = useState("login")
+  let [groups, setGroups] = useState([])
+
+  useEffect(() => {
+      getGroups();
+  }, [])
+
+  let getApiResponse = async (items, setState) => {
+    let response = await fetch('http://127.0.0.1:8000/api/'+String(items), {
+        method:'GET',
+        headers:{
+            'Content-Type':'application/json',
+        }
+    })
+    let data = await response.json()
+    if(response.status === 200){
+        setState(data)
+    }else if(response.statusText === 'Unauthorized'){
+        console.log("An error occurred.")
+    }
+  }
+
+  let getGroups = () => getApiResponse('group/', setGroups)
+
 
   const changeAuthMode = () => {
     setAuthMode(authMode === "login" ? "register" : "login")
@@ -24,12 +46,12 @@ export default function AuthPage() {
               </span>
             </div>
             <div className="form-group mt-3">
-              <label>Username</label>
+              <label>Email address</label>
               <input
-                name="username"
-                type="text"
+                name="email"
+                type="email"
                 className="form-control mt-1"
-                placeholder="Enter username"
+                placeholder="Email Address"
               />
             </div>
             <div className="form-group mt-3">
@@ -85,31 +107,25 @@ export default function AuthPage() {
             />
           </div>
           <div className="form-group mt-3">
-            <label>Username</label>
-            <input
-              name="username"
-              type="text"
-              className="form-control mt-1"
-              placeholder="Username"
-            />
-          </div>
-          <div className="form-group mt-3">
             <label>Working Group</label>
-            <input
-              name="working_group"
-              type="text"
-              className="form-control mt-1"
-              placeholder="Working Group"
-            />
+            <select className="form-select form-select-sm mt-1" name="working_group" aria-label=".form-select-sm example">
+            {/* todo: add working group request */}
+              <option selected>select group</option>
+              {groups.map(({id, name}) => (
+                <option key={id} value={id}>{name}</option>
+              ))}
+              {/*<option value="2">Brasholz</option>*/}
+              {/*<option value="3">Fifelsky</option>*/}
+            </select>
           </div>
           <div className="form-group mt-3">
             <label>Status</label>
-            <input
-              name="status"
-              type="text"
-              className="form-control mt-1"
-              placeholder="e.g. student"
-            />
+            <select className="form-select form-select-sm mt-1" name="status" aria-label=".form-select-sm example">
+              <option selected>select status</option>
+              <option value="1">student</option>
+              <option value="2">phd</option>
+              <option value="3">staff</option>
+            </select>
           </div>
           <div className="form-group mt-3">
             <label>Email address</label>
