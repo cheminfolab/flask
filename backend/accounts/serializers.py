@@ -8,7 +8,7 @@ class WorkingGroupSerializer(ModelSerializer):
         fields = ('name',)
 
 
-class RegisterMemberSerializer(ModelSerializer):
+class RegisterUserSerializer(ModelSerializer):
     class Meta:
         model = Member
         fields = ['first_name', 'last_name', 'username', 'email', 'password', 'working_group']  # todo: add user role
@@ -23,7 +23,7 @@ class RegisterMemberSerializer(ModelSerializer):
         return instance
 
 
-class MemberSerializer(HyperlinkedModelSerializer):
+class UserSerializer(ModelSerializer):
     class Meta:
         model = Member
-        fields = ['url', 'username', 'email', 'is_staff']
+        fields = ['first_name', 'last_name', 'username', 'email', 'is_staff']

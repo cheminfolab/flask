@@ -15,22 +15,24 @@ Including another URLconf
 """
 from django.conf import settings
 from django.contrib import admin
-from django.urls import path, include
+from django.urls import path
 from django.conf.urls.static import static
-from rest_framework import routers
 
 from rest_framework_simplejwt.views import TokenRefreshView
 
-from .views import MyTokenObtainPairView, SubstanceList, CompoundList, RegisterUser
+from .views import MyTokenObtainPairView, SubstanceList, SubstanceDetail, CompoundList, CompoundDetail, UserList, RegisterUser
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     # API
+    path('api/user/', UserList, name='register_user'),
     path('api/user/register/', RegisterUser, name='register_user'),
     path('api/token/', MyTokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
-    path('api/substances', SubstanceList, name='get_substances'),
+    path('api/substance/', SubstanceList, name='get_substances'),
+    path('api/substance/<int:pk>/', SubstanceDetail, name='get_substance_detail'),
     path('api/compounds', CompoundList, name='get_compounds'),
+    path('api/compound/<int:pk>/', CompoundDetail, name='get_compound_detail'),
 ]
 
 if settings.DEBUG:
