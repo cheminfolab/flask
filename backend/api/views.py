@@ -7,11 +7,9 @@ from .serializers import MyTokenObtainPairSerializer
 from chemicals.serializers import SubstanceSerializer, CompoundSerializer
 from chemicals.models import Substance, Compound
 
-from accounts.serializers import RegisterUserSerializer, UserSerializer
-from accounts.models import Member
+from accounts.serializers import MemberSerializer, RegisterMemberSerializer, WorkingGroupSerializer
+from accounts.models import Member, WorkingGroup
 from accounts.permissions import CompoundUserWritePermission
-
-
 
 
 @api_view(['GET'])
@@ -39,7 +37,7 @@ def SubstanceList(request):
 
 
 @api_view(['GET', 'PUT', 'PATCH', 'DELETE', 'HEAD', 'OPTIONS'])
-@permission_classes([])
+@permission_classes([IsAuthenticated])
 def SubstanceDetail(request, pk):
     queryset = Substance.objects.get(pk=pk)
     serializer = SubstanceSerializer(queryset)
@@ -51,20 +49,30 @@ def SubstanceDetail(request, pk):
 class MyTokenObtainPairView(TokenObtainPairView):
     serializer_class = MyTokenObtainPairSerializer
 
+
 @api_view(['GET'])
 @permission_classes([])
+def GroupList(request):
+    queryset = WorkingGroup.objects.all()
+    serializer = WorkingGroupSerializer(queryset, many=True)
+    return Response(serializer.data)
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
 def UserList(request):
     queryset = Member.objects.all()
-    serializer = UserSerializer(queryset, many=True)
+    serializer = MemberSerializer(queryset, many=True)
     return Response(serializer.data)
 
 
 @api_view(['POST'])
 @permission_classes([])
 def RegisterUser(request):
-    serializer = RegisterUserSerializer(data=request.data)
+    serializer = RegisterMemberSerializer(data=request.data)
     if serializer.is_valid():
         newuser = serializer.save()
         if newuser:
+            # todo: something missing?
             pass
     return Response(serializer.data)

@@ -20,12 +20,16 @@ from django.conf.urls.static import static
 
 from rest_framework_simplejwt.views import TokenRefreshView
 
-from .views import MyTokenObtainPairView, SubstanceList, SubstanceDetail, CompoundList, CompoundDetail, UserList, RegisterUser
+from .views import (
+    MyTokenObtainPairView, SubstanceList, SubstanceDetail, CompoundList, CompoundDetail,
+    GroupList, UserList, RegisterUser
+)
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     # API
-    path('api/user/', UserList, name='register_user'),
+    path('api/group/', GroupList, name='get_groups'),
+    path('api/user/', UserList, name='get_users'),
     path('api/user/register/', RegisterUser, name='register_user'),
     path('api/token/', MyTokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
