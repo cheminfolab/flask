@@ -3,7 +3,7 @@ from django.contrib.postgres.fields import ArrayField
 from django.core.validators import MaxValueValidator, MinValueValidator
 from .fields import BarcodeField
 
-from accounts.models import WorkingGroup, User
+from accounts.models import WorkingGroup, Member
 from locations.models import Storage
 
 
@@ -180,7 +180,7 @@ class Compound(models.Model):
     # Gruppe in der Seveso III-Verordnung
 
     container = models.OneToOneField(
-        Container, blank=True, null=True, on_delete=models.CASCADE, related_name='containing_compounds'
+        Container, null=True, on_delete=models.CASCADE, related_name='containing_compounds'
     )
 
     purity = models.FloatField(validators=[MinValueValidator(0.0), MaxValueValidator(100.0)], default=100)
@@ -199,7 +199,7 @@ class Compound(models.Model):
     )
     annotation = models.CharField(blank=True, max_length=500)
     last_user = models.OneToOneField(
-        User, blank=True, null=True, on_delete=models.SET_NULL,related_name='last_compounds'
+        Member, blank=True, null=True, on_delete=models.SET_NULL,related_name='last_compounds'
     )
     last_used = models.DateField(blank=True, null=True)
 
@@ -239,7 +239,7 @@ class Compound(models.Model):
     # Standard-Referenz-Materialien uva
 
     # spectra
-    created_by = models.ForeignKey(User, null=True, on_delete=models.SET_NULL, related_name='created_compounds')  # default ??
+    created_by = models.ForeignKey(Member, null=True, on_delete=models.SET_NULL, related_name='created_compounds')  # default ??
     created = models.DateField(auto_now_add=True)
 
     def __str__(self):

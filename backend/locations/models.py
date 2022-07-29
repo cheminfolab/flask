@@ -1,7 +1,7 @@
 from django.db import models
+from phonenumber_field.modelfields import PhoneNumberField
 
 
-# Create your models here.
 class Building(models.Model):
     name = models.CharField(unique=True, max_length=50)
     address = models.CharField(max_length=100)
@@ -47,3 +47,10 @@ class Storage(models.Model):
 
     # todo: warnings for congregated storing of multiple compounds(containers)
 
+
+class PhoneNumber(models.Model):
+    room = models.ForeignKey(Room, on_delete=models.PROTECT, related_name='phones')
+    number = PhoneNumberField(unique=True)
+
+    def __str__(self):
+        return f"{self.room.__str__()}: {self.number}"
