@@ -1,6 +1,8 @@
 import {useContext, useEffect, useState} from "react";
+import {Col, Container, Row} from "react-bootstrap";
 import AuthContext from "../context/AuthContext";
 import ChemTableComp from "../components/ChemTableComp";
+import ChemSidebarComp from "../components/ChemSidebarComp";
 import useAxios from "../utils/useAxios";
 
 const ChemPage = () => {
@@ -26,9 +28,16 @@ const ChemPage = () => {
     }
 
     return (
-        <div className='col-12'>
-            <ChemTableComp compounds={compounds}/>
-        </div>
+        <Container fluid>
+            <Row>
+                <Col xs={2} id="sidebar-wrapper">
+                    <ChemSidebarComp/>
+                </Col>
+                <Col  xs={10} id="page-content-wrapper">
+                    <ChemTableComp compounds={compounds}/>
+                </Col>
+            </Row>
+        </Container>
     );
 }
 
