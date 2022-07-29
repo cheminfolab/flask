@@ -3,13 +3,13 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework_simplejwt.views import TokenObtainPairView
 
-from .serializers import MyTokenObtainPairSerializer
-from chemicals.serializers import SubstanceSerializer, CompoundSerializer
-from chemicals.models import Substance, Compound
-
+from .serializers import CustomTokenObtainPairSerializer
 from accounts.serializers import MemberSerializer, RegisterMemberSerializer, WorkingGroupSerializer
 from accounts.models import Member, WorkingGroup
 from accounts.permissions import CompoundUserWritePermission
+
+from chemicals.serializers import SubstanceSerializer, CompoundSerializer
+from chemicals.models import Substance, Compound
 
 
 @api_view(['GET'])
@@ -45,9 +45,10 @@ def SubstanceDetail(request, pk):
 
 
 # AUTHENTICATION
-
-class MyTokenObtainPairView(TokenObtainPairView):
-    serializer_class = MyTokenObtainPairSerializer
+# todo: use function based views
+@permission_classes([])
+class TokenObtainPairView(TokenObtainPairView):
+    serializer_class = CustomTokenObtainPairSerializer
 
 
 @api_view(['GET'])
