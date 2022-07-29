@@ -35,7 +35,7 @@ urlpatterns = [
     path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     path('api/substance/', SubstanceList, name='get_substances'),
     path('api/substance/<int:pk>/', SubstanceDetail, name='get_substance_detail'),
-    path('api/compounds', CompoundList, name='get_compounds'),
+    path('api/compound/', CompoundList, name='get_compounds'),
     path('api/compound/<int:pk>/', CompoundDetail, name='get_compound_detail'),
 ]
 
