@@ -1,9 +1,10 @@
 import {Table} from "react-bootstrap";
 import SubstanceImage from "./SubstanceImage";
 
-const ChemTableComp = ({compounds}) => {
+const ChemTableComp = ({compounds, setShow}) => {
 
     // let substance = (id) => substances.find((substance_id) => substance_id['id'] === id)
+    const displayUnit = unitItem => String(unitItem.prefix)+String(unitItem.SI)
 
     return(
         <Table striped bordered hover>
@@ -29,7 +30,8 @@ const ChemTableComp = ({compounds}) => {
             <tbody>
                 {compounds.map(
                     ({
-                        id,
+                        id, density_unit, currency, owner, pubchem_cid, density, purity, opened, price, annotation,
+                        last_used, last_user, created,
                         substance: {
                             mol_weight_unit, names, molecule, formula, smiles, inchi, inchi_key, cas, pubchem_sid,
                             mol_weight, exact_mass, color, melting_point, boiling_point, flash_point, image,
@@ -41,22 +43,20 @@ const ChemTableComp = ({compounds}) => {
                                 name, compartment, room
                             },
                             supplier, EAN, product_number, amount, amount_left, tara, description
-                        },
-                        density_unit, currency, owner, pubchem_cid, density, purity, opened, price, annotation,
-                        last_used, last_user, created
+                        }
                     }) => (
-                    <tr key={id}>
+                    <tr key={id} onClick={() => setShow(true)}>
                         <td>{(image ? <SubstanceImage path={image}/>: null)}</td>
                         <td>{names}</td>
                         <td>{formula}</td>
-                        <td>{mol_weight} {mol_weight_unit.SI}</td> {/* todo: concat units (prefix, si) */}
-                        <td>{amount_left}/{amount} {amount_unit.SI}</td>
+                        <td>{mol_weight} {displayUnit(mol_weight_unit)}</td> {/* todo: concat units (prefix, si) */}
+                        <td>{amount_left}/{amount} {displayUnit(amount_unit)}</td>
                         {/* todo: add colored bar */}
                         <td>{supplier}</td>
                         <td>{purity}%</td>
-                        <td>{density} {density_unit.SI}</td>
+                        <td>{density} {displayUnit(density_unit)}</td>
                         <td>{description}</td>
-                        <td>{tara} {tara_unit.SI}</td>
+                        <td>{tara} {displayUnit(tara_unit)}</td>
                         <td>{price} {currency.currency}</td>
                         <td>{annotation}</td>
                         <td>R{room} {name} ({compartment})</td>
