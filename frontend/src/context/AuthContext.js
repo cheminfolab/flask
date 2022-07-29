@@ -1,10 +1,12 @@
 import {createContext, useEffect, useState} from "react";
 import {useNavigate} from 'react-router-dom'
 import jwt_decode from 'jwt-decode';
+import useAxios from "../utils/useAxios";
 
-const AuthContext = createContext()
 
+const AuthContext = createContext({})
 export default AuthContext
+
 
 export const AuthProvider = ({children}) => {
 
@@ -14,56 +16,46 @@ export const AuthProvider = ({children}) => {
     let [loading, setLoading] = useState(true)
 
     const navigate = useNavigate()
+    let api = useAxios()
 
-    // todo: use axios
     let loginUser = async (e) => {
         e.preventDefault()
-        let response = await fetch('http://127.0.0.1:8000/api/token/', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                'username':e.target.username.value,
-                'password':e.target.password.value
+        await api.post('/token/', {
+            'email':e.target.email.value,
+            'password':e.target.password.value
             })
-        })
-        let data = await response.json()
-        if (response.status === 200){
-            setAuthTokens(data)
-            setUser(jwt_decode(data.access))
-            localStorage.setItem('authTokens', JSON.stringify(data))
-            navigate(-2) // redirects to element from PrivateRoute
-        } else {
-            alert('Something went wrong!')
-        }
+            .then( (response) => {
+                if (response.status === 200) {
+                    const data = response.data
+                    setAuthTokens(data)
+                    setUser(jwt_decode(data.access))
+                    localStorage.setItem('authTokens', JSON.stringify(data))
+                    navigate(-2) // redirects to element from PrivateRoute
+                } else {
+                    alert('Something went wrong.')
+                }
+            })
+            .catch( (error) => console.log(error))
     }
 
-    // todo: use axios
-    let registerUser = async (e) => {
-        e.preventDefault()
-        let response = await fetch('http://127.0.0.1:8000/api/user/register/', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                "first_name": e.target.first_name.value,
-                "last_name": e.target.last_name.value,
-                "username": e.target.username.value,
-                "email": e.target.email.value,
-                'password':e.target.password.value,
-                "working_group": e.target.working_group.value
+    let registerUser = async (event) => {
+        event.preventDefault()
+        await api.post('/user/register/', {
+                first_name: event.target.first_name.value,
+                last_name: event.target.last_name.value,
+                email: event.target.email.value,
+                password:event.target.password.value,
+                working_group: event.target.working_group.value
             })
-        })
-
-        // let data = await response.json()
-        if (response.status === 200){
-            await loginUser(e)
-            // todo: notification / redirection to user page (prompt user for additional info: phone etc.)
-        } else {
-            alert('Something went wrong!')
-        }
+            .then( (response) => {
+                if (response.status === 200) {
+                    loginUser(event)
+                    // todo: notification / redirection to user page (prompt user for additional info: phone etc.)
+                } else {
+                    alert('Something went wrong!')
+                }
+            })
+            .catch( (error) => console.log(error))
     }
 
     let logoutUser = () => {
@@ -74,34 +66,40 @@ export const AuthProvider = ({children}) => {
     }
 
     let updateToken = async () => {
-        let response = await fetch('http://127.0.0.1:8000/api/token/refresh/', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({'refresh':authTokens?.refresh})
-        })
-        let data = await response.json()
-        if (response.status === 200){
-            setAuthTokens(data)
-            setUser(jwt_decode(data.access))
-            localStorage.setItem('authTokens', JSON.stringify(data))
-        } else {
-            logoutUser()
-        }
-        if (loading){
-            setLoading(false)
-        }
-    }
-
-    let contextData = {
-        user:user,
-        setUser:setUser,
-        authTokens:authTokens,
-        setAuthTokens:setAuthTokens,
-        loginUser:loginUser,
-        logoutUser:logoutUser,
-        registerUser:registerUser
+        const tokens = JSON.stringify({'refresh':authTokens?.refresh})
+        await api.post('/token/refresh/', {tokens})
+            .then( (response) => {
+                const data = response.data
+                if (response.status === 200){
+                    setAuthTokens(data)
+                    setUser(jwt_decode(data.access))
+                    localStorage.setItem('authTokens', JSON.stringify(data))
+                } else {
+                    logoutUser()
+                }
+                if (loading){
+                    setLoading(false)
+                }
+            })
+            .catch( (error) => console.log(error))
+        // let response = await fetch('http://127.0.0.1:8000/api/token/refresh/', {
+        //     method: 'POST',
+        //     headers: {
+        //         'Content-Type': 'application/json'
+        //     },
+        //     body: JSON.stringify({'refresh':authTokens?.refresh})
+        // })
+        // let data = await response.json()
+        // if (response.status === 200){
+        //     setAuthTokens(data)
+        //     setUser(jwt_decode(data.access))
+        //     localStorage.setItem('authTokens', JSON.stringify(data))
+        // } else {
+        //     logoutUser()
+        // }
+        // if (loading){
+        //     setLoading(false)
+        // }
     }
 
     useEffect(() => {
@@ -115,6 +113,16 @@ export const AuthProvider = ({children}) => {
         }, 270000) // 4.5 minutes
         return () => clearInterval(interval)
     }, [authTokens, loading])
+
+    let contextData = {
+        user:user,
+        setUser:setUser,
+        authTokens:authTokens,
+        setAuthTokens:setAuthTokens,
+        loginUser:loginUser,
+        logoutUser:logoutUser,
+        registerUser:registerUser
+    }
 
     return(
         <AuthContext.Provider value={contextData}>
