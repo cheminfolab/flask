@@ -108,20 +108,27 @@ export default function AuthPage() {
           </div>
           <div className="form-group mt-3">
             <label>Working Group</label>
-            <select className="form-select form-select-sm mt-1" name="working_group" aria-label=".form-select-sm example">
-            {/* todo: add working group request */}
-              <option selected>select group</option>
-              {groups.map(({id, name}) => (
-                <option key={id} value={id}>{name}</option>
-              ))}
-              {/*<option value="2">Brasholz</option>*/}
-              {/*<option value="3">Fifelsky</option>*/}
+            <select
+                className="form-select form-select-sm mt-1"
+                name="working_group"
+                aria-label=".form-select-sm example"
+                defaultValue={'DEFAULT'}
+            >
+              <option value="DEFAULT">select group</option>
+              {groups.map(
+                  ({id, name}) => <option key={id} value={id}>{name}</option>
+              )}
             </select>
           </div>
           <div className="form-group mt-3">
             <label>Status</label>
-            <select className="form-select form-select-sm mt-1" name="status" aria-label=".form-select-sm example">
-              <option selected>select status</option>
+            <select
+                className="form-select form-select-sm mt-1"
+                name="status"
+                aria-label=".form-select-sm example"
+                defaultValue={'DEFAULT'}
+            >
+              <option value="DEFAULT">select status</option>
               <option value="1">student</option>
               <option value="2">phd</option>
               <option value="3">staff</option>
