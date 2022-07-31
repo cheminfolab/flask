@@ -52,6 +52,7 @@ export default function AuthPage() {
                 type="email"
                 className="form-control mt-1"
                 placeholder="Email Address"
+                autoFocus
               />
             </div>
             <div className="form-group mt-3">
@@ -69,7 +70,7 @@ export default function AuthPage() {
               </button>
             </div>
             <p className="text-center mt-2">
-              Forgot <a href="#">password?</a>
+              Forgot <a href="/#">password?</a>
             </p>
           </div>
         </form>
@@ -152,13 +153,14 @@ export default function AuthPage() {
               placeholder="Password"
             />
           </div>
+          {/* todo: add password verification */}
           <div className="d-grid gap-2 mt-3">
             <button type="submit" className="btn btn-primary">
               Submit
             </button>
           </div>
           <p className="text-center mt-2">
-            Forgot <a href="#">password?</a>
+            Forgot <a href="/#">password?</a>
           </p>
         </div>
       </form>

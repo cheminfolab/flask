@@ -21,7 +21,7 @@ from django.conf.urls.static import static
 from rest_framework_simplejwt.views import TokenRefreshView
 
 from .views import (
-    MyTokenObtainPairView, SubstanceList, SubstanceDetail, CompoundList, CompoundDetail,
+    TokenObtainPairView, SubstanceList, SubstanceDetail, CompoundList, CompoundDetail,
     GroupList, UserList, RegisterUser
 )
 
@@ -31,7 +31,7 @@ urlpatterns = [
     path('api/group/', GroupList, name='get_groups'),
     path('api/user/', UserList, name='get_users'),
     path('api/user/register/', RegisterUser, name='register_user'),
-    path('api/token/', MyTokenObtainPairView.as_view(), name='token_obtain_pair'),
+    path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     path('api/substance/', SubstanceList, name='get_substances'),
     path('api/substance/<int:pk>/', SubstanceDetail, name='get_substance_detail'),
