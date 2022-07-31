@@ -21,6 +21,7 @@ class Unit(models.Model):
             ('g', 'gram'), ('l', 'liter'), ('g/mol', 'gram per mol'), ('g/ml', 'gram per milliliter')
         ]
     )
+    # todo: change to lower case?
     type = models.CharField(blank=True, max_length=50)
 
     def __str__(self):
@@ -32,6 +33,7 @@ class Unit(models.Model):
 
 class Currency(models.Model):
     currency = models.CharField(max_length=10, choices=[('EUR', 'euro'), ('USD', 'us dollar')], unique=True)
+    # todo: change to name!
 
     def __str__(self):
         return self.currency
@@ -60,7 +62,9 @@ class Container(models.Model):
     tara_unit = models.ForeignKey(
         Unit, blank=True, null=True, on_delete=models.PROTECT, related_name="tara_units"
     )
-    location = models.ForeignKey(Storage, null=True, on_delete=models.SET_NULL, related_name="containments")
+    location = models.ForeignKey(
+        Storage, null=True, on_delete=models.SET_NULL, related_name="containments"
+    )
     # storing conditions: argon, molecular sieve etc. (checkboxes?)
     description = models.CharField(blank=True, max_length=50)
 
@@ -142,7 +146,9 @@ class Substance(models.Model):
 
 
 class Compound(models.Model):
-    substance = models.ForeignKey(Substance, null=True, on_delete=models.PROTECT, related_name="compounds")
+    substance = models.ForeignKey(
+        Substance, null=True, on_delete=models.PROTECT, related_name="compounds"
+    )
     # what about mixtures (diluted substances, etc.)
 
     # mixtures:
@@ -181,7 +187,9 @@ class Compound(models.Model):
         Container, null=True, on_delete=models.CASCADE, related_name='containing_compounds'
     )
 
-    purity = models.FloatField(validators=[MinValueValidator(0.0), MaxValueValidator(100.0)], default=100)
+    purity = models.FloatField(
+        validators=[MinValueValidator(0.0), MaxValueValidator(100.0)], default=100
+    )
     density = models.FloatField(null=True, blank=True)  # todo: move to substance?
     #                                                   #  what about mixtures??
     density_unit = models.ForeignKey(
@@ -197,7 +205,7 @@ class Compound(models.Model):
     )
     annotation = models.CharField(blank=True, max_length=500)
     last_user = models.OneToOneField(
-        Member, blank=True, null=True, on_delete=models.SET_NULL,related_name='last_compounds'
+        Member, blank=True, null=True, on_delete=models.SET_NULL, related_name='last_compounds'
     )
     last_used = models.DateField(blank=True, null=True)
 
@@ -237,7 +245,9 @@ class Compound(models.Model):
     # Standard-Referenz-Materialien uva
 
     # spectra
-    created_by = models.ForeignKey(Member, null=True, on_delete=models.SET_NULL, related_name='created_compounds')  # default ??
+    created_by = models.ForeignKey(
+        Member, null=True, on_delete=models.SET_NULL, related_name='created_compounds'  # default ??
+    )
     created = models.DateField(auto_now_add=True)
 
     def __str__(self):

@@ -4,11 +4,13 @@ import AuthContext from "../context/AuthContext";
 import ChemTableComp from "../components/ChemTableComp";
 import ChemSidebarComp from "../components/ChemSidebarComp";
 import useAxios from "../utils/useAxios";
+import ChemDetailComp from "../components/ChemDetailComp";
 
 const ChemPage = () => {
 
     let {logoutUser} = useContext(AuthContext)
     let [compounds, setCompounds] = useState([])
+    let [show, setShow] = useState(false)
     let api = useAxios(true)
 
     useEffect(() => {
@@ -29,12 +31,13 @@ const ChemPage = () => {
 
     return (
         <Container fluid>
+            <ChemDetailComp show={show} setShow={setShow}/>
             <Row>
                 <Col xs={2} id="sidebar-wrapper">
                     <ChemSidebarComp/>
                 </Col>
                 <Col  xs={10} id="page-content-wrapper">
-                    <ChemTableComp compounds={compounds}/>
+                    <ChemTableComp compounds={compounds} setShow={setShow}/>
                 </Col>
             </Row>
         </Container>
