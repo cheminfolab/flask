@@ -1,10 +1,9 @@
 import {Table} from "react-bootstrap";
 import SubstanceImage from "./SubstanceImage";
 
-const ChemTableComp = ({compounds, setShow}) => {
+const ChemTableComp = ({compounds, setShow, setCompoundId}) => {
 
-    // let substance = (id) => substances.find((substance_id) => substance_id['id'] === id)
-    const displayUnit = unitItem => String(unitItem.prefix)+String(unitItem.SI)
+    const displayUnit = unitItem => String(unitItem.prefix)+String(unitItem.si)
 
     return(
         <Table striped bordered hover>
@@ -45,11 +44,14 @@ const ChemTableComp = ({compounds, setShow}) => {
                             supplier, EAN, product_number, amount, amount_left, tara, description
                         }
                     }) => (
-                    <tr key={id} onClick={() => setShow(true)}>
+                    <tr key={id} onClick={() => {
+                        setCompoundId(id)
+                        setShow(true)
+                    }}>
                         <td>{(image ? <SubstanceImage path={image}/>: null)}</td>
                         <td>{names}</td>
                         <td>{formula}</td>
-                        <td>{mol_weight} {displayUnit(mol_weight_unit)}</td> {/* todo: concat units (prefix, si) */}
+                        <td>{mol_weight} {displayUnit(mol_weight_unit)}</td>
                         <td>{amount_left}/{amount} {displayUnit(amount_unit)}</td>
                         {/* todo: add colored bar */}
                         <td>{supplier}</td>
