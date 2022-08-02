@@ -15,7 +15,7 @@ class Unit(models.Model):
         choices=[('m', 'milli'), ('c', 'centi'), ('d', 'deci'), ('h', 'hecto'), ('k', 'kilo')],
         blank=True
     )
-    SI = models.CharField(
+    si = models.CharField(
         max_length=10,
         choices=[
             ('g', 'gram'), ('l', 'liter'), ('g/mol', 'gram per mol'), ('g/ml', 'gram per milliliter')
@@ -25,10 +25,10 @@ class Unit(models.Model):
     type = models.CharField(blank=True, max_length=50)
 
     def __str__(self):
-        return f"{self.prefix}{self.SI}"
+        return f"{self.prefix}{self.si}"
 
     class Meta:
-        unique_together = (('prefix', 'SI'),)
+        unique_together = (('prefix', 'si'),)
 
 
 class Currency(models.Model):
