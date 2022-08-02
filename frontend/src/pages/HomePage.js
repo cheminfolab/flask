@@ -5,7 +5,7 @@ const HomePage = () => {
     let {user} = useContext(AuthContext)
     return (
         <div>
-            {user && <p>Hello {user.username}, you are logged to the HOME page!</p>}
+            {user && <p>Hello {user.email}, you are logged to the HOME page!</p>}
         </div>
     );
 }
