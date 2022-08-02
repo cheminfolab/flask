@@ -20,7 +20,7 @@ def CompoundList(request):
     return Response(serializer.data)
 
 
-@api_view(['GET', 'PUT', 'PATCH', 'DELETE', 'HEAD', 'OPTIONS'])
+@api_view(['GET', 'PUT', 'PATCH', 'POST', 'DELETE', 'HEAD', 'OPTIONS'])
 @permission_classes([CompoundUserWritePermission])
 def CompoundDetail(request, pk):
     queryset = Compound.objects.get(pk=pk)
@@ -36,7 +36,7 @@ def SubstanceList(request):
     return Response(serializer.data)
 
 
-@api_view(['GET', 'PUT', 'PATCH', 'DELETE', 'HEAD', 'OPTIONS'])
+@api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def SubstanceDetail(request, pk):
     queryset = Substance.objects.get(pk=pk)
