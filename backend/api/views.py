@@ -11,6 +11,8 @@ from accounts.permissions import CompoundUserWritePermission
 from chemicals.serializers import SubstanceSerializer, CompoundSerializer, ContainerSerializer
 from chemicals.models import Substance, Compound, Container
 
+from ghs.serializers import GHSSerializer
+
 
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])

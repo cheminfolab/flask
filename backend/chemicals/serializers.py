@@ -40,10 +40,10 @@ class ContainerSerializer(ModelSerializer):
     compound = CompoundSerializer(many=False)
     amount_unit = UnitSerializer(many=False)
     tara_unit = UnitSerializer(many=False)
-    location = StorageSerializer(many=False)
     currency = CurrencySerializer(many=False)
+    location = StorageSerializer(many=False)
     owner = WorkingGroupSerializer(many=False)
 
     class Meta:
         model = Container
-        exclude = ['id']
+        fields = '__all__'
