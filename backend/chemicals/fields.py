@@ -63,7 +63,7 @@ class BarcodeField(models.CharField):
         ]
 
     def _check_country(self):
-        if len(self.country) is not 3:
+        if len(self.country) != 3:
             return [
                 checks.Error(
                     "%s's country argument must have a 3 digits." % self.__class__.__name__,
@@ -75,7 +75,7 @@ class BarcodeField(models.CharField):
             return []
 
     def _check_brand(self):
-        if len(self.brand) is not 4:
+        if len(self.brand) != 4:
             return [
                 checks.Error(
                     "%s's country argument must have a 4 digits." % self.__class__.__name__,

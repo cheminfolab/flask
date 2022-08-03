@@ -22,7 +22,7 @@ const useAxios = (authentication=false) => {
 
             // check if token is expired
             const user = jwt_decode(authTokens.access)
-            const isExpired = dayjs.unix(user.exp).diff(dayjs) < 1;
+            const isExpired = dayjs.unix(user.exp).diff(dayjs(), 'second') < 30;
             if (!isExpired) return req
 
             // if token is expired, request new token
