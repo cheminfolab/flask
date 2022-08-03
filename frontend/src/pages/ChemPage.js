@@ -10,14 +10,13 @@ const ChemPage = () => {
 
     let {logoutUser} = useContext(AuthContext)
     let [compounds, setCompounds] = useState([])
-    let [compoundDetail, setCompoundDetail] = useState([])
+    let [compoundDetail, setCompoundDetail] = useState({
+        id: null,
+        substance: {image:null}
+    })
     let [compoundId, setCompoundId] = useState(1)
     let [show, setShow] = useState(false)
     let api = useAxios(true)
-
-    useEffect(() => {
-        getCompounds();
-    }, [])
 
     let getapi = async (url, setState) => {
         await api.get(url)
@@ -32,14 +31,20 @@ const ChemPage = () => {
     }
 
     let getCompounds = () => getapi('/compound/', setCompounds)
-    let getCompoundDetail = id => getapi(`/compound/${id}`, setCompoundDetail)
+    let getCompoundDetail = id => getapi(`/compound/${id}/`, setCompoundDetail)
 
     useEffect(() => {
-        if (compoundId){
-            getCompoundDetail(compoundId)
-        }
-        return
-    }, [compoundId])
+        getCompounds();
+    }, [])
+
+    // useEffect(() => {
+    //     if (compoundId){
+    //         setCompoundDetail(getCompoundDetail(compoundId))
+    //         console.log(compoundId)
+    //         console.log(compoundDetail)
+    //     }
+    //     return
+    // }, [compoundId])
 
     return (
         <Container fluid>
@@ -51,7 +56,7 @@ const ChemPage = () => {
                     <ChemTableComp
                         compounds={compounds}
                         setShow={setShow}
-                        setCompoundId={setCompoundId}
+                        getCompoundDetail={getCompoundDetail}
                     />
                     <ChemDetailComp
                         show={show}

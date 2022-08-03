@@ -1,7 +1,7 @@
 import {Table} from "react-bootstrap";
 import SubstanceImage from "./SubstanceImage";
 
-const ChemTableComp = ({compounds, setShow, setCompoundId}) => {
+const ChemTableComp = ({compounds, setShow, getCompoundDetail}) => {
 
     const displayUnit = unitItem => String(unitItem.prefix)+String(unitItem.si)
 
@@ -45,7 +45,7 @@ const ChemTableComp = ({compounds, setShow, setCompoundId}) => {
                         }
                     }) => (
                     <tr key={id} onClick={() => {
-                        setCompoundId(id)
+                        getCompoundDetail(id)
                         setShow(true)
                     }}>
                         <td>{(image ? <SubstanceImage path={image}/>: null)}</td>

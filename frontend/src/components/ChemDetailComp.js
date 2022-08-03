@@ -4,21 +4,8 @@ import SubstanceImage from "./SubstanceImage";
 
 export default function ChemDetailComp({show, setShow, compoundDetail}) {
 
-  let {id, density_unit, currency, owner, pubchem_cid, density, purity, opened, price, annotation,
-                        last_used, last_user, created,
-                        substance: {
-                            mol_weight_unit, names, molecule, formula, smiles, inchi, inchi_key, cas, pubchem_sid,
-                            mol_weight, exact_mass, color, melting_point, boiling_point, flash_point, image,
-                            exact_mass_unit, melting_point_unit, boiling_point_unit, flash_point_unit
-                        },
-                        container: {
-                            amount_unit, tara_unit,
-                            location: {
-                                name, compartment, room
-                            },
-                            supplier, EAN, product_number, amount, amount_left, tara, description
-                        }
-    } = compoundDetail
+  let {id, substance: { image}} = compoundDetail
+  // console.log('compound:', compoundDetail)
 
   return (
     <>
