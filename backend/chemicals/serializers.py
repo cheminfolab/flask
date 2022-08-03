@@ -2,6 +2,7 @@ from rest_framework.serializers import ModelSerializer
 
 from accounts.serializers import WorkingGroupSerializer
 from locations.serializers import StorageSerializer
+from ghs.serializers import GHSSerializer
 from .models import *
 
 
@@ -28,6 +29,7 @@ class SubstanceSerializer(ModelSerializer):
 class CompoundSerializer(ModelSerializer):
     substance = SubstanceSerializer(many=False)
     density_unit = UnitSerializer(many=False)
+    ghs = GHSSerializer(many=False)
 
     class Meta:
         model = Compound
