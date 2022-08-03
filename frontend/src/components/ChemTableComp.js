@@ -20,7 +20,7 @@ const ChemTableComp = ({compounds, setShow, getCompoundDetail}) => {
                     <th>Containment</th>
                     <th>Tara (incl. cap)</th>
                     <th>Price</th>
-                    <th>Annotation</th>
+                    <th>Storing conditions</th>
                     <th>Location</th>
                     <th>Owner</th>
                     <th>Opened</th>
@@ -29,20 +29,56 @@ const ChemTableComp = ({compounds, setShow, getCompoundDetail}) => {
             <tbody>
                 {compounds.map(
                     ({
-                        id, density_unit, currency, owner, pubchem_cid, density, purity, opened, price, annotation,
-                        last_used, last_user, created,
-                        substance: {
-                            mol_weight_unit, names, molecule, formula, smiles, inchi, inchi_key, cas, pubchem_sid,
-                            mol_weight, exact_mass, color, melting_point, boiling_point, flash_point, image,
-                            exact_mass_unit, melting_point_unit, boiling_point_unit, flash_point_unit
-                        },
-                        container: {
-                            amount_unit, tara_unit,
-                            location: {
-                                name, compartment, room
+                        compound:{
+                            id,
+                            substance: {
+                                names,
+                                molecule,
+                                formula,
+                                smiles,
+                                inchi,
+                                inchi_key,
+                                cas,
+                                pubchem_sid,
+                                mol_weight,
+                                mol_weight_unit,
+                                exact_mass,
+                                exact_mass_unit,
+                                color,
+                                melting_point,
+                                melting_point_unit,
+                                boiling_point,
+                                boiling_point_unit,
+                                flash_point,
+                                flash_point_unit,
+                                image
                             },
-                            supplier, EAN, product_number, amount, amount_left, tara, description
-                        }
+                            pubchem_cid,
+                            purity,
+                            density,
+                            density_unit,
+                            ghs,
+                            category,
+                            created_by,
+                            created
+                        },
+                        supplier,
+                        EAN,
+                        product_number,
+                        amount,
+                        amount_left,
+                        amount_unit,
+                        tara,
+                        tara_unit,
+                        location: {name, compartment, room},
+                        owner,
+                        price,
+                        currency,
+                        description,
+                        conditions,
+                        opened,
+                        last_used,
+                        last_user,
                     }) => (
                     <tr key={id} onClick={() => {
                         getCompoundDetail(id)
@@ -60,7 +96,7 @@ const ChemTableComp = ({compounds, setShow, getCompoundDetail}) => {
                         <td>{description}</td>
                         <td>{tara} {displayUnit(tara_unit)}</td>
                         <td>{price} {currency.currency}</td>
-                        <td>{annotation}</td>
+                        <td>{conditions}</td>
                         <td>R{room} {name} ({compartment})</td>
                         <td>{owner.name}</td>
                         <td>{opened}</td>
