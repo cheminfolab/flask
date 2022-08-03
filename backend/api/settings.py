@@ -53,6 +53,7 @@ INSTALLED_APPS = [
     'accounts',
     'locations',
     'chemicals',
+    'ghs',
     'equipment',
     'projects',
 ]

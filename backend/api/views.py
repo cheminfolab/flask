@@ -8,15 +8,15 @@ from accounts.serializers import MemberSerializer, RegisterMemberSerializer, Wor
 from accounts.models import Member, WorkingGroup
 from accounts.permissions import CompoundUserWritePermission
 
-from chemicals.serializers import SubstanceSerializer, CompoundSerializer
-from chemicals.models import Substance, Compound
+from chemicals.serializers import SubstanceSerializer, CompoundSerializer, ContainerSerializer
+from chemicals.models import Substance, Compound, Container
 
 
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def CompoundList(request):
-    queryset = Compound.objects.all()
-    serializer = CompoundSerializer(queryset, many=True)
+    queryset = Container.objects.all()
+    serializer = ContainerSerializer(queryset, many=True)
     return Response(serializer.data)
 
 
