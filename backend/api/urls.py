@@ -24,6 +24,7 @@ from .views import (
     TokenObtainPairView, SubstanceList, SubstanceDetail, CompoundList, CompoundDetail,
     GroupList, UserList, RegisterUser
 )
+from locations.views import BuildingList
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -37,6 +38,7 @@ urlpatterns = [
     path('api/substance/<int:pk>/', SubstanceDetail, name='get_substance_detail'),
     path('api/compound/', CompoundList, name='get_compounds'),
     path('api/compound/<int:pk>/', CompoundDetail, name='get_compound_detail'),
+    path('api/building/', BuildingList, name='buildings'),
 ]
 
 if settings.DEBUG:
