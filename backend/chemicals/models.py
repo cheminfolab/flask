@@ -134,6 +134,7 @@ class Substance(models.Model):
     # stability (shelf life)
     # viscosity
     # refractive index
+    # todo: properties as array? (substance vs compound?)
 
     image = models.ImageField(blank=True, null=True, upload_to=user_directory_path)
 
