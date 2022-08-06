@@ -1,30 +1,19 @@
-"""api URL Configuration
-
-The `urlpatterns` list routes URLs to views. For more information please see:
-    https://docs.djangoproject.com/en/4.0/topics/http/urls/
-Examples:
-Function views
-    1. Add an import:  from my_app import views
-    2. Add a URL to urlpatterns:  path('', views.home, name='home')
-Class-based views
-    1. Add an import:  from other_app.views import Home
-    2. Add a URL to urlpatterns:  path('', Home.as_view(), name='home')
-Including another URLconf
-    1. Import the include() function: from django.urls import include, path
-    2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
-"""
 from django.conf import settings
 from django.contrib import admin
-from django.urls import path
+from django.urls import path, include
 from django.conf.urls.static import static
 
+from rest_framework import routers
 from rest_framework_simplejwt.views import TokenRefreshView
 
 from .views import (
     TokenObtainPairView, SubstanceList, SubstanceDetail, CompoundList, CompoundDetail,
     GroupList, UserList, RegisterUser
 )
-from locations.views import BuildingList
+from locations.views import BuildingViewSet
+
+router = routers.SimpleRouter()
+router.register(r'building', BuildingViewSet, basename='buildings')
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -38,7 +27,7 @@ urlpatterns = [
     path('api/substance/<int:pk>/', SubstanceDetail, name='get_substance_detail'),
     path('api/compound/', CompoundList, name='get_compounds'),
     path('api/compound/<int:pk>/', CompoundDetail, name='get_compound_detail'),
-    path('api/building/', BuildingList, name='buildings'),
+    path('api/', include(router.urls))
 ]
 
 if settings.DEBUG:
