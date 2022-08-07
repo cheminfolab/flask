@@ -1,5 +1,18 @@
-from rest_framework.serializers import ModelSerializer, HyperlinkedModelSerializer
+from rest_framework.serializers import ModelSerializer
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
+
 from .models import *
+
+
+class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
+    @classmethod
+    def get_token(cls, user):
+        token = super().get_token(user)
+
+        # Add custom claims:
+        token['email'] = user.email
+
+        return token
 
 
 class WorkingGroupSerializer(ModelSerializer):
@@ -8,10 +21,10 @@ class WorkingGroupSerializer(ModelSerializer):
         fields = ('id', 'name')
 
 
-class RegisterMemberSerializer(ModelSerializer):
+class MemberSerializer(ModelSerializer):
     class Meta:
         model = Member
-        fields = ['first_name', 'last_name', 'email', 'password', 'working_group']  # todo: add user role
+        fields = ['first_name', 'last_name', 'email', 'password', 'working_group', 'role']
         extra_kwargs = {'password': {'write_only': True}}
 
     def create(self, validated_data):
@@ -22,8 +35,3 @@ class RegisterMemberSerializer(ModelSerializer):
         instance.save()
         return instance
 
-
-class MemberSerializer(ModelSerializer):
-    class Meta:
-        model = Member
-        fields = ['first_name', 'last_name', 'username', 'email', 'is_staff']
