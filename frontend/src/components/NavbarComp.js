@@ -48,7 +48,7 @@ const NavbarComp = () => {
 
                         <NavDropdown.Item href="#action/3.4">Separated link</NavDropdown.Item>
                     </NavDropdown>
-                    <Nav.Link as={Link} to={"/"}>Equipment</Nav.Link>
+                    <Nav.Link as={Link} to={"/"}>Wiki</Nav.Link>
                   </Nav>
                   <Form className="d-flex mx-auto">
                     <FormControl

@@ -82,22 +82,26 @@ class Substance(models.Model):
     names = ArrayField(models.CharField(blank=True, max_length=250), default=list)
     # most common name (trivial name)?
 
-    molecule = models.CharField(blank=True, max_length=250)  # rd_models.MolField()  #
     formula = models.CharField(blank=True, max_length=100)  # JSONField()
-    # todo: add validators
+    # todo: add validators (Hill notation)
 
     # structural identifiers
     smiles = models.CharField(blank=True, max_length=100)
     inchi = models.CharField(blank=True, max_length=100)
     inchi_key = models.CharField(blank=True, max_length=100)
     # mdl
-    # STEREOCHEMISTRY??
+    # STEREOCHEMISTRY?? enantiomers, distereomers, racemic mixtures?
+    molecule = models.CharField(blank=True, max_length=250)  # rd_models.MolField()  #
+    # mol file (type: crystal structure, calculated (conditions))
+    # cif: crystal structure
 
     # other identifiers
     cas = models.CharField(blank=True, max_length=12)  # todo: add validator
     pubchem_sid = models.IntegerField(blank=True, null=True)
     # 'https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/cid/<cid>/property/MolecularFormula,MolecularWeight/CSV'
     # 'https://pubchem.ncbi.nlm.nih.gov/rest/pug_view/data/compound/<cid>/JSON'
+    # ec number (european community), german: EG
+    # https://echa.europa.eu/information-on-chemicals/ec-inventory
 
     # properties
     mol_weight = models.FloatField(blank=True, null=True)
@@ -130,6 +134,7 @@ class Substance(models.Model):
     # stability (shelf life)
     # viscosity
     # refractive index
+    # todo: properties as array? (substance vs compound?)
 
     image = models.ImageField(blank=True, null=True, upload_to=user_directory_path)
 

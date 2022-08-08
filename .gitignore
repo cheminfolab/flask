@@ -70,8 +70,11 @@ db.sqlite3-journal
 
 /backend/database
 # ignore all migrations except __init__.py
-migrations/*
-!migrations/__init__.py
+**/migrations/*
+!**/migrations/__init__.py
+**/images/substances/*
+tmp/
+
 
 
 # PyBuilder
