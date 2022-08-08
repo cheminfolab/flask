@@ -116,7 +116,7 @@ export default function AuthPage() {
               <input
                 autoFocus
                 required
-                name="login_email"
+                name="email"
                 type="email"
                 className="form-control mt-1"
                 placeholder="Email Address"
@@ -125,7 +125,7 @@ export default function AuthPage() {
             <div className="form-group mt-3">
               <label>Password</label>
               <input
-                name="login_password"
+                name="password"
                 type="password"
                 className="form-control mt-1"
                 placeholder="Enter password"

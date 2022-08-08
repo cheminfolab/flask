@@ -21,8 +21,8 @@ export const AuthProvider = ({children}) => {
     let loginUser = async (e) => {
         e.preventDefault()
         await api.post('/token/', {
-            'email':e.target.login_email.value,
-            'password':e.target.login_password.value
+            'email':e.target.email.value,
+            'password':e.target.password.value
             })
             .then( (response) => {
                 if (response.status === 200) {
@@ -40,7 +40,7 @@ export const AuthProvider = ({children}) => {
 
     let registerUser = async (event) => {
         event.preventDefault()
-        await api.post('/user/register/', {
+        await api.post('/member/register/', {
                 first_name: event.target.first_name.value,
                 last_name: event.target.last_name.value,
                 email: event.target.email.value,
