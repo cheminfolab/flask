@@ -1,7 +1,11 @@
-import {Col, Container, Form, Modal, Row} from "react-bootstrap";
+import {Col, Container, Form, Modal, Row, Tab, Tabs} from "react-bootstrap";
 import './ChemDetailComp.css';
+import SubstanceImage from "./SubstanceImage";
 
-export default function ChemDetailComp({show, setShow}) {
+export default function ChemDetailComp({show, setShow, compoundDetail}) {
+
+  let {id, substance: { image}} = compoundDetail
+  // console.log('compound:', compoundDetail)
 
   return (
     <>
@@ -20,15 +24,64 @@ export default function ChemDetailComp({show, setShow}) {
           </Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <p>
-            Ipsum molestiae natus adipisci modi eligendi? Debitis amet quae unde
-            commodi aspernatur enim, consectetur. Cumque deleniti temporibus
-            ipsam atque a dolores quisquam quisquam adipisci possimus
-            laboriosam. Quibusdam facilis doloribus debitis! Sit quasi quod
-            accusamus eos quod. Ab quos consequuntur eaque quo rem! Mollitia
-            reiciendis porro quo magni incidunt dolore amet atque facilis ipsum
-            deleniti rem!
-          </p>
+          <Container>
+            <Row>
+              <Col xs={12} lg={2}>
+                {(image ? <SubstanceImage path={image}/>: 'IMAGE')}
+              </Col>
+              <Col xs={12} lg={10}>
+                <p>
+                  Ipsum molestiae natus adipisci modi eligendi? Debitis amet quae unde
+                  commodi aspernatur enim, consectetur. Cumque deleniti temporibus
+                  ipsam atque a dolores quisquam quisquam adipisci possimus
+                  laboriosam. Quibusdam facilis doloribus debitis! Sit quasi quod
+                  accusamus eos quod. Ab quos consequuntur eaque quo rem! Mollitia
+                  reiciendis porro quo magni incidunt dolore amet atque facilis ipsum
+                  deleniti rem!
+                </p>
+              </Col>
+            </Row>
+          </Container>
+          <Tabs
+            defaultActiveKey="home"
+            transition={false}
+            id="noanim-tab-example"
+            className="mb-3"
+          >
+            <Tab eventKey="home" title="Properties">
+                <p>
+                  Ipsum molestiae natus adipisci modi eligendi? Debitis amet quae unde
+                  commodi aspernatur enim, consectetur. Cumque deleniti temporibus
+                  ipsam atque a dolores quisquam quisquam adipisci possimus
+                  laboriosam. Quibusdam facilis doloribus debitis! Sit quasi quod
+                  accusamus eos quod. Ab quos consequuntur eaque quo rem! Mollitia
+                  reiciendis porro quo magni incidunt dolore amet atque facilis ipsum
+                  deleniti rem!
+                </p>
+            </Tab>
+            <Tab eventKey="profile" title="Spectra">
+                <p>
+                  Ipsum molestiae natus adipisci modi eligendi? Debitis amet quae unde
+                  commodi aspernatur enim, consectetur. Cumque deleniti temporibus
+                  ipsam atque a dolores quisquam quisquam adipisci possimus
+                  laboriosam. Quibusdam facilis doloribus debitis! Sit quasi quod
+                  accusamus eos quod. Ab quos consequuntur eaque quo rem! Mollitia
+                  reiciendis porro quo magni incidunt dolore amet atque facilis ipsum
+                  deleniti rem!
+                </p>
+            </Tab>
+            <Tab eventKey="contact" title="SDS">
+                <p>
+                  Ipsum molestiae natus adipisci modi eligendi? Debitis amet quae unde
+                  commodi aspernatur enim, consectetur. Cumque deleniti temporibus
+                  ipsam atque a dolores quisquam quisquam adipisci possimus
+                  laboriosam. Quibusdam facilis doloribus debitis! Sit quasi quod
+                  accusamus eos quod. Ab quos consequuntur eaque quo rem! Mollitia
+                  reiciendis porro quo magni incidunt dolore amet atque facilis ipsum
+                  deleniti rem!
+                </p>
+            </Tab>
+          </Tabs>
           <Container>
             <Row>
               <Col xs={12} md={8}>
