@@ -4,7 +4,7 @@ from django.core.validators import MaxValueValidator, MinValueValidator
 
 from barcode_field.fields import BarcodeField
 
-from accounts.models import WorkingGroup, Member
+from accounts.models import WorkingGroup, Member, Supplier
 from locations.models import Storage
 from ghs.models import GHS
 
@@ -223,7 +223,7 @@ class Compound(models.Model):
     )
 
     ghs = models.OneToOneField(
-        GHS, null=True, on_delete=models.PROTECT, related_name='hazardous_compounds'
+        GHS, blank=True, null=True, on_delete=models.PROTECT, related_name='hazardous_compounds'
     )
     # sds
     # un number (adr, adn, ADNR und ADN-D, RID, SOLAS)
@@ -271,7 +271,7 @@ class Container(models.Model):
     compound = models.ForeignKey(
         Compound, null=True, on_delete=models.PROTECT, related_name="containers"
     )
-    supplier = models.CharField(max_length=250)
+    supplier = models.ForeignKey(Supplier, on_delete=models.PROTECT, related_name="products")
     EAN = BarcodeField(blank=True)
     product_number = models.CharField(blank=True, max_length=100)
     # batch_number (self-made: auto-generate?)
