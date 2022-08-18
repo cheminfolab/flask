@@ -47,7 +47,7 @@ INSTALLED_APPS = [
     'corsheaders',
 
     'phonenumber_field',
-
+    # 'barcode_field'
     # 'django_rdkit',
 
     'accounts',
