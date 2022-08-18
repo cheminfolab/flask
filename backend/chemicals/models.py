@@ -1,43 +1,80 @@
 from django.db import models
 from django.contrib.postgres.fields import ArrayField
 from django.core.validators import MaxValueValidator, MinValueValidator
-from .fields import BarcodeField
+
+from barcode_field.fields import BarcodeField
 
 from accounts.models import WorkingGroup, Member
 from locations.models import Storage
 from ghs.models import GHS
 
-
 # MISCELLANEOUS
 
+si_units = []
+
+
+class Prefix(models.Model):
+    name = models.CharField(blank=True, max_length=10)
+    symbol = models.CharField(max_length=2, unique=True)
+    factor = models.FloatField()
+
+    def __str__(self):
+        return f"{self.name} ({self.symbol}): {self.factor:.0E}"
+
+    class Meta:
+        verbose_name_plural = 'prefixes'
+
+
+class SI(models.Model):
+    name = models.CharField(max_length=50)
+    symbol = models.CharField(max_length=10, unique=True)
+
+    def __str__(self):
+        return self.name
+
+    def is_valid(self):
+        return self.symbol in si_units
+
+    class Meta:
+        verbose_name_plural = 'SI'
+
+
 class Unit(models.Model):
-    prefix = models.CharField(
-        max_length=10,
-        choices=[('m', 'milli'), ('c', 'centi'), ('d', 'deci'), ('h', 'hecto'), ('k', 'kilo')],
-        blank=True
+    name = models.CharField(max_length=50)
+    prefix = models.ForeignKey(
+        Prefix, blank=True, null=True, on_delete=models.PROTECT, related_name='unit_prefixes'
     )
-    si = models.CharField(
-        max_length=10,
-        choices=[
-            ('g', 'gram'), ('l', 'liter'), ('g/mol', 'gram per mol'), ('g/ml', 'gram per milliliter')
-        ]
+    symbol = models.CharField(max_length=10)
+    si = models.ManyToManyField(
+        SI, blank=True, related_name='units', through='DerivedUnit'
     )
-    # todo: change to lower case?
+    factor = models.FloatField(default=1)
     type = models.CharField(blank=True, max_length=50)
 
     def __str__(self):
-        return f"{self.prefix}{self.si}"
+        return f"{self.name}"
 
     class Meta:
-        unique_together = (('prefix', 'si'),)
+        unique_together = (('prefix', 'symbol'),)
+
+
+class DerivedUnit(models.Model):
+    unit = models.ForeignKey(Unit, on_delete=models.PROTECT)
+    si = models.ForeignKey(SI, on_delete=models.PROTECT)
+    exponent = models.IntegerField(default=1)
+    factor = models.FloatField(default=1)
+
+    def __str__(self):
+        if self.exponent == 1:
+            return f"{self.unit.symbol}: {self.factor} {self.si.symbol}"
+        return f"{self.unit.symbol}: {self.factor} {self.si.symbol}^{self.exponent}"
 
 
 class Currency(models.Model):
-    currency = models.CharField(max_length=10, choices=[('EUR', 'euro'), ('USD', 'us dollar')], unique=True)
-    # todo: change to name!
+    name = models.CharField(max_length=10, unique=True)
 
     def __str__(self):
-        return self.currency
+        return self.name
 
     class Meta:
         verbose_name_plural = 'Currencies'

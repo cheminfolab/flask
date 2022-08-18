@@ -6,6 +6,11 @@ from .serializers import *
 from .permissions import *
 
 
+class UnitViewSet(CustomViewSet):
+    model = Unit
+    serializer_class = UnitSerializer
+
+
 class SubstanceViewSet(CustomViewSet):
     model = Substance
     serializer_class = SubstanceSerializer
@@ -23,6 +28,8 @@ class ContainerViewSet(CustomViewSet):
     def get_permissions(self):
         if self.action == 'list':
             permission_classes = [IsAuthenticated]
+        elif self.action == 'retrieve':
+            permission_classes = []
         # todo: add permissions for create method (based on role)
         elif self.action == 'partial_update' or self.action == 'update':
             permission_classes = [IsAuthenticated, IsOwnerOrEditFieldOnly]
