@@ -1,9 +1,9 @@
 import {Table} from "react-bootstrap";
 import SubstanceImage from "./SubstanceImage";
 
-const ChemTableComp = ({compounds}) => {
+const ChemTableComp = ({compounds, setShow, getCompoundDetail}) => {
 
-    // let substance = (id) => substances.find((substance_id) => substance_id['id'] === id)
+    const displayUnit = unitItem => String(unitItem.prefix)+String(unitItem.si)
 
     return(
         <Table striped bordered hover>
@@ -13,13 +13,14 @@ const ChemTableComp = ({compounds}) => {
                     <th>Name</th>
                     <th>Formula</th>
                     <th>Molecular weight</th>
-                    <th>Amount (left)</th>
+                    <th>Amount</th>
                     <th>Supplier</th>
                     <th>Purity</th>
                     <th>Density</th>
                     <th>Containment</th>
+                    <th>Tara (incl. cap)</th>
                     <th>Price</th>
-                    <th>Annotation</th>
+                    <th>Storing conditions</th>
                     <th>Location</th>
                     <th>Owner</th>
                     <th>Opened</th>
@@ -28,34 +29,74 @@ const ChemTableComp = ({compounds}) => {
             <tbody>
                 {compounds.map(
                     ({
-                        id,
-                        substance: {
-                            mol_weight_unit, names, molecule, formula, smiles, inchi, inchi_key, cas, pubchem_sid,
-                            mol_weight, exact_mass, color, melting_point, boiling_point, flash_point, image,
-                            exact_mass_unit, melting_point_unit, boiling_point_unit, flash_point_unit
-                        },
-                        container: {
-                            amount_unit, tara_unit,
-                            location: {
-                                name, compartment, room
+                        compound:{
+                            id,
+                            substance: {
+                                names,
+                                molecule,
+                                formula,
+                                smiles,
+                                inchi,
+                                inchi_key,
+                                cas,
+                                pubchem_sid,
+                                mol_weight,
+                                mol_weight_unit,
+                                exact_mass,
+                                exact_mass_unit,
+                                color,
+                                melting_point,
+                                melting_point_unit,
+                                boiling_point,
+                                boiling_point_unit,
+                                flash_point,
+                                flash_point_unit,
+                                image
                             },
-                            supplier, EAN, product_number, amount, amount_left, tara, description
+                            pubchem_cid,
+                            purity,
+                            density,
+                            density_unit,
+                            ghs,
+                            category,
+                            created_by,
+                            created
                         },
-                        density_unit, currency, owner, pubchem_cid, density, purity, opened, price, annotation,
-                        last_used, last_user, created
+                        supplier,
+                        EAN,
+                        product_number,
+                        amount,
+                        amount_left,
+                        amount_unit,
+                        tara,
+                        tara_unit,
+                        location: {name, compartment, room},
+                        owner,
+                        price,
+                        currency,
+                        description,
+                        conditions,
+                        opened,
+                        last_used,
+                        last_user,
                     }) => (
-                    <tr key={id}>
+                    <tr key={id} onClick={() => {
+                        getCompoundDetail(id)
+                        setShow(true)
+                    }}>
                         <td>{(image ? <SubstanceImage path={image}/>: null)}</td>
                         <td>{names}</td>
                         <td>{formula}</td>
-                        <td>{mol_weight} {mol_weight_unit.SI}</td>
-                        <td>{amount} ({amount_left}) {amount_unit.SI}</td>
+                        <td>{mol_weight} {displayUnit(mol_weight_unit)}</td>
+                        <td>{amount_left}/{amount} {displayUnit(amount_unit)}</td>
+                        {/* todo: add colored bar */}
                         <td>{supplier}</td>
                         <td>{purity}%</td>
-                        <td>{density} {density_unit.SI}</td>
+                        <td>{density} {displayUnit(density_unit)}</td>
                         <td>{description}</td>
+                        <td>{tara} {displayUnit(tara_unit)}</td>
                         <td>{price} {currency.currency}</td>
-                        <td>{annotation}</td>
+                        <td>{conditions}</td>
                         <td>R{room} {name} ({compartment})</td>
                         <td>{owner.name}</td>
                         <td>{opened}</td>

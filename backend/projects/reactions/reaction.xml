@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Synthesis>
+    <Reaction>
+        <Reagents>
+            <Reagent id='345' name='' /> <!-- other properties...-->
+            <Solvent/>
+        </Reagents>
+        <Procedure>
+            <Preparation>
+            <InertGas/>
+                <Add reagent='' amount='2 eq' vessel='reactor' stir='0' time="10 min"/>
+                <!-- heat / chill (adjustment) -->
+                <Temperature/>
+
+            </Preparation>
+            <Reaction>
+                <Repeat count='2'>
+                    <Stir vessel="filter" time="5 min"/>
+                    <Wait time='5 min'/>
+                </Repeat>
+                <Irradiate/>
+            </Reaction>
+            <Workup>
+                <Transfer from_vessel="reactor" to_vessel="separator" volume="all" queue="A"/>
+                <Evaporate/>
+                <Precipitate/>
+                <Separate/>
+            </Workup>
+            <Purification>
+                <RunColumn/>
+                <Repeat>
+                    <Recrystallize/>
+                </Repeat>
+            </Purification>
+
+
+
+        </Procedure>
+    </Reaction>
+</Synthesis>
+<!--
+attributes:
+vessel: name (id?)
+reagent: id
+amount: (eq, vol, weight, etc.)
+stir: rpm
+time: min
+
+
+purpose
+descriptors
+-->
+
+<!--Liquid Handling-->
+<!--Add-->
+<!--Separate-->
+<!--Transfer-->
+
+<!--Stirring-->
+<!--Stir-->
+<!--StartStir-->
+<!--StopStir-->
+
+<!--Temperature Control-->
+<!--HeatChill-->
+<!--HeatChillToTemp-->
+<!--StartHeatChill-->
+<!--StopHeatChill-->
+
+<!--Inert Gas-->
+<!--EvacuateAndRefill-->
+<!--Purge-->
+<!--StartPurge-->
+<!--StopPurge-->
+
+<!--Filtration-->
+<!--Filter-->
+<!--FilterThrough-->
+<!--WashSolid-->
+
+<!--Special-->
+<!--Wait-->
+<!--Repeat-->
+
+<!--Other-->
+<!--CleanVessel-->
+<!--Crystallize-->
+<!--Dissolve-->
+<!--Dry-->
+<!--Evaporate-->
+<!--Irradiate-->
+<!--Precipitate-->
+<!--ResetHandling-->
+<!--RunColumn-->

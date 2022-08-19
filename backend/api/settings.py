@@ -53,13 +53,14 @@ INSTALLED_APPS = [
     'accounts',
     'locations',
     'chemicals',
+    'ghs',
     'equipment',
+    'projects',
 ]
 
 REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': [
         'rest_framework.permissions.IsAuthenticated',
-
     ],
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework_simplejwt.authentication.JWTAuthentication',
@@ -171,7 +172,7 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-AUTH_USER_MODEL = 'accounts.User'
+AUTH_USER_MODEL = 'accounts.Member'
 
 # Internationalization
 # https://docs.djangoproject.com/en/4.0/topics/i18n/

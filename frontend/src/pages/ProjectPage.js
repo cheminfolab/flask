@@ -1,13 +1,13 @@
 import React, {useContext} from 'react';
 import AuthContext from "../context/AuthContext";
 
-const ReactionPage = () => {
+const ProjectPage = () => {
     let {user} = useContext(AuthContext)
     return (
         <div>
-            {user && <p>Hello {user.username}, you are logged to the REACTION page!</p>}
+            {user && <p>Hello {user.email}, you are logged to the PROJECTS page!</p>}
         </div>
     );
 }
 
-export default ReactionPage;
+export default ProjectPage;
