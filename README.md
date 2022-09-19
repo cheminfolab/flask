@@ -52,8 +52,6 @@ pg_ctl -D database -l logfile start
 #waiting for server to start.... done
 #server started
 ````
-now the server is up.
-
 
 create a non-superuser (more safety!)
 
@@ -67,13 +65,18 @@ using this super user, create inner database inside the base database
 ````bash
 createdb --owner=admin userinterface_db
 ````
-
-
-
+Migrations to the database need to be applied by:
 ```python
 python3 manage.py makemigrations
 python3 manage.py migrate
+```
+If you want to add entries to the database yourself, you need to create a superuser first:
+```python
 python3 manage.py createsuperuser
+```
+Otherwise, you can populate the database with example data (including superuser (email:'admin@admin.com', password:'admin'))
+```python
+django-admin loaddata init.json
 ```
 
 #### Stop running the postgres instance (under ubuntu)
