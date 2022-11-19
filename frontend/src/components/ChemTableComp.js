@@ -1,8 +1,8 @@
 import {Table} from "react-bootstrap";
 import SubstanceImage from "./SubstanceImage";
 
-const ChemTableComp = ({compounds, setShow, getCompoundDetail}) => {
-
+const ChemTableComp = ({compounds, setShow, setCompoundId}) => {
+    if (compounds.length === 0) return null
     const displayUnit = unitItem => String(unitItem.prefix)+String(unitItem.si)
 
     return(
@@ -80,28 +80,29 @@ const ChemTableComp = ({compounds, setShow, getCompoundDetail}) => {
                         last_used,
                         last_user,
                     }) => (
-                    <tr key={id} onClick={() => {
-                        getCompoundDetail(id)
-                        setShow(true)
-                    }}>
-                        <td>{(image ? <SubstanceImage path={image}/>: null)}</td>
-                        <td>{names}</td>
-                        <td>{formula}</td>
-                        <td>{mol_weight} {displayUnit(mol_weight_unit)}</td>
-                        <td>{amount_left}/{amount} {displayUnit(amount_unit)}</td>
-                        {/* todo: add colored bar */}
-                        <td>{supplier}</td>
-                        <td>{purity}%</td>
-                        <td>{density} {displayUnit(density_unit)}</td>
-                        <td>{description}</td>
-                        <td>{tara} {displayUnit(tara_unit)}</td>
-                        <td>{price} {currency.currency}</td>
-                        <td>{conditions}</td>
-                        <td>R{room} {name} ({compartment})</td>
-                        <td>{owner.name}</td>
-                        <td>{opened}</td>
-                    </tr>
-                ))}
+                        <tr key={id} onClick={() => {
+                            setCompoundId(id)
+                            setShow(true)
+                        }}>
+                            <td>{(image ? <SubstanceImage path={image}/>: null)}</td>
+                            <td>{names}</td>
+                            <td>{formula}</td>
+                            <td>{mol_weight} {displayUnit(mol_weight_unit)}</td>
+                            <td>{amount_left}/{amount} {displayUnit(amount_unit)}</td>
+                            {/* todo: add colored bar */}
+                            <td>{supplier}</td>
+                            <td>{purity}%</td>
+                            <td>{density} {displayUnit(density_unit)}</td>
+                            <td>{description}</td>
+                            <td>{tara} {displayUnit(tara_unit)}</td>
+                            <td>{price} {currency.currency}</td>
+                            <td>{conditions}</td>
+                            <td>R{room} {name} ({compartment})</td>
+                            <td>{owner.name}</td>
+                            <td>{opened}</td>
+                        </tr>
+                    )
+                )}
             </tbody>
         </Table>
     );

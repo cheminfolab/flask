@@ -1,4 +1,4 @@
-name: userinterface
+name: flask
 channels:
   - conda-forge
   - defaults
