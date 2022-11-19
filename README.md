@@ -7,20 +7,20 @@ conda activate <env_name>
 Set up .env file:
 ```python
 # .env
-SECRET_KEY = '<secret_key>'
-DEBUG = False
-ALLOWED_HOSTS = '<allowed_host>, ...'
+SECRET_KEY='<secret_key>'
+DEBUG=False
+ALLOWED_HOSTS='<allowed_host>, ...'
 
-TIME_ZONE = 'Europe/Berlin'
+TIME_ZONE='Europe/Berlin'
 
-DB_NAME = 'userinterface_db'
-DB_USER = 'admin'
-DB_PASSWORD = '<admin_password>'
-DB_HOST = 'localhost'
-DB_PORT = '5432'
+DB_NAME='userinterface_db'
+DB_USER='admin'
+DB_PASSWORD='<admin_password>'
+DB_HOST='localhost'
+DB_PORT='5432'
 
-CORS_ALLOW_ALL_ORIGINS = True
-CORS_ALLOWED_ORIGINS = '<allowed_origins>, ... '
+CORS_ALLOW_ALL_ORIGINS=True
+CORS_ALLOWED_ORIGINS='<allowed_origins>, ... '
 ```
 
 ## Setting up Postgresql database

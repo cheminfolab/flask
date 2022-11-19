@@ -72,7 +72,7 @@ class Member(AbstractBaseUser, PermissionsMixin):
     phones = models.ManyToManyField(PhoneNumber, blank=True, related_name='contacts')
     rooms = models.ManyToManyField(Room, blank=True, related_name='team')
 
-    # # identifiers, links (ORCID, ResearchGate, etc.)
+    # # identifiers, linked accounts (ORCID, ResearchGate, etc.), affiliations
 
     # permissions
     is_active = models.BooleanField(default=True)
@@ -107,3 +107,6 @@ class Member(AbstractBaseUser, PermissionsMixin):
     #     """Is the user a member of staff?"""
     #     # Simplest possible answer: All admins are staff
     #     return self.is_admin
+
+
+# supplier / vendor

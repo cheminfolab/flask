@@ -162,14 +162,16 @@ class Substance(models.Model):
     flash_point_unit = models.ForeignKey(
         Unit, blank=True, null=True, on_delete=models.PROTECT, related_name="flash_point_units"
     )
+    # decomposition temperature
+    # auto-ignition temp.
+    # viscosity
+    # refractive index
+
     # vapor density
     # vapor pressure
     # solubility
     # logP
-    # auto-ignition temp.
     # stability (shelf life)
-    # viscosity
-    # refractive index
     # todo: properties as array? (substance vs compound?)
 
     image = models.ImageField(blank=True, null=True, upload_to=user_directory_path)
@@ -181,8 +183,6 @@ class Substance(models.Model):
     # ffp2 = models.BfpField(null=True)
 
     # wikipedia, CPDat, ChEMBL, ChemSpider, CHEMnetBASE, GESTIS(SDS), NFDI, SpectraBASE (slugfields?), Massbank!
-
-    # spectra
 
     def __str__(self):
         return self.names[0]
@@ -236,27 +236,29 @@ class Compound(models.Model):
 
     # classification
     #
-    # Zoll-Nummern
-    # CAS-Nummern
-    # Dual-Use Kategorie
+    # EC-Nummern (REACH)
     # UN-Nr. (ADR)
+    # Zoll-Nummern
+    # Dual-Use Kategorie
     # Colour-Index
     # BtMG
     # CWÜ- und BWÜ-Listen
     # Doping (WADA-Liste)
     # ATC-Codes
-    # EC-Nummern (REACH)
     # EINECS / ELINCS / NLP
     # Stoffgruppe Sprengstoff-Gesetz
     # Ausführliche Regelungen für die Schule (SR-2004)
     # Einstufung als Biologischer Arbeitsstoff
     # Gruppe in der Seveso III-Verordnung
 
+    # spectra
+
     category = models.ManyToManyField(Category, blank=True, related_name='categorized_compounds')
 
     # related compounds (hydrates, hydrochlorides, etc.)
 
     # spectra
+
     created_by = models.ForeignKey(
         Member, null=True, on_delete=models.SET_NULL, related_name='created_compounds'  # default ??
     )
@@ -307,6 +309,7 @@ class Container(models.Model):
         Member, blank=True, null=True, on_delete=models.SET_NULL, related_name='last_compounds'
     )
 
+    # spectra
     # inspection cycle
 
     # todo: solve refilling from other container (e.g. after destillation)?
