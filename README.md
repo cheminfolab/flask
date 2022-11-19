@@ -117,6 +117,19 @@ postgres -D db_djangogirls &
 
 you can stop and switch to server mode by following 'stop running postgres instance under ubuntu'
 
+#### Backing up the PostgreSQL database
+
+See: [pg_dump](https://www.postgresql.org/docs/12/app-pgdump.html)
+
+````bash
+pg_dump -h [host] -U [option] -W -F [file_type] [database_name] > [backup_name]
+````
+
+for example:
+
+````bash
+ pg_dump -h localhost -U admin -W -F t userinterface_db > ./init.tar
+````
 
 # Getting Started with Create React App
 
