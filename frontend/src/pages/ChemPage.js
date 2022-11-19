@@ -1,50 +1,39 @@
-import {useContext, useEffect, useState} from "react";
+import {useEffect, useState} from "react";
 import {Col, Container, Row} from "react-bootstrap";
-import AuthContext from "../context/AuthContext";
 import ChemTableComp from "../components/ChemTableComp";
 import ChemSidebarComp from "../components/ChemSidebarComp";
 import useAxios from "../utils/useAxios";
 import ChemDetailComp from "../components/ChemDetailComp";
 
+
 const ChemPage = () => {
 
-    let {logoutUser} = useContext(AuthContext)
-    let [compounds, setCompounds] = useState([])
-    let [compoundDetail, setCompoundDetail] = useState({
+    let ApiService = useAxios(true)
+    let [containers, setContainers] = useState([])
+    let [containerDetail, setContainerDetail] = useState({
         id: null,
         substance: {image:null}
     })
-    let [compoundId, setCompoundId] = useState(1)
+    let [containerId, setContainerId] = useState()
     let [show, setShow] = useState(false)
-    let api = useAxios(true)
-
-    let getapi = async (url, setState) => {
-        await api.get(url)
-            .then( (response) => {
-                if (response.status === 200){
-                    setState(response.data)
-                } else if (response.statusText === 'Unauthorized'){
-                    logoutUser()
-                }
-            })
-            .catch( (error) => console.log(error))
-    }
-
-    let getCompounds = () => getapi('/compound/', setCompounds)
-    let getCompoundDetail = id => getapi(`/compound/${id}/`, setCompoundDetail)
 
     useEffect(() => {
-        getCompounds();
+        ApiService
+            .getAll('container')
+            .then(returnedContainers => setContainers(returnedContainers))
+            .catch(error => console.log('getAll error:', error))
     }, [])
 
-    // useEffect(() => {
-    //     if (compoundId){
-    //         setCompoundDetail(getCompoundDetail(compoundId))
-    //         console.log(compoundId)
-    //         console.log(compoundDetail)
-    //     }
-    //     return
-    // }, [compoundId])
+    useEffect(() => console.log(containers), [containers])
+
+    useEffect(() => {
+        console.log('containerId', containerId)
+        if (containerId) {
+        ApiService
+            .get('container', containerId)
+            .then(returnedContainer => setContainerDetail(returnedContainer))
+            .catch(error => console.log('get error:', error))
+    }}, [containerId])
 
     return (
         <Container fluid>
@@ -54,14 +43,14 @@ const ChemPage = () => {
                 </Col>
                 <Col  xs={10} id="page-content-wrapper">
                     <ChemTableComp
-                        compounds={compounds}
+                        compounds={containers}
                         setShow={setShow}
-                        getCompoundDetail={getCompoundDetail}
+                        setCompoundId={setContainerId}
                     />
                     <ChemDetailComp
                         show={show}
                         setShow={setShow}
-                        compoundDetail={compoundDetail}
+                        compoundId={containerId}
                     />
                 </Col>
             </Row>
