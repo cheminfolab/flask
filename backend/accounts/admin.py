@@ -78,7 +78,8 @@ class MemberAdmin(UserAdmin):
 
 
 admin.site.register(WorkingGroup, WorkingGroupAdmin)
-# unregister Group model to use custom Role proxy model:
+# unregister Group model to use custom Role (proxy) model:
 admin.site.unregister(Group)
 admin.site.register(Role)  # , GroupAdmin)
 admin.site.register(Member, MemberAdmin)
+admin.site.register(Supplier)

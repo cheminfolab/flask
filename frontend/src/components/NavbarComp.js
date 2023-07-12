@@ -53,11 +53,11 @@ const NavbarComp = () => {
                   <Form className="d-flex mx-auto">
                     <FormControl
                       type="search"
-                      placeholder="Search"
+                      placeholder="Search (inactive)"
                       className="me-2"
                       aria-label="Search"
                     />
-                    <Button variant="outline-success">Search</Button>
+                    <Button variant="outline-success" disabled>Search</Button>
                   </Form>
                   <Nav className="mr-auto">
                       <DropdownButton

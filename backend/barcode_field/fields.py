@@ -1,10 +1,10 @@
-from django.db import models
-from django.utils.translation import gettext_lazy as _
-
-from .core import Barcode  # todo: update project structure?
 from django.conf import settings
 from django.core import checks
+from django.db import models
+from django.utils.translation import gettext_lazy as _
 from django.utils.crypto import get_random_string
+
+from .core import Barcode
 
 default_country = getattr(settings, 'BARCODE_COUNTRY', '950')
 default_brand = getattr(settings, 'BARCODE_BRAND', '0000')

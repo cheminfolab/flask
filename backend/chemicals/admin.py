@@ -42,6 +42,7 @@ admin.site.register(Unit, UnitAdmin)
 admin.site.register(DerivedUnit)
 admin.site.register(Currency)
 admin.site.register(Category)
-admin.site.register(Container)
 admin.site.register(Substance, SubstanceAdmin)
 admin.site.register(Compound, CompoundAdmin)
+admin.site.register(Container)
+

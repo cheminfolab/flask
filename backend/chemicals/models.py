@@ -1,9 +1,11 @@
 from django.db import models
+# from django_rdkit import models as rk_models
 from django.contrib.postgres.fields import ArrayField
 from django.core.validators import MaxValueValidator, MinValueValidator
-from .fields import BarcodeField
 
-from accounts.models import WorkingGroup, Member
+from barcode_field.fields import BarcodeField
+
+from accounts.models import WorkingGroup, Member, Supplier
 from locations.models import Storage
 from ghs.models import GHS
 
@@ -128,6 +130,7 @@ class Substance(models.Model):
     # mdl
     # STEREOCHEMISTRY?? enantiomers, distereomers, racemic mixtures?
     molecule = models.CharField(blank=True, max_length=250)  # rd_models.MolField()  #
+    # structure = rk_models.MolField(blank=True, null=True)
     # mol file (type: crystal structure, calculated (conditions))
     # cif: crystal structure
 
@@ -162,14 +165,16 @@ class Substance(models.Model):
     flash_point_unit = models.ForeignKey(
         Unit, blank=True, null=True, on_delete=models.PROTECT, related_name="flash_point_units"
     )
+    # decomposition temperature
+    # auto-ignition temp.
+    # viscosity
+    # refractive index
+
     # vapor density
     # vapor pressure
     # solubility
     # logP
-    # auto-ignition temp.
     # stability (shelf life)
-    # viscosity
-    # refractive index
     # todo: properties as array? (substance vs compound?)
 
     image = models.ImageField(blank=True, null=True, upload_to=user_directory_path)
@@ -181,8 +186,6 @@ class Substance(models.Model):
     # ffp2 = models.BfpField(null=True)
 
     # wikipedia, CPDat, ChEMBL, ChemSpider, CHEMnetBASE, GESTIS(SDS), NFDI, SpectraBASE (slugfields?), Massbank!
-
-    # spectra
 
     def __str__(self):
         return self.names[0]
@@ -222,7 +225,7 @@ class Compound(models.Model):
     )
 
     ghs = models.OneToOneField(
-        GHS, null=True, on_delete=models.PROTECT, related_name='hazardous_compounds'
+        GHS, blank=True, null=True, on_delete=models.PROTECT, related_name='hazardous_compounds'
     )
     # sds
     # un number (adr, adn, ADNR und ADN-D, RID, SOLAS)
@@ -236,27 +239,29 @@ class Compound(models.Model):
 
     # classification
     #
-    # Zoll-Nummern
-    # CAS-Nummern
-    # Dual-Use Kategorie
+    # EC-Nummern (REACH)
     # UN-Nr. (ADR)
+    # Zoll-Nummern
+    # Dual-Use Kategorie
     # Colour-Index
     # BtMG
     # CWÜ- und BWÜ-Listen
     # Doping (WADA-Liste)
     # ATC-Codes
-    # EC-Nummern (REACH)
     # EINECS / ELINCS / NLP
     # Stoffgruppe Sprengstoff-Gesetz
     # Ausführliche Regelungen für die Schule (SR-2004)
     # Einstufung als Biologischer Arbeitsstoff
     # Gruppe in der Seveso III-Verordnung
 
+    # spectra
+
     category = models.ManyToManyField(Category, blank=True, related_name='categorized_compounds')
 
     # related compounds (hydrates, hydrochlorides, etc.)
 
     # spectra
+
     created_by = models.ForeignKey(
         Member, null=True, on_delete=models.SET_NULL, related_name='created_compounds'  # default ??
     )
@@ -267,10 +272,13 @@ class Compound(models.Model):
 
 
 class Container(models.Model):
+    source = models.ForeignKey(
+        'self', blank=True, null=True, on_delete=models.SET_NULL, related_name="children"
+    )
     compound = models.ForeignKey(
         Compound, null=True, on_delete=models.PROTECT, related_name="containers"
     )
-    supplier = models.CharField(max_length=250)
+    supplier = models.ForeignKey(Supplier, on_delete=models.PROTECT, related_name="products")
     EAN = BarcodeField(blank=True)
     product_number = models.CharField(blank=True, max_length=100)
     # batch_number (self-made: auto-generate?)
@@ -307,9 +315,8 @@ class Container(models.Model):
         Member, blank=True, null=True, on_delete=models.SET_NULL, related_name='last_compounds'
     )
 
+    # spectra
     # inspection cycle
-
-    # todo: solve refilling from other container (e.g. after destillation)?
 
     def __str__(self):
         return f"{self.compound.substance.names[0]} ({self.supplier})"

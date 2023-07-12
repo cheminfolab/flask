@@ -7,20 +7,20 @@ conda activate <env_name>
 Set up .env file:
 ```python
 # .env
-SECRET_KEY = '<secret_key>'
-DEBUG = False
-ALLOWED_HOSTS = '<allowed_host>, ...'
+SECRET_KEY='<secret_key>'
+DEBUG=False
+ALLOWED_HOSTS='<allowed_host>, ...'
 
-TIME_ZONE = 'Europe/Berlin'
+TIME_ZONE='Europe/Berlin'
 
-DB_NAME = 'userinterface_db'
-DB_USER = 'admin'
-DB_PASSWORD = '<admin_password>'
-DB_HOST = 'localhost'
-DB_PORT = '5432'
+DB_NAME='userinterface_db'
+DB_USER='admin'
+DB_PASSWORD='<admin_password>'
+DB_HOST='localhost'
+DB_PORT='5432'
 
-CORS_ALLOW_ALL_ORIGINS = True
-CORS_ALLOWED_ORIGINS = '<allowed_origins>, ... '
+CORS_ALLOW_ALL_ORIGINS=True
+CORS_ALLOWED_ORIGINS='<allowed_origins>, ... '
 ```
 
 ## Setting up Postgresql database
@@ -52,8 +52,6 @@ pg_ctl -D database -l logfile start
 #waiting for server to start.... done
 #server started
 ````
-now the server is up.
-
 
 create a non-superuser (more safety!)
 
@@ -67,13 +65,18 @@ using this super user, create inner database inside the base database
 ````bash
 createdb --owner=admin userinterface_db
 ````
-
-
-
+Migrations to the database need to be applied by:
 ```python
 python3 manage.py makemigrations
 python3 manage.py migrate
+```
+If you want to add entries to the database yourself, you need to create a superuser first:
+```python
 python3 manage.py createsuperuser
+```
+Otherwise, you can populate the database with example data (including superuser (email:'admin@admin.com', password:'admin'))
+```python
+django-admin loaddata init.json
 ```
 
 #### Stop running the postgres instance (under ubuntu)
@@ -117,6 +120,19 @@ postgres -D db_djangogirls &
 
 you can stop and switch to server mode by following 'stop running postgres instance under ubuntu'
 
+#### Backing up the PostgreSQL database
+
+See: [pg_dump](https://www.postgresql.org/docs/12/app-pgdump.html)
+
+````bash
+pg_dump -h [host] -U [option] -W -F [file_type] [database_name] > [backup_name]
+````
+
+for example:
+
+````bash
+ pg_dump -h localhost -U admin -W -F t userinterface_db > ./init.tar
+````
 
 # Getting Started with Create React App
 

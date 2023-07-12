@@ -11,8 +11,12 @@ export default AuthContext
 export const AuthProvider = ({children}) => {
 
     // todo: rewrite !
-    let [authTokens, setAuthTokens] = useState(() => localStorage.getItem('authTokens') ? JSON.parse(localStorage.getItem('authTokens')) : null)
-    let [user, setUser] = useState(() => localStorage.getItem('authTokens') ? jwt_decode(localStorage.getItem('authTokens')) : null)
+    let [authTokens, setAuthTokens] = useState(() => (
+        localStorage.getItem('authTokens') ? JSON.parse(localStorage.getItem('authTokens')) : null
+    ))
+    let [user, setUser] = useState(() => (
+        localStorage.getItem('authTokens') ? jwt_decode(localStorage.getItem('authTokens')) : null
+    ))
     let [loading, setLoading] = useState(true)
 
     const navigate = useNavigate()
@@ -20,9 +24,10 @@ export const AuthProvider = ({children}) => {
 
     let loginUser = async (e) => {
         e.preventDefault()
-        await api.post('/token/', {
-            'email':e.target.email.value,
-            'password':e.target.password.value
+        await api.axiosInstance // todo: unite multiple services in one instance!
+            .post('/token/', {
+                'email':e.target.email.value,
+                'password':e.target.password.value
             })
             .then( (response) => {
                 if (response.status === 200) {
@@ -40,7 +45,8 @@ export const AuthProvider = ({children}) => {
 
     let registerUser = async (event) => {
         event.preventDefault()
-        await api.post('/member/register/', {
+        await api.axiosInstance
+            .post('/member/register/', {
                 first_name: event.target.first_name.value,
                 last_name: event.target.last_name.value,
                 email: event.target.email.value,
@@ -74,13 +80,13 @@ export const AuthProvider = ({children}) => {
     }, [authTokens, loading])
 
     let contextData = {
-        user:user,
-        setUser:setUser,
-        authTokens:authTokens,
-        setAuthTokens:setAuthTokens,
-        loginUser:loginUser,
-        logoutUser:logoutUser,
-        registerUser:registerUser
+        user,
+        setUser,
+        authTokens,
+        setAuthTokens,
+        loginUser,
+        logoutUser,
+        registerUser
     }
 
     return(
