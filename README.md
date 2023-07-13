@@ -13,11 +13,11 @@ ALLOWED_HOSTS='<allowed_host>, ...'
 
 TIME_ZONE='Europe/Berlin'
 
-DB_NAME='userinterface_db'
-DB_USER='admin'
-DB_PASSWORD='<admin_password>'
-DB_HOST='localhost'
-DB_PORT='5432'
+POSTGRES_NAME='userinterface_db'
+POSTGRES_USER='admin'
+POSTGRES_PASSWORD='<admin_password>'
+POSTGRES_HOST='localhost'
+POSTGRES_PORT='5432'
 
 CORS_ALLOW_ALL_ORIGINS=True
 CORS_ALLOWED_ORIGINS='<allowed_origins>, ... '
@@ -30,11 +30,11 @@ CORS_ALLOWED_ORIGINS='<allowed_origins>, ... '
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': config('DB_NAME'),
-        'USER': config('DB_USER'),
-        'PASSWORD': config('DB_PASSWORD'),
-        'HOST': config('DB_HOST'),
-        'PORT': config('DB_PORT'),
+        'NAME': config('POSTGRES_NAME'),
+        'USER': config('POSTGRES_USER'),
+        'PASSWORD': config('POSTGRES_PASSWORD'),
+        'HOST': config('POSTGRES_HOST'),
+        'PORT': config('POSTGRES_PORT'),
     }
 }
 ````
@@ -52,8 +52,6 @@ pg_ctl -D database -l logfile start
 #waiting for server to start.... done
 #server started
 ````
-now the server is up.
-
 
 create a non-superuser (more safety!)
 
@@ -67,13 +65,18 @@ using this super user, create inner database inside the base database
 ````bash
 createdb --owner=admin userinterface_db
 ````
-
-
-
+Migrations to the database need to be applied by:
 ```python
 python3 manage.py makemigrations
 python3 manage.py migrate
+```
+If you want to add entries to the database yourself, you need to create a superuser first:
+```python
 python3 manage.py createsuperuser
+```
+Otherwise, you can populate the database with example data (including superuser (email:'admin@admin.com', password:'admin'))
+```python
+django-admin loaddata init.json
 ```
 
 #### Stop running the postgres instance (under ubuntu)
@@ -112,7 +115,7 @@ take first number occuring in this line (PID - process ID number) which is 30550
 
 run postgres as a non-server in the background:
 ````bash
-postgres -D db_djangogirls & 
+postgres -D postgres_db &
 ````
 
 you can stop and switch to server mode by following 'stop running postgres instance under ubuntu'

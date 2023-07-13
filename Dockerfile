@@ -1,0 +1,59 @@
+## Define base image
+FROM continuumio/miniconda3
+
+# Set working directory for the project
+WORKDIR /app
+
+# Create Conda environment from the YAML file
+COPY environment.yml .
+RUN conda env create -f environment.yml
+
+# Override default shell and use bash
+SHELL ["conda", "run", "-n", "env", "/bin/bash", "-c"]
+
+# Check if conda env is working properly
+RUN echo "Making sure django is installed correctly..."
+RUN python -c "import django"
+
+# Python program to run in the container
+COPY /backend/ .
+ENTRYPOINT ["conda", "run", "-n", "env", "python", "manage.py", "test"]
+
+####################
+
+## Define base image
+#FROM ubuntu:22.04
+#
+## Set default shell
+#SHELL ["/bin/bash", "--login", "-C"]
+#
+## Create non-root user
+## ...
+## Set environment
+#COPY environment.yml /tmp/
+#
+## ...
+
+################
+
+## pull base image
+#FROM python:3.10.5
+#
+## set environment variables
+#ENV PYTHONDONTWRITEBYTECODE=1
+#ENV PYTHONUNBUFFERED=1
+#
+## set work directory
+#WORKDIR /code
+#COPY environment.yml /code/
+#RUN pip install -r requirements.txt
+#
+##FROM continuumio/miniconda3RUN conda create -n env python=3.6
+##RUN echo "source activate env" > ~/.bashrc
+##ENV PATH /opt/conda/envs/env/bin:$PATH
+#
+## copy project
+#COPY . /code/
+
+################
+

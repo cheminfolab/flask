@@ -109,4 +109,10 @@ class Member(AbstractBaseUser, PermissionsMixin):
     #     return self.is_admin
 
 
-# supplier / vendor
+class Supplier(models.Model):
+    name = models.CharField(max_length=50)
+    address = models.ForeignKey(Building, blank=True, null=True, on_delete=models.SET_NULL)
+    url = models.URLField(blank=True)
+
+    def __str__(self):
+        return self.name

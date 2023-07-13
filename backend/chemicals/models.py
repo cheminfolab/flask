@@ -1,9 +1,11 @@
 from django.db import models
+# from django_rdkit import models as rk_models
 from django.contrib.postgres.fields import ArrayField
 from django.core.validators import MaxValueValidator, MinValueValidator
-from .fields import BarcodeField
 
-from accounts.models import WorkingGroup, Member
+from barcode_field.fields import BarcodeField
+
+from accounts.models import WorkingGroup, Member, Supplier
 from locations.models import Storage
 from ghs.models import GHS
 
@@ -128,6 +130,7 @@ class Substance(models.Model):
     # mdl
     # STEREOCHEMISTRY?? enantiomers, distereomers, racemic mixtures?
     molecule = models.CharField(blank=True, max_length=250)  # rd_models.MolField()  #
+    # structure = rk_models.MolField(blank=True, null=True)
     # mol file (type: crystal structure, calculated (conditions))
     # cif: crystal structure
 
@@ -222,7 +225,7 @@ class Compound(models.Model):
     )
 
     ghs = models.OneToOneField(
-        GHS, null=True, on_delete=models.PROTECT, related_name='hazardous_compounds'
+        GHS, blank=True, null=True, on_delete=models.PROTECT, related_name='hazardous_compounds'
     )
     # sds
     # un number (adr, adn, ADNR und ADN-D, RID, SOLAS)
@@ -269,10 +272,13 @@ class Compound(models.Model):
 
 
 class Container(models.Model):
+    source = models.ForeignKey(
+        'self', blank=True, null=True, on_delete=models.SET_NULL, related_name="children"
+    )
     compound = models.ForeignKey(
         Compound, null=True, on_delete=models.PROTECT, related_name="containers"
     )
-    supplier = models.CharField(max_length=250)
+    supplier = models.ForeignKey(Supplier, on_delete=models.PROTECT, related_name="products")
     EAN = BarcodeField(blank=True)
     product_number = models.CharField(blank=True, max_length=100)
     # batch_number (self-made: auto-generate?)
@@ -311,8 +317,6 @@ class Container(models.Model):
 
     # spectra
     # inspection cycle
-
-    # todo: solve refilling from other container (e.g. after destillation)?
 
     def __str__(self):
         return f"{self.compound.substance.names[0]} ({self.supplier})"

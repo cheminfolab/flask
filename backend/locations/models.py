@@ -20,7 +20,10 @@ class Room(models.Model):
     building = models.ForeignKey(Building, blank=True, null=True, on_delete=models.CASCADE, related_name='rooms')
     type = models.TextField(
         blank=True,
-        choices=[('office', 'office'), ('lab', 'laboratory'), ('lec', 'lecture hall'), ('sem', 'seminar room')]
+        choices=[
+            ('office', 'office'), ('lab', 'laboratory'), ('lec', 'lecture hall'), ('sem', 'seminar room'),
+            ('none', 'other')
+        ]
     )
 
     def __str__(self):
@@ -30,6 +33,14 @@ class Room(models.Model):
 
     class Meta:
         unique_together = (('number', 'floor', 'building'),)
+
+
+class PhoneNumber(models.Model):
+    room = models.ForeignKey(Room, on_delete=models.PROTECT, related_name='phones')
+    number = PhoneNumberField(unique=True)
+
+    def __str__(self):
+        return f"{self.room.__str__()}: {self.number}"
 
 
 class Storage(models.Model):
@@ -46,11 +57,3 @@ class Storage(models.Model):
         unique_together = (('room', 'name', 'compartment'),)
 
     # todo: warnings for congregated storing of multiple compounds(containers)
-
-
-class PhoneNumber(models.Model):
-    room = models.ForeignKey(Room, on_delete=models.PROTECT, related_name='phones')
-    number = PhoneNumberField(unique=True)
-
-    def __str__(self):
-        return f"{self.room.__str__()}: {self.number}"
