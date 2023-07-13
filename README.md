@@ -1,9 +1,4 @@
 # Installation
-Install prerequisites:
-```bash
-conda install -f environments.yml -n <env_name>
-conda activate <env_name>
-```
 Set up .env file:
 ```python
 # .env
@@ -13,7 +8,7 @@ ALLOWED_HOSTS='<allowed_host>, ...'
 
 TIME_ZONE='Europe/Berlin'
 
-POSTGRES_NAME='userinterface_db'
+POSTGRES_NAME='flask_database'
 POSTGRES_USER='admin'
 POSTGRES_PASSWORD='<admin_password>'
 POSTGRES_HOST='localhost'
@@ -23,23 +18,28 @@ CORS_ALLOW_ALL_ORIGINS=True
 CORS_ALLOWED_ORIGINS='<allowed_origins>, ... '
 ```
 
-## Setting up Postgresql database
+### Django
 
-````python
-# api/settings.py
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': config('POSTGRES_NAME'),
-        'USER': config('POSTGRES_USER'),
-        'PASSWORD': config('POSTGRES_PASSWORD'),
-        'HOST': config('POSTGRES_HOST'),
-        'PORT': config('POSTGRES_PORT'),
-    }
-}
+Install prerequisites:
+
+```bash
+conda install -f environments.yml -n <env_name>
+conda activate <env_name>
+```
+
+### React
+
+## Setting up the PostgreSQL Database
+
+### Docker
+
+````bash
+docker compose -d --build
 ````
 
-In the terminal (backend), initialize a postgres database by:
+### Native
+
+In the terminal (backend/), initialize a postgres database by:
 ````bash
 initdb -D database
 ````
@@ -53,18 +53,21 @@ pg_ctl -D database -l logfile start
 #server started
 ````
 
-create a non-superuser (more safety!)
+create a non-superuser:
 
 ````bash
 createuser --encrypted --pwprompt admin
 # asks for name and password
 ````
 
-using this super user, create inner database inside the base database
+using this superuser, create inner database inside the base database
 
 ````bash
-createdb --owner=admin userinterface_db
+createdb --owner=admin flask_database
 ````
+
+### Populating the Database
+
 Migrations to the database need to be applied by:
 ```python
 python3 manage.py makemigrations
@@ -76,18 +79,49 @@ python3 manage.py createsuperuser
 ```
 Otherwise, you can populate the database with example data (including superuser (email:'admin@admin.com', password:'admin'))
 ```python
-django-admin loaddata init.json
+python3 loaddata init.json
 ```
 
-#### Stop running the postgres instance (under ubuntu)
+### Backing up the Database
+
+#### Via Django
+
+````bash
+python3 manage.py dumpdata > init.json
+````
+
+#### Using pg_dump
+
+See: [pg_dump manual](https://www.postgresql.org/docs/12/app-pgdump.html)
+
+````bash
+pg_dump -h [host] -U [option] -W -F [file_type] [database_name] > [backup_name]
+````
+
+for example:
+
+````bash
+pg_dump -h localhost -U admin -W -F t userinterface_db > ./init.tar
+````
+
+
+### Stop running the Postgres Instance
+
+#### Docker
+
+````bash
+docker compose down
+````
+
+#### Native
 
 monitor whether a postgres instance/server is running or not
 ````bash
 ps aux | grep postgres
 ````
-if no instance is running, you will see only one line as the answer to your query - which is from your grep search!
+if no instance is running, you will see only one line as the answer to your query - which is from your grep search,
 ending with: grep --color=auto postgres
-ignore this line!
+(ignore this line)
 
 e.g. the output of `ps aux | grep postgres` was:
 ````bash
@@ -107,32 +141,6 @@ you can kill the server by the first number of the leading line!
 kill <number>
 ````
 
-then # 2673 is just the 'grep --color=auto postgres' so ignore
-the line ending with 'postgres -D /path/to/mylocal_db' is the leading line!
-take first number occuring in this line (PID - process ID number) which is 30550, therefore kill it by:
-
-
-
-run postgres as a non-server in the background:
-````bash
-postgres -D postgres_db &
-````
-
-you can stop and switch to server mode by following 'stop running postgres instance under ubuntu'
-
-#### Backing up the PostgreSQL database
-
-See: [pg_dump](https://www.postgresql.org/docs/12/app-pgdump.html)
-
-````bash
-pg_dump -h [host] -U [option] -W -F [file_type] [database_name] > [backup_name]
-````
-
-for example:
-
-````bash
- pg_dump -h localhost -U admin -W -F t userinterface_db > ./init.tar
-````
 
 # Getting Started with Create React App
 
