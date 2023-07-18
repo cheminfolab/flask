@@ -1,5 +1,18 @@
 # Installation
-Set up .env file:
+
+Install prerequisites:
+- conda
+- npm (node.js)
+
+Setting up the environment:
+
+```bash
+conda install -f environment.yml
+conda activate flask
+```
+
+Setting up the .env file:
+
 ```python
 # .env
 SECRET_KEY='<secret_key>'
