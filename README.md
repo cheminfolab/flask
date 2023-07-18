@@ -1,10 +1,16 @@
 # Installation
 Install prerequisites:
+- conda
+- npm (node.js)
+
+Setting up the environment:
+
 ```bash
-conda install -f environments.yml -n <env_name>
-conda activate <env_name>
+conda install -f environment.yml
+conda activate flask
 ```
-Set up .env file:
+
+Setting up the .env file:
 ```python
 # .env
 SECRET_KEY='<secret_key>'
@@ -19,7 +25,7 @@ POSTGRES_PASSWORD='<admin_password>'
 POSTGRES_HOST='localhost'
 POSTGRES_PORT='5432'
 
-CORS_ALLOW_ALL_ORIGINS=True
+#CORS_ALLOW_ALL_ORIGINS=True
 CORS_ALLOWED_ORIGINS='<allowed_origins>, ... '
 ```
 
