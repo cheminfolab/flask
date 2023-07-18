@@ -14,7 +14,7 @@ POSTGRES_PASSWORD='<admin_password>'
 POSTGRES_HOST='localhost'
 POSTGRES_PORT='5432'
 
-CORS_ALLOW_ALL_ORIGINS=True
+#CORS_ALLOW_ALL_ORIGINS=True
 CORS_ALLOWED_ORIGINS='<allowed_origins>, ... '
 ```
 
