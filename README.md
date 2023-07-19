@@ -85,7 +85,7 @@ python3 manage.py createsuperuser
 ```
 Otherwise, you can populate the database with example data (including superuser (email:'admin@admin.com', password:'admin'))
 ```python
-python3 loaddata init.json
+python3 manage.py loaddata init.json
 ```
 
 ### Backing up the Database
