@@ -43,8 +43,17 @@ class SubstanceSerializer(ModelSerializer):
         fields = '__all__'
 
 
-class CompoundSerializer(ModelSerializer):
+class QuantitySerializer(ModelSerializer):
     substance = SubstanceSerializer(many=False)
+    unit = UnitSerializer(many=False)
+
+    class Meta:
+        model = Quantity
+        fields = '__all__'
+
+
+class CompoundSerializer(ModelSerializer):
+    substances = QuantitySerializer(many=False)
     density_unit = UnitSerializer(many=False)
     ghs = GHSSerializer(many=False)
 

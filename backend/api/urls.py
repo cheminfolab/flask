@@ -8,7 +8,7 @@ from rest_framework_simplejwt.views import TokenRefreshView
 
 from accounts.views import CustomTokenObtainPairView, MemberViewSet, WorkingGroupViewSet
 from locations.views import BuildingViewSet
-from chemicals.views import UnitViewSet, SubstanceViewSet, CompoundViewSet, ContainerViewSet
+from chemicals.views import UnitViewSet, SubstanceViewSet, QuantityViewSet, CompoundViewSet, ContainerViewSet
 
 router = routers.SimpleRouter()
 router.register(r'member', MemberViewSet, basename='members')
@@ -16,6 +16,7 @@ router.register(r'group', WorkingGroupViewSet, basename='groups')
 router.register(r'building', BuildingViewSet, basename='buildings')
 router.register(r'unit', UnitViewSet, basename='units')
 router.register(r'substance', SubstanceViewSet, basename='substances')
+router.register(r'quantity', QuantityViewSet, basename='containers')
 router.register(r'compound', CompoundViewSet, basename='containers')
 router.register(r'container', ContainerViewSet, basename='containers')
 

@@ -19,9 +19,9 @@ class ContainerAdmin(admin.ModelAdmin):
     list_display = ('compound', 'supplier', 'amount', 'amount_left', 'amount_unit', 'description')
 
 
-class CompoundAdmin(admin.ModelAdmin):
-    # inlines = []
-    list_display = ('substance',)
+# class CompoundAdmin(admin.ModelAdmin):
+#     # inlines = []
+#     list_display = ('substances',)
 
 
 class CompoundInline(admin.TabularInline):
@@ -29,9 +29,14 @@ class CompoundInline(admin.TabularInline):
     extra = 0
 
 
+class QuantityInline(admin.TabularInline):
+    model = Quantity
+    extra = 0
+
+
 class SubstanceAdmin(admin.ModelAdmin):
     inlines = [
-        CompoundInline
+        QuantityInline
     ]
     list_display = ('names', 'formula', 'mol_weight')
 
@@ -45,6 +50,7 @@ admin.site.register(Category)
 admin.site.register(UnitCell)
 admin.site.register(Structure)
 admin.site.register(Substance, SubstanceAdmin)
-admin.site.register(Compound, CompoundAdmin)
+admin.site.register(Quantity)
+admin.site.register(Compound)  # , CompoundAdmin)
 admin.site.register(Container)
 

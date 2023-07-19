@@ -9,8 +9,8 @@ from accounts.models import WorkingGroup, Member, Supplier
 from locations.models import Storage
 from ghs.models import GHS
 
-# MISCELLANEOUS
 
+# MISCELLANEOUS
 si_units = []
 
 
@@ -112,9 +112,9 @@ class Category(models.Model):
 
 # CHEMICALS
 
-def user_directory_path(instance, filename):
+def substance_directory_path(instance, filename):
     # file will be uploaded to MEDIA_ROOT/substances/<filename>
-    return 'substances/{0}'.format(filename)
+    return f'substances/{filename}'
 
 
 #####################################################################################
@@ -157,8 +157,7 @@ class Substance(models.Model):
     # import uuid
     # id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     names = ArrayField(models.CharField(blank=True, max_length=250), default=list)
-    # most common name (trivial name)?
-
+    # trivial name vs IUPAC
     formula = models.CharField(blank=True, max_length=100)
     # todo: add validators (Hill notation)
 
@@ -183,7 +182,7 @@ class Substance(models.Model):
         Unit, blank=True, null=True, on_delete=models.PROTECT, related_name="exact_mass_units"
     )
 
-    image = models.ImageField(blank=True, null=True, upload_to=user_directory_path)
+    image = models.ImageField(blank=True, null=True, upload_to=substance_directory_path)
 
     # FINGERPRINTS
     # torsionbv = models.BfpField(null=True)
@@ -194,10 +193,34 @@ class Substance(models.Model):
         return self.names[0]
 
 
+class Quantity(models.Model):
+    substance = models.ForeignKey(Substance, on_delete=models.PROTECT, related_name='quantities')
+    mass = models.FloatField(blank=True, null=True)
+    volume = models.FloatField(blank=True, null=True)
+    pressure = models.FloatField(blank=True, null=True)
+    amount = models.FloatField(blank=True, null=True)
+    unit = models.ForeignKey(Unit, on_delete=models.PROTECT, related_name='quantity_units')
+    type = models.CharField(blank=True, max_length=200)
+
+    def __str__(self):
+        name = self.substance.names[0]
+        if self.mass:
+            name += " (" + str(self.mass)
+        elif self.volume:
+            name += " (" + str(self.volume)
+        elif self.amount:
+            name += " (" + str(self.amount)
+        elif self.pressure:
+            name += " (" + str(self.pressure)
+        return f"{name} {self.unit})"
+
+    class Meta:
+        verbose_name_plural = 'quantities'
+
+
 class Compound(models.Model):
-    substance = models.ForeignKey(
-        Substance, null=True, on_delete=models.PROTECT, related_name="compounds"
-    )
+    name = models.CharField(blank=True, max_length=250)
+    substances = models.ManyToManyField(Quantity, blank=False, related_name='compounds')
     purity = models.FloatField(
         validators=[MinValueValidator(0.0), MaxValueValidator(100.0)], default=100
     )
@@ -250,9 +273,8 @@ class Compound(models.Model):
     ghs = models.OneToOneField(
         GHS, blank=True, null=True, on_delete=models.PROTECT, related_name='hazardous_compounds'
     )
-    # sds (pdf)
-    # un number (adr, adn, ADNR und ADN-D, RID, SOLAS)
-
+    # SDS (pdf)
+    # UN number (adr, adn, ADNR und ADN-D, RID, SOLAS)
     # Lagerklassen
     # Arbeitsplatzgrenzwerte(AGW)
     # Biologische
@@ -279,7 +301,7 @@ class Compound(models.Model):
     # Gruppe in der Seveso III-Verordnung
 
     category = models.ManyToManyField(Category, blank=True, related_name='categorized_compounds')
-    # related compounds (hydrates, hydrochlorides, etc.)
+    # related compounds (hydrates, hydrochlorides, etc.), see also fingeprints
 
     # spectra
 
@@ -289,15 +311,19 @@ class Compound(models.Model):
     )
 
     def __str__(self):
-        return f"{self.substance.names[0]}"
+        return f"{self.substances.names[0]}"
 
 
 class Container(models.Model):
-    source = models.ForeignKey(
+    parent = models.ForeignKey(
         'self', blank=True, null=True, on_delete=models.SET_NULL, related_name="children"
     )
     compound = models.ForeignKey(
         Compound, null=True, on_delete=models.PROTECT, related_name="containers"
+    )
+    tara = models.FloatField(blank=True, null=True)  # container weight including cap
+    tara_unit = models.ForeignKey(
+        Unit, blank=True, null=True, on_delete=models.PROTECT, related_name="tara_units"
     )
     amount = models.FloatField(null=True)
     amount_left = models.FloatField(blank=True, null=True)
@@ -305,10 +331,6 @@ class Container(models.Model):
         Unit, null=True, on_delete=models.PROTECT, related_name="amount_units"
     )
     # is_active (False, when amount_left = 0)
-    tara = models.FloatField(blank=True, null=True)  # container weight including cap
-    tara_unit = models.ForeignKey(
-        Unit, blank=True, null=True, on_delete=models.PROTECT, related_name="tara_units"
-    )
 
     supplier = models.ForeignKey(Supplier, on_delete=models.PROTECT, related_name="products")
     EAN = BarcodeField(blank=True)

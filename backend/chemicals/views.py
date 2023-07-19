@@ -16,6 +16,11 @@ class SubstanceViewSet(CustomViewSet):
     serializer_class = SubstanceSerializer
 
 
+class QuantityViewSet(CustomViewSet):
+    model = Quantity
+    serializer_class = QuantitySerializer
+
+
 class CompoundViewSet(CustomViewSet):
     model = Compound
     serializer_class = CompoundSerializer
