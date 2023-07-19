@@ -12,26 +12,10 @@ class CurrencySerializer(ModelSerializer):
         exclude = ['id']
 
 
-class SISerializer(ModelSerializer):
-    class Meta:
-        model = SI
-        exclude = ['id']
-
-
 class UnitSerializer(ModelSerializer):
-    # si = SISerializer(source='units')  # .objects.filter(unit=<self>)
 
     class Meta:
         model = Unit
-        exclude = ['id', 'type']
-
-
-class DerivedUnitSerializer(ModelSerializer):
-    unit = UnitSerializer(many=False)
-    si = SISerializer(many=True)
-
-    class Meta:
-        model = DerivedUnit
         exclude = ['id']
 
 

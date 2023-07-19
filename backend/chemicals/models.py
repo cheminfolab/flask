@@ -10,65 +10,12 @@ from locations.models import Storage
 from ghs.models import GHS
 
 
-# MISCELLANEOUS
-si_units = []
-
-
-class Prefix(models.Model):
-    name = models.CharField(blank=True, max_length=10)
-    symbol = models.CharField(max_length=2, unique=True)
-    factor = models.FloatField()
-
-    def __str__(self):
-        return f"{self.name} ({self.symbol}): {self.factor:.0E}"
-
-    class Meta:
-        verbose_name_plural = 'prefixes'
-
-
-class SI(models.Model):
+class Unit(models.Model):
     name = models.CharField(max_length=50)
     symbol = models.CharField(max_length=10, unique=True)
 
     def __str__(self):
-        return self.name
-
-    def is_valid(self):
-        return self.symbol in si_units
-
-    class Meta:
-        verbose_name_plural = 'SI'
-
-
-class Unit(models.Model):
-    name = models.CharField(max_length=50)
-    prefix = models.ForeignKey(
-        Prefix, blank=True, null=True, on_delete=models.PROTECT, related_name='unit_prefixes'
-    )
-    symbol = models.CharField(max_length=10)
-    si = models.ManyToManyField(
-        SI, blank=True, related_name='units', through='DerivedUnit'
-    )
-    factor = models.FloatField(default=1)
-    type = models.CharField(blank=True, max_length=50)
-
-    def __str__(self):
         return f"{self.name}"
-
-    class Meta:
-        unique_together = (('prefix', 'symbol'),)
-
-
-class DerivedUnit(models.Model):
-    unit = models.ForeignKey(Unit, on_delete=models.PROTECT)
-    si = models.ForeignKey(SI, on_delete=models.PROTECT)
-    exponent = models.IntegerField(default=1)
-    factor = models.FloatField(default=1)
-
-    def __str__(self):
-        if self.exponent == 1:
-            return f"{self.unit.symbol}: {self.factor} {self.si.symbol}"
-        return f"{self.unit.symbol}: {self.factor} {self.si.symbol}^{self.exponent}"
 
 
 class Currency(models.Model):
