@@ -4,13 +4,6 @@ Install prerequisites:
 - conda
 - npm (node.js)
 
-Setting up the environment:
-
-```bash
-conda install -f environment.yml
-conda activate flask
-```
-
 Setting up the .env file:
 
 ```python
@@ -21,7 +14,7 @@ ALLOWED_HOSTS='<allowed_host>, ...'
 
 TIME_ZONE='Europe/Berlin'
 
-POSTGRES_NAME='flask_database'
+POSTGRES_DB='flask_database'
 POSTGRES_USER='admin'
 POSTGRES_PASSWORD='<admin_password>'
 POSTGRES_HOST='localhost'
@@ -33,11 +26,11 @@ CORS_ALLOWED_ORIGINS='<allowed_origins>, ... '
 
 ### Django
 
-Install prerequisites:
+Setting up the environment:
 
 ```bash
-conda install -f environments.yml -n <env_name>
-conda activate <env_name>
+conda install -f environment.yml
+conda activate flask
 ```
 
 ### React
