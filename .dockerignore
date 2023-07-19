@@ -4,7 +4,7 @@ CHANGELOG.md
 .DS_Store
 
 # Docker
-Dockerfile
+backend/Dockerfile_miniconda
 docker-compose.yml
 .dockerignore
 
