@@ -4,6 +4,9 @@ Install prerequisites:
 - conda
 - npm (node.js)
 
+or 
+- docker
+
 Setting up the .env file:
 
 ```python
@@ -34,6 +37,12 @@ conda activate flask
 ```
 
 ### React
+
+In the frontend directory, run:
+
+````bash
+npm install
+````
 
 ## Setting up the PostgreSQL Database
 
