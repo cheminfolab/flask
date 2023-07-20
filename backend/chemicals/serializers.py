@@ -27,32 +27,24 @@ class SubstanceSerializer(ModelSerializer):
         fields = '__all__'
 
 
-class QuantitySerializer(ModelSerializer):
-    substance = SubstanceSerializer(many=False)
-    unit = UnitSerializer(many=False)
-
+class ComponentSerializer(ModelSerializer):
     class Meta:
-        model = Quantity
-        fields = '__all__'
+        model = Component
+        exclude = ['id']
 
 
-class CompoundSerializer(ModelSerializer):
-    substances = QuantitySerializer(many=False)
-    density_unit = UnitSerializer(many=False)
-    ghs = GHSSerializer(many=False)
+class CompoundListSerializer(ModelSerializer):
+    substances = ComponentSerializer(many=True)
 
     class Meta:
         model = Compound
         fields = '__all__'
 
 
-class ContainerSerializer(ModelSerializer):
-    compound = CompoundSerializer(many=False)
-    amount_unit = UnitSerializer(many=False)
-    tara_unit = UnitSerializer(many=False)
-    currency = CurrencySerializer(many=False)
-    location = StorageSerializer(many=False)
-    owner = WorkingGroupSerializer(many=False)
+class CompoundDetailSerializer(ModelSerializer):
+    substances = ComponentSerializer(many=True)
+    containers = ContainerSerializer(many=True)
+    ghs = GHSSerializer(many=False)
 
     class Meta:
         model = Container

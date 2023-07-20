@@ -16,14 +16,14 @@ class CompoundInline(admin.TabularInline):
     extra = 0
 
 
-class QuantityInline(admin.TabularInline):
-    model = Quantity
+class ComponentInline(admin.TabularInline):
+    model = Component
     extra = 0
 
 
 class SubstanceAdmin(admin.ModelAdmin):
     inlines = [
-        QuantityInline
+        ComponentInline
     ]
     list_display = ('names', 'formula', 'mol_weight')
 
@@ -34,7 +34,7 @@ admin.site.register(Category)
 admin.site.register(UnitCell)
 admin.site.register(Structure)
 admin.site.register(Substance, SubstanceAdmin)
-admin.site.register(Quantity)
-admin.site.register(Compound)  # , CompoundAdmin)
+admin.site.register(Component)
+admin.site.register(Compound)
 admin.site.register(Container)
 

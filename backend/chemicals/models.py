@@ -140,49 +140,29 @@ class Substance(models.Model):
         return self.names[0]
 
 
-class Quantity(models.Model):
-    substance = models.ForeignKey(Substance, on_delete=models.PROTECT, related_name='quantities')
-    mass = models.FloatField(blank=True, null=True)
-    volume = models.FloatField(blank=True, null=True)
-    pressure = models.FloatField(blank=True, null=True)
-    amount = models.FloatField(blank=True, null=True)
-    unit = models.ForeignKey(Unit, on_delete=models.PROTECT, related_name='quantity_units')
-    type = models.CharField(blank=True, max_length=200)
+class Component(models.Model):
+    substance = models.ForeignKey(Substance, on_delete=models.PROTECT, related_name='components')
+    fraction = models.FloatField(
+        validators=[MinValueValidator(0.0), MaxValueValidator(1.00)], default=1.00
+    )
+    type = models.CharField(blank=True, max_length=50)
 
     def __str__(self):
-        name = self.substance.names[0]
-        if self.mass:
-            name += " (" + str(self.mass)
-        elif self.volume:
-            name += " (" + str(self.volume)
-        elif self.amount:
-            name += " (" + str(self.amount)
-        elif self.pressure:
-            name += " (" + str(self.pressure)
-        return f"{name} {self.unit})"
-
-    class Meta:
-        verbose_name_plural = 'quantities'
+        return f"{self.substance.name} ({self.fraction*100}%)"
 
 
 class Compound(models.Model):
-    name = models.CharField(blank=True, max_length=250)
-    substances = models.ManyToManyField(Quantity, blank=False, related_name='compounds')
+    name = models.CharField(max_length=250)  # IUPAC
+    synonyms = ArrayField(
+        models.CharField(blank=True, max_length=250),
+        blank=True,
+        default=list
+    )
+    label = models.CharField(blank=True, max_length=250)
+    substances = models.ManyToManyField(Component, blank=False, related_name='compounds')
     purity = models.FloatField(
         validators=[MinValueValidator(0.0), MaxValueValidator(100.0)], default=100
     )
-
-    # todo: mixtures? (diluted substances, etc.)
-    #
-    # Petrolether 30-50 und Petrolether 50-70 mit und ohne Benzol
-    # Salzsäure 10% und 37%-ig in Wasser oder in Methanol
-    # Eisen als Block oder Pulver
-    # Kieselgel, normal oder als Blau- oder Orangegel
-    # Standardlösungen (AAS) und Pufferlösungen
-    # Ionenaustauscher
-    # Petrochemische Produkte und Lösungsmittel
-    # Pflanzenextrakte
-    # traditionelle Arzneistoffe
 
     pubchem_cid = models.IntegerField(blank=True, null=True)
 

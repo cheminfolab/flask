@@ -1,5 +1,6 @@
 from api.views import CustomViewSet
 
+from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
 
 from .serializers import *
@@ -16,9 +17,9 @@ class SubstanceViewSet(CustomViewSet):
     serializer_class = SubstanceSerializer
 
 
-class QuantityViewSet(CustomViewSet):
-    model = Quantity
-    serializer_class = QuantitySerializer
+class ComponentViewSet(CustomViewSet):
+    model = Component
+    serializer_class = ComponentSerializer
 
 
 class CompoundViewSet(CustomViewSet):
