@@ -2,6 +2,7 @@ from django.db import models
 # from django_rdkit import models as rk_models
 from django.contrib.postgres.fields import ArrayField
 from django.core.validators import MaxValueValidator, MinValueValidator
+import uuid
 
 from barcode_field.fields import BarcodeField
 
@@ -10,7 +11,7 @@ from locations.models import Storage
 from ghs.models import GHS
 
 
-class Unit(models.Model):
+class Prefix(models.Model):
     name = models.CharField(max_length=50)
     symbol = models.CharField(max_length=10, unique=True)
 
@@ -18,11 +19,20 @@ class Unit(models.Model):
         return f"{self.name}"
 
 
-class Currency(models.Model):
-    name = models.CharField(max_length=10, unique=True)
+class Unit(models.Model):
+    name = models.CharField(max_length=50)
+    symbol = models.CharField(max_length=10, unique=True)
 
     def __str__(self):
-        return self.name
+        return f"{self.name} ({self.symbol})"
+
+
+class Currency(models.Model):
+    name = models.CharField(max_length=10)
+    symbol = models.CharField(max_length=10, unique=True)
+
+    def __str__(self):
+        return self.symbol
 
     class Meta:
         verbose_name_plural = 'Currencies'
@@ -77,43 +87,77 @@ class UnitCell(models.Model):
 
 
 class Structure(models.Model):
-    atoms = ArrayField(models.CharField(blank=True, max_length=3), blank=True, default=list)
-    # indexes
-    coordinates = ArrayField(models.FloatField(blank=True, null=True), blank=True, default=list)
-    bonds = ArrayField(
-        ArrayField(models.IntegerField(blank=True, null=True), size=2, default=list),
+    # IDENTIFIERS
+    smiles = models.CharField(blank=True, max_length=100)
+    # smarts
+    inchi = models.CharField(blank=True, max_length=100)
+    inchi_key = models.CharField(blank=True, max_length=100)
+    # todo: add validators
+
+    # COORDINATES
+    atoms = ArrayField(
+        models.CharField(blank=True, max_length=3),
         blank=True,
         default=list
     )
-    labels = ArrayField(models.CharField(blank=True, max_length=3), blank=True, default=list)
-
+    # indexes, labels
+    coordinates = ArrayField(
+        ArrayField(
+            models.FloatField(blank=True, null=True),
+            blank=True,
+            default=list
+        ),
+        blank=True,
+        size=3,
+        default=list
+    )
+    bonds = ArrayField(
+        ArrayField(
+            models.IntegerField(blank=True, null=True),
+            size=2,
+            default=list
+        ),
+        blank=True,
+        default=list
+    )
+    labels = ArrayField(
+        models.CharField(blank=True, max_length=3),
+        blank=True,
+        default=list
+    )
     unitcell = models.OneToOneField(UnitCell, on_delete=models.SET_NULL, blank=True, null=True)
 
     # CALCULATION CONDITIONS
-    # basis set
-    # orbitals
+    # basis set (as separate model? fetch from basissetexchange?)
+    # orbitals (how to represent?)
 
-    # file (cif, mol, ...)
+    type = models.CharField(blank=True, max_length=50)  # todo: CHOICES (calculation / crystal structure / ...)
+    description = models.TextField(blank=True)  # (measurement) conditions
+
+    # FILES
+    # cif, mol, ...
     # rdkit = rk_models.MolField(blank=True, null=True)
 
-    type = models.CharField(blank=True, max_length=50)  # todo: CHOICES
-    description = models.TextField(blank=True)
+    # FINGERPRINTS / FRAGMENTS
+    # torsionbv = models.BfpField(null=True)
+    # mfp2 = models.BfpField(null=True)
+    # ffp2 = models.BfpField(null=True)
 
 
 class Substance(models.Model):
-    # import uuid
     # id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    names = ArrayField(models.CharField(blank=True, max_length=250), default=list)
-    # trivial name vs IUPAC
-    formula = models.CharField(blank=True, max_length=100)
-    # todo: add validators (Hill notation)
+    name = models.CharField(max_length=250)  # IUPAC
+    synonyms = ArrayField(
+        models.CharField(blank=True, max_length=250),
+        blank=True,
+        default=list
+    )
+    label = models.CharField(blank=True, max_length=250)  # trivial name
+    formula = models.CharField(blank=True, max_length=100)  # todo: add validators (Hill notation)
 
     # IDENTIFIERS
     cas = models.CharField(blank=True, max_length=12)  # todo: add validator
     pubchem_sid = models.IntegerField(blank=True, null=True)
-    smiles = models.CharField(blank=True, max_length=100)
-    inchi = models.CharField(blank=True, max_length=100)
-    inchi_key = models.CharField(blank=True, max_length=100)
 
     # STRUCTURE
     structure = models.ManyToManyField(Structure, blank=True, related_name='substance_structures')
@@ -131,13 +175,10 @@ class Substance(models.Model):
 
     image = models.ImageField(blank=True, null=True, upload_to=substance_directory_path)
 
-    # FINGERPRINTS
-    # torsionbv = models.BfpField(null=True)
-    # mfp2 = models.BfpField(null=True)
-    # ffp2 = models.BfpField(null=True)
-
     def __str__(self):
-        return self.names[0]
+        if self.label:
+            return self.label
+        return self.name
 
 
 class Component(models.Model):
@@ -161,7 +202,7 @@ class Compound(models.Model):
     label = models.CharField(blank=True, max_length=250)
     substances = models.ManyToManyField(Component, blank=False, related_name='compounds')
     purity = models.FloatField(
-        validators=[MinValueValidator(0.0), MaxValueValidator(100.0)], default=100
+        validators=[MinValueValidator(0.0), MaxValueValidator(1.00)], default=1.00
     )
 
     pubchem_cid = models.IntegerField(blank=True, null=True)
@@ -227,18 +268,20 @@ class Compound(models.Model):
     # Einstufung als Biologischer Arbeitsstoff
     # Gruppe in der Seveso III-Verordnung
 
-    category = models.ManyToManyField(Category, blank=True, related_name='categorized_compounds')
+    categories = models.ManyToManyField(Category, blank=True, related_name='categorized_compounds')
     # related compounds (hydrates, hydrochlorides, etc.), see also fingeprints
 
     # spectra
 
     created = models.DateField(auto_now_add=True)
     created_by = models.ForeignKey(
-        Member, null=True, on_delete=models.SET_NULL, related_name='created_compounds'  # default ??
+        Member, null=True, on_delete=models.SET_NULL, related_name='compounds_created'
     )
 
     def __str__(self):
-        return f"{self.substances.names[0]}"
+        if self.label:
+            return f"{self.label} {self.purity*100}%"
+        return f"{self.name} {self.purity*100}%"
 
 
 class Container(models.Model):
@@ -280,17 +323,22 @@ class Container(models.Model):
 
     conditions = models.CharField(blank=True, max_length=50)  # argon, molecular sieve etc. (checkboxes?)
 
+    created = models.DateField(auto_now_add=True)
+    created_by = models.ForeignKey(
+        Member, null=True, on_delete=models.SET_NULL, related_name='containers_created'
+    )
     opened = models.DateField(blank=True, null=True)
     last_used = models.DateField(blank=True, null=True)
     last_user = models.OneToOneField(
-        Member, blank=True, null=True, on_delete=models.SET_NULL, related_name='last_compounds'
+        Member, blank=True, null=True, on_delete=models.SET_NULL, related_name='compounds_used_last'
     )
+    # future user ??
 
     # spectra
     # inspection cycle
 
     def __str__(self):
-        return f"{self.compound.substance.names[0]} ({self.supplier})"
+        return f"{self.compound.__str__()} ({self.supplier})"
 
 
 # DATABASES

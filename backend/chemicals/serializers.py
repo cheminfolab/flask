@@ -13,15 +13,22 @@ class CurrencySerializer(ModelSerializer):
 
 
 class UnitSerializer(ModelSerializer):
-
     class Meta:
         model = Unit
         exclude = ['id']
 
 
-class SubstanceSerializer(ModelSerializer):
-    mol_weight_unit = UnitSerializer(many=False)
+class ContainerSerializer(ModelSerializer):
+    # compound = CompoundSerializer(many=False)
+    # location = StorageSerializer(many=False)
+    # owner = WorkingGroupSerializer(many=False)
 
+    class Meta:
+        model = Container
+        fields = '__all__'
+
+
+class SubstanceSerializer(ModelSerializer):
     class Meta:
         model = Substance
         fields = '__all__'
@@ -47,5 +54,5 @@ class CompoundDetailSerializer(ModelSerializer):
     ghs = GHSSerializer(many=False)
 
     class Meta:
-        model = Container
+        model = Compound
         fields = '__all__'
