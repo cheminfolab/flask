@@ -24,7 +24,7 @@ class WorkingGroupSerializer(ModelSerializer):
 class MemberSerializer(ModelSerializer):
     class Meta:
         model = Member
-        fields = ['first_name', 'last_name', 'email', 'password', 'working_group', 'role']
+        fields = ['id', 'first_name', 'last_name', 'email', 'password', 'working_group', 'role']
         extra_kwargs = {'password': {'write_only': True}}
 
     def create(self, validated_data):

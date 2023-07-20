@@ -2,6 +2,7 @@ from django.db import models
 from django.contrib.auth.models import Group, AbstractUser, AbstractBaseUser, BaseUserManager, PermissionsMixin
 from django.utils.translation import gettext_lazy as _
 from django.utils import timezone
+import uuid
 
 from locations.models import Building, Room, PhoneNumber
 
@@ -63,6 +64,7 @@ class MemberManager(BaseUserManager):
 
 
 class Member(AbstractBaseUser, PermissionsMixin):
+    # id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     email = models.EmailField(verbose_name='email address', unique=True)
     first_name = models.CharField(max_length=50)
     last_name = models.CharField(max_length=50)
