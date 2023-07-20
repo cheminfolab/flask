@@ -102,7 +102,7 @@ python3 loaddata init.json
 #### Via Django
 
 ````bash
-python3 manage.py dumpdata > init.json
+python3 manage.py dumpdata --indent=2 > init.json
 ````
 
 #### Using pg_dump
