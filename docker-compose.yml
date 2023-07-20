@@ -5,17 +5,17 @@ services:
   database:
     image: postgres:15.1
     #restart: unless-stopped
-    container_name: flask_db
+    container_name: eln_db
     env_file: .env
     volumes:
-      - flask_db:/var/lib/postgresql/data/
+      - eln_db:/var/lib/postgresql/data/
     ports:
       - "${POSTGRES_PORT}:5432"
     networks:
-      - flask
+      - eln
 
   backend:
-    container_name: flask_backend
+    container_name: eln_backend
     #restart: unless-stopped
     build:
       context: ./backend
@@ -28,12 +28,12 @@ services:
     volumes:
       - ./backend:/app
     networks:
-      - flask
+      - eln
     depends_on:
       - database
 
 volumes:
-  flask_db:
+  eln_db:
 
 networks:
-  flask:
+  eln:
