@@ -2,6 +2,7 @@ from django.db import models
 # from django_rdkit import models as rk_models
 from django.contrib.postgres.fields import ArrayField
 from django.core.validators import MaxValueValidator, MinValueValidator
+import uuid
 
 from barcode_field.fields import BarcodeField
 
@@ -9,73 +10,29 @@ from accounts.models import WorkingGroup, Member, Supplier
 from locations.models import Storage
 from ghs.models import GHS
 
-# MISCELLANEOUS
-
-si_units = []
-
 
 class Prefix(models.Model):
-    name = models.CharField(blank=True, max_length=10)
-    symbol = models.CharField(max_length=2, unique=True)
-    factor = models.FloatField()
-
-    def __str__(self):
-        return f"{self.name} ({self.symbol}): {self.factor:.0E}"
-
-    class Meta:
-        verbose_name_plural = 'prefixes'
-
-
-class SI(models.Model):
     name = models.CharField(max_length=50)
     symbol = models.CharField(max_length=10, unique=True)
 
     def __str__(self):
-        return self.name
-
-    def is_valid(self):
-        return self.symbol in si_units
-
-    class Meta:
-        verbose_name_plural = 'SI'
+        return f"{self.name}"
 
 
 class Unit(models.Model):
     name = models.CharField(max_length=50)
-    prefix = models.ForeignKey(
-        Prefix, blank=True, null=True, on_delete=models.PROTECT, related_name='unit_prefixes'
-    )
-    symbol = models.CharField(max_length=10)
-    si = models.ManyToManyField(
-        SI, blank=True, related_name='units', through='DerivedUnit'
-    )
-    factor = models.FloatField(default=1)
-    type = models.CharField(blank=True, max_length=50)
+    symbol = models.CharField(max_length=10, unique=True)
 
     def __str__(self):
-        return f"{self.name}"
-
-    class Meta:
-        unique_together = (('prefix', 'symbol'),)
-
-
-class DerivedUnit(models.Model):
-    unit = models.ForeignKey(Unit, on_delete=models.PROTECT)
-    si = models.ForeignKey(SI, on_delete=models.PROTECT)
-    exponent = models.IntegerField(default=1)
-    factor = models.FloatField(default=1)
-
-    def __str__(self):
-        if self.exponent == 1:
-            return f"{self.unit.symbol}: {self.factor} {self.si.symbol}"
-        return f"{self.unit.symbol}: {self.factor} {self.si.symbol}^{self.exponent}"
+        return f"{self.name} ({self.symbol})"
 
 
 class Currency(models.Model):
-    name = models.CharField(max_length=10, unique=True)
+    name = models.CharField(max_length=10)
+    symbol = models.CharField(max_length=10, unique=True)
 
     def __str__(self):
-        return self.name
+        return self.symbol
 
     class Meta:
         verbose_name_plural = 'Currencies'
@@ -83,6 +40,9 @@ class Currency(models.Model):
 
 class Category(models.Model):
     name = models.CharField(max_length=100)
+
+    class Meta:
+        verbose_name_plural = 'Categories'
 
     def __str__(self):
         return self.name
@@ -109,40 +69,101 @@ class Category(models.Model):
 
 # CHEMICALS
 
-def user_directory_path(instance, filename):
+def substance_directory_path(instance, filename):
     # file will be uploaded to MEDIA_ROOT/substances/<filename>
-    return 'substances/{0}'.format(filename)
+    return f'substances/{filename}'
+
+
+#####################################################################################
+
+
+class UnitCell(models.Model):
+    a = models.FloatField(null=True)
+    b = models.FloatField(null=True)
+    c = models.FloatField(null=True)
+    alpha = models.FloatField(null=True)
+    beta = models.FloatField(null=True)
+    gamma = models.FloatField(null=True)
+
+
+class Structure(models.Model):
+    # IDENTIFIERS
+    smiles = models.CharField(blank=True, max_length=100)
+    # smarts
+    inchi = models.CharField(blank=True, max_length=100)
+    inchi_key = models.CharField(blank=True, max_length=100)
+    # todo: add validators
+
+    # COORDINATES
+    atoms = ArrayField(
+        models.CharField(blank=True, max_length=3),
+        blank=True,
+        default=list
+    )
+    # indexes ?
+    coordinates = ArrayField(
+        ArrayField(
+            models.FloatField(blank=True, null=True),
+            blank=True,
+            default=list
+        ),
+        blank=True,
+        size=3,
+        default=list
+    )
+    bonds = ArrayField(
+        ArrayField(
+            models.IntegerField(blank=True, null=True),
+            size=2,
+            default=list
+        ),
+        blank=True,
+        default=list
+    )
+    labels = ArrayField(
+        models.CharField(blank=True, max_length=3),
+        blank=True,
+        default=list
+    )
+    unitcell = models.OneToOneField(UnitCell, on_delete=models.SET_NULL, blank=True, null=True)
+
+    # CALCULATION CONDITIONS
+    # basis set (as separate model? fetch from basissetexchange?)
+    # orbitals (how to represent?)
+
+    type = models.CharField(blank=True, max_length=50)  # todo: CHOICES (calculation / crystal structure / ...)
+    description = models.TextField(blank=True)  # (measurement) conditions
+
+    # FILES
+    # cif, mol, ...
+    # rdkit = rk_models.MolField(blank=True, null=True)
+
+    # FINGERPRINTS / FRAGMENTS
+    # torsionbv = models.BfpField(null=True)
+    # mfp2 = models.BfpField(null=True)
+    # ffp2 = models.BfpField(null=True)
 
 
 class Substance(models.Model):
-    # import uuid
     # id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    names = ArrayField(models.CharField(blank=True, max_length=250), default=list)
-    # most common name (trivial name)?
+    name = models.CharField(max_length=250)  # IUPAC
+    synonyms = ArrayField(
+        models.CharField(blank=True, max_length=250),
+        blank=True,
+        default=list
+    )
+    label = models.CharField(blank=True, max_length=250)  # trivial name
+    formula = models.CharField(blank=True, max_length=100)  # todo: add validators (Hill notation)
 
-    formula = models.CharField(blank=True, max_length=100)  # JSONField()
-    # todo: add validators (Hill notation)
-
-    # structural identifiers
-    smiles = models.CharField(blank=True, max_length=100)
-    inchi = models.CharField(blank=True, max_length=100)
-    inchi_key = models.CharField(blank=True, max_length=100)
-    # mdl
-    # STEREOCHEMISTRY?? enantiomers, distereomers, racemic mixtures?
-    molecule = models.CharField(blank=True, max_length=250)  # rd_models.MolField()  #
-    # structure = rk_models.MolField(blank=True, null=True)
-    # mol file (type: crystal structure, calculated (conditions))
-    # cif: crystal structure
-
-    # other identifiers
+    # IDENTIFIERS
     cas = models.CharField(blank=True, max_length=12)  # todo: add validator
     pubchem_sid = models.IntegerField(blank=True, null=True)
-    # 'https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/cid/<cid>/property/MolecularFormula,MolecularWeight/CSV'
-    # 'https://pubchem.ncbi.nlm.nih.gov/rest/pug_view/data/compound/<cid>/JSON'
-    # ec number (european community), german: EG
-    # https://echa.europa.eu/information-on-chemicals/ec-inventory
 
-    # properties
+    # STRUCTURE
+    structure = models.ManyToManyField(Structure, blank=True, related_name='substance_structures')
+    # STEREOCHEMISTRY?? enantiomers, distereomers, racemic mixtures?
+
+    # PROPERTIES
     mol_weight = models.FloatField(blank=True, null=True)
     mol_weight_unit = models.ForeignKey(
         Unit, blank=True, null=True, on_delete=models.PROTECT, related_name="mol_weight_units"
@@ -151,7 +172,47 @@ class Substance(models.Model):
     exact_mass_unit = models.ForeignKey(
         Unit, blank=True, null=True, on_delete=models.PROTECT, related_name="exact_mass_units"
     )
-    # physical state (gaseous, liquid, solid, hypercritical,...)
+
+    image = models.ImageField(blank=True, null=True, upload_to=substance_directory_path)
+
+    def __str__(self):
+        if self.label:
+            return self.label
+        return self.name
+
+
+class Component(models.Model):
+    substance = models.ForeignKey(Substance, on_delete=models.PROTECT, related_name='components')
+    fraction = models.FloatField(
+        validators=[MinValueValidator(0.0), MaxValueValidator(1.00)], default=1.00
+    )
+    type = models.CharField(blank=True, max_length=50)
+
+    def __str__(self):
+        return f"{self.substance.name} ({self.fraction*100}%)"
+
+
+class Compound(models.Model):
+    name = models.CharField(max_length=250)  # IUPAC
+    synonyms = ArrayField(
+        models.CharField(blank=True, max_length=250),
+        blank=True,
+        default=list
+    )
+    label = models.CharField(blank=True, max_length=250)
+    substances = models.ManyToManyField(Component, blank=False, related_name='compounds')
+    purity = models.FloatField(
+        validators=[MinValueValidator(0.0), MaxValueValidator(1.00)], default=1.00
+    )
+
+    pubchem_cid = models.IntegerField(blank=True, null=True)
+
+    # PROPERTIES
+    density = models.FloatField(null=True, blank=True)
+    density_unit = models.ForeignKey(
+        Unit, blank=True, null=True, on_delete=models.PROTECT, related_name="density_units"
+    )
+    # physical state at normal conditions (gaseous, liquid, solid, hypercritical,...)
     color = models.CharField(blank=True, max_length=20)
     melting_point = models.FloatField(blank=True, null=True)
     melting_point_unit = models.ForeignKey(
@@ -169,67 +230,19 @@ class Substance(models.Model):
     # auto-ignition temp.
     # viscosity
     # refractive index
-
     # vapor density
     # vapor pressure
-    # solubility
+    # solubility (solvent???)
     # logP
     # stability (shelf life)
     # todo: properties as array? (substance vs compound?)
 
-    image = models.ImageField(blank=True, null=True, upload_to=user_directory_path)
-
-    # mol file ? (params: 2D/3D optimized, etc.)
-    # ccsd ?
-    # torsionbv = models.BfpField(null=True)
-    # mfp2 = models.BfpField(null=True)
-    # ffp2 = models.BfpField(null=True)
-
-    # wikipedia, CPDat, ChEMBL, ChemSpider, CHEMnetBASE, GESTIS(SDS), NFDI, SpectraBASE (slugfields?), Massbank!
-
-    def __str__(self):
-        return self.names[0]
-
-
-class Compound(models.Model):
-    substance = models.ForeignKey(
-        Substance, null=True, on_delete=models.PROTECT, related_name="compounds"
-    )
-    # todo: mixtures? (diluted substances, etc.)
-    # mixtures:
-    #
-    # Petrolether 30-50 und Petrolether 50-70 mit und ohne Benzol
-    # Salzsäure 10% und 37%-ig in Wasser oder in Methanol
-    # Eisen als Block oder Pulver
-    # Kieselgel, normal oder als Blau- oder Orangegel
-    # Standardlösungen (AAS) und Pufferlösungen
-    # Ionenaustauscher
-    # Petrochemische Produkte und Lösungsmittel
-    # Pflanzenextrakte
-    # traditionelle Arzneistoffe
-
-    pubchem_cid = models.IntegerField(blank=True, null=True)
-
-    # # todo: change to many-to-one relation
-    # container = models.OneToOneField(
-    #     Container, null=True, on_delete=models.CASCADE, related_name='containing_compounds'
-    # )
-
-    purity = models.FloatField(
-        validators=[MinValueValidator(0.0), MaxValueValidator(100.0)], default=100
-    )
-    density = models.FloatField(null=True, blank=True)  # todo: move to substance?
-    #                                                   #  what about mixtures??
-    density_unit = models.ForeignKey(
-        Unit, blank=True, null=True, on_delete=models.PROTECT, related_name="density_units"
-    )
-
+    # SAFETY
     ghs = models.OneToOneField(
         GHS, blank=True, null=True, on_delete=models.PROTECT, related_name='hazardous_compounds'
     )
-    # sds
-    # un number (adr, adn, ADNR und ADN-D, RID, SOLAS)
-
+    # SDS (pdf)
+    # UN number (adr, adn, ADNR und ADN-D, RID, SOLAS)
     # Lagerklassen
     # Arbeitsplatzgrenzwerte(AGW)
     # Biologische
@@ -237,9 +250,10 @@ class Compound(models.Model):
     # Wassergefährdungsklassen
     # Global Warming Potential(des ICC)
 
-    # classification
+    # CLASSIFICATION
     #
-    # EC-Nummern (REACH)
+    # EC-Nummern (REACH)    # ec number (european community), german: EG
+    # https://echa.europa.eu/information-on-chemicals/ec-inventory
     # UN-Nr. (ADR)
     # Zoll-Nummern
     # Dual-Use Kategorie
@@ -254,44 +268,49 @@ class Compound(models.Model):
     # Einstufung als Biologischer Arbeitsstoff
     # Gruppe in der Seveso III-Verordnung
 
-    # spectra
-
-    category = models.ManyToManyField(Category, blank=True, related_name='categorized_compounds')
-
-    # related compounds (hydrates, hydrochlorides, etc.)
+    categories = models.ManyToManyField(Category, blank=True, related_name='categorized_compounds')
+    # related compounds (hydrates, hydrochlorides, etc.), see also fingeprints
 
     # spectra
 
-    created_by = models.ForeignKey(
-        Member, null=True, on_delete=models.SET_NULL, related_name='created_compounds'  # default ??
-    )
     created = models.DateField(auto_now_add=True)
+    created_by = models.ForeignKey(
+        Member, null=True, on_delete=models.SET_NULL, related_name='compounds_created'
+    )
 
     def __str__(self):
-        return f"{self.substance.names[0]}"
+        if self.label:
+            return f"{self.label} {self.purity*100}%"
+        return f"{self.name} {self.purity*100}%"
 
 
 class Container(models.Model):
-    source = models.ForeignKey(
+    parent = models.ForeignKey(
         'self', blank=True, null=True, on_delete=models.SET_NULL, related_name="children"
     )
     compound = models.ForeignKey(
         Compound, null=True, on_delete=models.PROTECT, related_name="containers"
     )
-    supplier = models.ForeignKey(Supplier, on_delete=models.PROTECT, related_name="products")
-    EAN = BarcodeField(blank=True)
-    product_number = models.CharField(blank=True, max_length=100)
-    # batch_number (self-made: auto-generate?)
-    # sku (stock-keeping unit)
+    tara = models.FloatField(blank=True, null=True)  # container weight including cap
+    tara_unit = models.ForeignKey(
+        Unit, blank=True, null=True, on_delete=models.PROTECT, related_name="tara_units"
+    )
     amount = models.FloatField(null=True)
     amount_left = models.FloatField(blank=True, null=True)
     amount_unit = models.ForeignKey(
         Unit, null=True, on_delete=models.PROTECT, related_name="amount_units"
     )
     # is_active (False, when amount_left = 0)
-    tara = models.FloatField(blank=True, null=True)  # container weight including cap
-    tara_unit = models.ForeignKey(
-        Unit, blank=True, null=True, on_delete=models.PROTECT, related_name="tara_units"
+
+    supplier = models.ForeignKey(Supplier, on_delete=models.PROTECT, related_name="products")
+    EAN = BarcodeField(blank=True)
+    product_number = models.CharField(blank=True, max_length=100)
+    # batch_number (self-made: auto-generate?)
+    # sku (stock-keeping unit)
+
+    price = models.DecimalField(blank=True, null=True, max_digits=10, decimal_places=2)
+    currency = models.ForeignKey(
+        Currency, blank=True, null=True, on_delete=models.PROTECT, related_name="currencies"
     )
     location = models.ForeignKey(
         Storage, null=True, on_delete=models.SET_NULL, related_name="containments"
@@ -300,23 +319,39 @@ class Container(models.Model):
         WorkingGroup, blank=True, null=True, on_delete=models.PROTECT, related_name="group_chemicals"
     )
 
-    price = models.DecimalField(blank=True, null=True, max_digits=10, decimal_places=2)
-    currency = models.ForeignKey(
-        Currency, blank=True, null=True, on_delete=models.PROTECT, related_name="currencies"
-    )
-
     description = models.CharField(blank=True, max_length=500)
 
     conditions = models.CharField(blank=True, max_length=50)  # argon, molecular sieve etc. (checkboxes?)
 
+    created = models.DateField(auto_now_add=True)
+    created_by = models.ForeignKey(
+        Member, null=True, on_delete=models.SET_NULL, related_name='containers_created'
+    )
     opened = models.DateField(blank=True, null=True)
     last_used = models.DateField(blank=True, null=True)
     last_user = models.OneToOneField(
-        Member, blank=True, null=True, on_delete=models.SET_NULL, related_name='last_compounds'
+        Member, blank=True, null=True, on_delete=models.SET_NULL, related_name='compounds_used_last'
     )
+    # future user ??
 
     # spectra
     # inspection cycle
 
     def __str__(self):
-        return f"{self.compound.substance.names[0]} ({self.supplier})"
+        return f"{self.compound.__str__()} ({self.supplier})"
+
+
+# DATABASES
+# PUGView
+# PUGREST
+# wikipedia
+# CPDat
+# ChEMBL
+# ChemSpider
+# CHEMnetBASE
+# GESTIS(SDS)
+# NFDI
+# SpectraBASE (slugfields?),
+# Massbank
+# CCSD
+# (retractionwatch)

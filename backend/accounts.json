@@ -1,0 +1,23 @@
+[
+{
+  "model": "accounts.member",
+  "pk": 1,
+  "fields": {
+    "password": "pbkdf2_sha256$320000$XLVarkC7rVEBjz0iCLAto6$sVAodDMrIfSH4AgNY313duDf11Xq6zy1hXhnCF0b4ck=",
+    "last_login": null,
+    "is_superuser": true,
+    "email": "admin@admin.com",
+    "first_name": "",
+    "last_name": "",
+    "working_group": null,
+    "is_active": true,
+    "is_staff": true,
+    "date_joined": "2023-07-20T21:17:19.269Z",
+    "groups": [],
+    "user_permissions": [],
+    "phones": [],
+    "rooms": [],
+    "role": []
+  }
+}
+]

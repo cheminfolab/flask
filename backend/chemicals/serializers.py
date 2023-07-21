@@ -12,55 +12,47 @@ class CurrencySerializer(ModelSerializer):
         exclude = ['id']
 
 
-class SISerializer(ModelSerializer):
-    class Meta:
-        model = SI
-        exclude = ['id']
-
-
 class UnitSerializer(ModelSerializer):
-    # si = SISerializer(source='units')  # .objects.filter(unit=<self>)
-
     class Meta:
         model = Unit
-        exclude = ['id', 'type']
+        exclude = ['id']
 
 
-class DerivedUnitSerializer(ModelSerializer):
-    unit = UnitSerializer(many=False)
-    si = SISerializer(many=True)
+class ContainerSerializer(ModelSerializer):
+    # compound = CompoundSerializer(many=False)
+    # location = StorageSerializer(many=False)
+    # owner = WorkingGroupSerializer(many=False)
 
     class Meta:
-        model = DerivedUnit
-        exclude = ['id']
+        model = Container
+        fields = '__all__'
 
 
 class SubstanceSerializer(ModelSerializer):
-    mol_weight_unit = UnitSerializer(many=False)
-
     class Meta:
         model = Substance
         fields = '__all__'
 
 
-class CompoundSerializer(ModelSerializer):
-    substance = SubstanceSerializer(many=False)
-    density_unit = UnitSerializer(many=False)
-    ghs = GHSSerializer(many=False)
+class ComponentSerializer(ModelSerializer):
+    class Meta:
+        model = Component
+        exclude = ['id']
+
+
+class CompoundListSerializer(ModelSerializer):
+    substances = ComponentSerializer(many=True)
 
     class Meta:
         model = Compound
         fields = '__all__'
 
 
-class ContainerSerializer(ModelSerializer):
-    compound = CompoundSerializer(many=False)
-    amount_unit = UnitSerializer(many=False)
-    tara_unit = UnitSerializer(many=False)
-    currency = CurrencySerializer(many=False)
-    location = StorageSerializer(many=False)
-    owner = WorkingGroupSerializer(many=False)
+class CompoundDetailSerializer(ModelSerializer):
+    substances = ComponentSerializer(many=True)
+    containers = ContainerSerializer(many=True)
+    ghs = GHSSerializer(many=False)
 
     class Meta:
-        model = Container
+        model = Compound
         fields = '__all__'

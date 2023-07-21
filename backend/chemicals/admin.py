@@ -2,17 +2,8 @@ from django.contrib import admin
 from .models import *
 
 
-class DerivedUnitInline(admin.TabularInline):
-    model = DerivedUnit
-    extra = 0
-    readonly_fields = ('factor', 'si', 'exponent')
-
-
 class UnitAdmin(admin.ModelAdmin):
-    inlines = [
-        DerivedUnitInline
-    ]
-    # list_display = ('names', 'formula', 'mol_weight')
+    list_display = ('id', 'name', 'symbol')
 
 
 class ContainerAdmin(admin.ModelAdmin):
@@ -21,7 +12,7 @@ class ContainerAdmin(admin.ModelAdmin):
 
 class CompoundAdmin(admin.ModelAdmin):
     # inlines = []
-    list_display = ('substance',)
+    list_display = ('name', 'label')
 
 
 class CompoundInline(admin.TabularInline):
@@ -29,20 +20,25 @@ class CompoundInline(admin.TabularInline):
     extra = 0
 
 
+class ComponentInline(admin.TabularInline):
+    model = Component
+    extra = 0
+
+
 class SubstanceAdmin(admin.ModelAdmin):
     inlines = [
-        CompoundInline
+        ComponentInline
     ]
-    list_display = ('names', 'formula', 'mol_weight')
+    list_display = ('name', 'label', 'formula', 'mol_weight')
 
 
-admin.site.register(Prefix)
-admin.site.register(SI)
 admin.site.register(Unit, UnitAdmin)
-admin.site.register(DerivedUnit)
 admin.site.register(Currency)
 admin.site.register(Category)
+admin.site.register(UnitCell)
+admin.site.register(Structure)
 admin.site.register(Substance, SubstanceAdmin)
-admin.site.register(Compound, CompoundAdmin)
+admin.site.register(Component)
+admin.site.register(Compound)
 admin.site.register(Container)
 

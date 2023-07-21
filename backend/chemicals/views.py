@@ -1,5 +1,6 @@
 from api.views import CustomViewSet
 
+from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
 
 from .serializers import *
@@ -16,9 +17,23 @@ class SubstanceViewSet(CustomViewSet):
     serializer_class = SubstanceSerializer
 
 
+class ComponentViewSet(CustomViewSet):
+    model = Component
+    serializer_class = ComponentSerializer
+
+
 class CompoundViewSet(CustomViewSet):
     model = Compound
-    serializer_class = CompoundSerializer
+    # serializer_class = CompoundListSerializer
+
+    def list(self, request):
+        serializer = CompoundListSerializer(self.get_queryset(), many=True)
+        return Response(serializer.data)
+
+    def retrieve(self, request, pk=None):
+        instance = self.get_object(pk=pk)
+        serializer = CompoundDetailSerializer(instance)
+        return Response(serializer.data)
 
 
 class ContainerViewSet(CustomViewSet):

@@ -4,6 +4,9 @@ Install prerequisites:
 - conda
 - npm (node.js)
 
+or 
+- docker
+
 Setting up the .env file:
 
 ```python
@@ -34,6 +37,12 @@ conda activate flask
 ```
 
 ### React
+
+In the frontend directory, run:
+
+````bash
+npm install
+````
 
 ## Setting up the PostgreSQL Database
 
@@ -93,7 +102,7 @@ python3 manage.py loaddata init.json
 #### Via Django
 
 ````bash
-python3 manage.py dumpdata > init.json
+python3 manage.py dumpdata --indent=2 > init.json
 ````
 
 #### Using pg_dump
