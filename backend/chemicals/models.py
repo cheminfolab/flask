@@ -100,7 +100,7 @@ class Structure(models.Model):
         blank=True,
         default=list
     )
-    # indexes, labels
+    # indexes ?
     coordinates = ArrayField(
         ArrayField(
             models.FloatField(blank=True, null=True),
