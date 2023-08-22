@@ -12,13 +12,13 @@ import {
 } from 'react-bootstrap';
 import { Link } from "react-router-dom";
 
-import AuthContext from "../context/AuthContext";
-import Logo from "../../../frontend-ts/src/flask.png";
+// import AuthContext from "../context/AuthContext";
+import Logo from "../flask.png";
 
 
 const NavbarComp = () => {
 
-    let {user, logoutUser} = useContext(AuthContext);
+    // let {user, logoutUser} = useContext(AuthContext);
 
     return (
         <div>
@@ -70,11 +70,11 @@ const NavbarComp = () => {
 
                         <Dropdown.Divider />
 
-                        {user ? (
-                            <Dropdown.Item onClick={logoutUser}>Logout</Dropdown.Item>
-                        ):(
+                        {/*{user ? (*/}
+                        {/*    <Dropdown.Item onClick={logoutUser}>Logout</Dropdown.Item>*/}
+                        {/*):(*/}
                             <Dropdown.Item as={Link} to={"/login"}>Login</Dropdown.Item>
-                        )}
+                        {/*)}*/}
                       </DropdownButton>
                   </Nav>
                 </Navbar.Collapse>
