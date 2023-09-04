@@ -21,7 +21,7 @@ class CustomViewSet(ViewSet):
 
     def get_permissions(self):
         if self.action == 'list':
-            permission_classes = [IsAuthenticated]
+            permission_classes = []#IsAuthenticated]
         else:
             permission_classes = [IsAdminUser]
         return [permission() for permission in permission_classes]

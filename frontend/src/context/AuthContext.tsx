@@ -2,27 +2,24 @@ import {createContext, useEffect, useState} from "react";
 import {useNavigate} from 'react-router-dom'
 import jwt_decode from 'jwt-decode';
 import useAxios from "../utils/useAxios";
+import {Tokens, User, LoginUserType, LogoutUserType, RegisterUserType, AuthContextType} from "../@types/authorization"
 
 
-const AuthContext = createContext({})
+const AuthContext = createContext<AuthContextType | {}>({})
 export default AuthContext
-
 
 export const AuthProvider = ({children}) => {
 
-    // todo: rewrite !
-    let [authTokens, setAuthTokens] = useState(() => (
-        localStorage.getItem('authTokens') ? JSON.parse(localStorage.getItem('authTokens')) : null
-    ))
-    let [user, setUser] = useState(() => (
-        localStorage.getItem('authTokens') ? jwt_decode(localStorage.getItem('authTokens')) : null
-    ))
-    let [loading, setLoading] = useState(true)
+    let localTokens = localStorage.getItem('authTokens')
+
+    let [authTokens, setAuthTokens] = useState<Tokens | null>(() => localTokens ? JSON.parse(localTokens) : null)
+    let [user, setUser] = useState<User | null>(() => localTokens ? jwt_decode(localTokens) : null)
+    let [loading, setLoading] = useState<boolean>(true)
 
     const navigate = useNavigate()
     let api = useAxios()
 
-    let loginUser = async (e) => {
+    let loginUser:LoginUserType = async (e) => {
         e.preventDefault()
         await api.axiosInstance // todo: unite multiple services in one instance!
             .post('/token/', {
@@ -40,10 +37,10 @@ export const AuthProvider = ({children}) => {
                     alert('Something went wrong.')
                 }
             })
-            .catch( (error) => console.log(error))
+            .catch(error => console.log(error))
     }
 
-    let registerUser = async (event) => {
+    let registerUser:RegisterUserType = async event => {
         event.preventDefault()
         await api.axiosInstance
             .post('/member/register/', {
@@ -64,7 +61,7 @@ export const AuthProvider = ({children}) => {
             .catch( (error) => console.log(error))
     }
 
-    let logoutUser = () => {
+    let logoutUser:LogoutUserType = () => {
         setUser(null)
         setAuthTokens(null)
         localStorage.removeItem('authTokens')

@@ -1,12 +1,11 @@
-import React from "react";
 import {Route, Routes} from "react-router-dom";
 import PrivateRoute from "../utils/PrivateRoute";
 
 import HomePage from "../pages/HomePage";
 import AuthPage from "../pages/AuthPage";
-import '../pages/AuthPage.css'
 import ChemPage from "../pages/ChemPage";
 import ProjectPage from "../pages/ProjectPage";
+import '../pages/AuthPage.css'
 
 const RoutesComp = () => {
     return (

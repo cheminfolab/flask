@@ -1,24 +1,20 @@
-import React, {useContext, useState, useEffect} from 'react';
+import {useContext, useState, useEffect} from 'react';
 import AuthContext from "../context/AuthContext";
 import {Button, Col, Form, Row} from "react-bootstrap";
+import {AuthContextType, AuthModeType, Errors, RegistrationForm} from "../@types/authorization";
+import {Group} from "../@types/accounts";
 
 export default function AuthPage() {
 
-  let {loginUser, registerUser} = useContext(AuthContext)
-  let [authMode, setAuthMode] = useState("login")
-  let [groups, setGroups] = useState([])
-
-  useEffect(() => {
-      getGroups();
-  }, [])
+  let {loginUser, registerUser} = useContext(AuthContext) as AuthContextType
+  let [authMode, setAuthMode] = useState<AuthModeType>("login")
+  let [groups, setGroups] = useState<Group[] | []>([])
 
   // todo: use axios
   let getApiResponse = async (items, setState) => {
     let response = await fetch('http://127.0.0.1:8000/api/'+String(items), {
-        method:'GET',
-        headers:{
-            'Content-Type':'application/json',
-        }
+        method: 'GET',
+        headers: {'Content-Type': 'application/json'}
     })
     let data = await response.json()
     if (response.status === 200){
@@ -28,17 +24,26 @@ export default function AuthPage() {
     }
   }
 
-  let getGroups = () => getApiResponse('group/', setGroups)
+  let getGroups = () => getApiResponse('group/', setGroups);
 
+  useEffect(() => {
+      getGroups();
+  }, [])
 
-  const changeAuthMode = () => {
-    setAuthMode(authMode === "login" ? "register" : "login")
-  }
+  const changeAuthMode = () => {setAuthMode(authMode === "login" ? "register" : "login")}
 
   // VALIDATION
 
-  const [form, setForm] = useState({})
-  const [errors, setErrors] = useState({})
+  const [form, setForm] = useState<RegistrationForm>({
+    "first_name": null,
+    "last_name": null,
+    "working_group": null,
+    "status": null,
+    "email": null,
+    "password": null,
+    "password2": null
+  })
+  const [errors, setErrors] = useState<Errors>({})
 
   const setField = (field, value) => {
     setForm({
@@ -53,9 +58,16 @@ export default function AuthPage() {
       })
   }
 
-  const validateForm = () => {
-    const { first_name, last_name, working_group, status, email, password, password2 } = form
-    const newErrors = {}
+  const validateForm:() => Errors = () => {
+    const newErrors: Errors = {
+      "first_name": null,
+      "last_name": null,
+      "working_group": null,
+      "status": null,
+      "email": null,
+      "password": null,
+      "password2": null
+    }
     const NAME_REGEX = /^[a-zA-Z][a-zA-Z0-9-_]{2,23}/i
     const PWD_REGEX = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%]).{8,120}$/i
     const validName = name => NAME_REGEX.test(name)
@@ -65,25 +77,24 @@ export default function AuthPage() {
     // https://www.youtube.com/watch?v=86uXSFm3ND0
 
     // REGISTRATION
-    if (!first_name || first_name === '') newErrors.first_name = 'Please enter your first name.'
-    else if (!validName(first_name))
+    if (!form.first_name || form.first_name === '') newErrors.first_name = 'Please enter your first name.'
+    else if (!validName(form.first_name))
       newErrors.first_name = 'Please enter a valid name. It must have 2 to 24 characters and begin with a letter. Letters, numbers, underscores, hyphens allowed.'
-    if (!last_name || last_name === '') newErrors.last_name = 'Please enter your last name.'
-    else if (!validName(last_name))
+    if (!form.last_name || form.last_name === '') newErrors.last_name = 'Please enter your last name.'
+    else if (!validName(form.last_name))
       newErrors.last_name = 'Please enter a valid name. It must have 2 to 24 characters and begin with a letter. Letters, numbers, underscores, hyphens allowed.'
-    if (!working_group || working_group === '') newErrors.working_group = 'Please select a working group.'
+    if (!form.working_group) newErrors.working_group = 'Please select a working group.'
     // validation
-    if (!status || status === '') newErrors.status = 'Please select your status.'
+    if (!form.status) newErrors.status = 'Please select your status.'
     // validation
-    if (!email || email === '') newErrors.email = 'Please enter an email address.'
+    if (!form.email || form.email === '') newErrors.email = 'Please enter an email address.'
     // email validation
-    if (!password || password === '') newErrors.password = 'Please enter a password.'
-    else if (!validPassword(password))
+    if (!form.password || form.password === '') newErrors.password = 'Please enter a password.'
+    else if (!validPassword(form.password))
       newErrors.password = 'Please enter a valid password. It must have 8 to 120 characters and include uppercase and lowercase letters, a number and a special character. Allowed characters are: !@#¢%'
-    if (!password2 || password2 === '') newErrors.password2 = 'Please confirm your password.'
-    else if (password2 !== password)
+    if (!form.password2 || form.password2 === '') newErrors.password2 = 'Please confirm your password.'
+    else if (form.password2 !== form.password)
       newErrors.password2 = 'Password entered does not match the first password'
-
     return newErrors
   }
 
@@ -149,7 +160,7 @@ export default function AuthPage() {
   return (
     <div className="Auth-form-container">
       <Form className="Auth-form" noValidate //validated={validated}
-            onSubmit={handleSubmit}//{registerUser}
+            onSubmit={handleSubmit}
       >
         <div className="Auth-form-content">
           <h3 className="Auth-form-title">Register</h3>
@@ -267,57 +278,6 @@ export default function AuthPage() {
 
           <Button type="submit" className="mt-3">Submit</Button>
 
-          {/*<div className="form-group mt-3">*/}
-          {/*  <label>Working Group</label>*/}
-          {/*  <select*/}
-          {/*      className="form-select form-select-sm mt-1"*/}
-          {/*      name="working_group"*/}
-          {/*      aria-label=".form-select-sm example"*/}
-          {/*      required*/}
-          {/*  >*/}
-          {/*    <option>select...</option>*/}
-          {/*    {groups.map(({id, name}) => <option key={id} value={id}>{name}</option>)}*/}
-          {/*  </select>*/}
-          {/*</div>*/}
-          {/*<div className="form-group mt-3">*/}
-          {/*  <label>Status</label>*/}
-          {/*  <select*/}
-          {/*      className="form-select form-select-sm mt-1"*/}
-          {/*      name="status"*/}
-          {/*      aria-label=".form-select-sm example"*/}
-          {/*  >*/}
-          {/*    <option>select...</option>*/}
-          {/*    <option value="1">student</option>*/}
-          {/*    <option value="2">phd</option>*/}
-          {/*    <option value="3">staff</option>*/}
-          {/*  </select>*/}
-          {/*</div>*/}
-          {/*<div className="form-group mt-3">*/}
-          {/*  <label>Email address</label>*/}
-          {/*  <input*/}
-          {/*    name="email"*/}
-          {/*    type="email"*/}
-          {/*    className="form-control mt-1"*/}
-          {/*    placeholder="Email Address"*/}
-          {/*    required*/}
-          {/*  />*/}
-          {/*</div>*/}
-          {/*<div className="form-group mt-3">*/}
-          {/*  <label>Password</label>*/}
-          {/*  <input*/}
-          {/*    name="password"*/}
-          {/*    type="password"*/}
-          {/*    className="form-control mt-1"*/}
-          {/*    placeholder="Password"*/}
-          {/*    required*/}
-          {/*  />*/}
-          {/*</div>*/}
-          {/*<div className="d-grid gap-2 mt-3">*/}
-          {/*  <button type="submit"  className="btn btn-primary">*/}
-          {/*    Submit*/}
-          {/*  </button>*/}
-          {/*</div>*/}
-
           <p className="text-center mt-2">
             Forgot <a href="/#">password?</a>
           </p>
@@ -326,5 +286,3 @@ export default function AuthPage() {
     </div>
   )
 }
-
-// export default AuthPage;
