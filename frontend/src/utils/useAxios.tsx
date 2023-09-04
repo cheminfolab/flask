@@ -1,18 +1,20 @@
 import {useContext} from "react";
 import axios from "axios";
 import jwt_decode from "jwt-decode";
-import dayjs from "dayjs";
+import * as dayjs from "dayjs";
 import AuthContext from "../context/AuthContext";
+import {AuthContextType, User} from "../@types/authorization";
 
 const baseURL = 'http://127.0.0.1:8000/api'
-
+// todo: use environment variable
 
 const useAxios = (authentication=false) => {
-    const { authTokens, setAuthTokens, setUser, logoutUser } = useContext(AuthContext)
+
+    const { authTokens, setAuthTokens, setUser, logoutUser } = useContext(AuthContext) as AuthContextType
     const axiosInstance = axios
         .create({
             baseURL,
-            timeout: 5000,
+            timeout: 5000, // ms
             headers:{
                 'Content-Type': 'application/json',
                 accept: 'application/json'
@@ -24,7 +26,7 @@ const useAxios = (authentication=false) => {
             async req => {
 
                 // check if token is expired
-                const user = jwt_decode(authTokens.access)
+                const user:User = jwt_decode(authTokens.access)
                 const isExpired = dayjs.unix(user.exp).diff(dayjs(), 'second') < 30;
                 if (!isExpired) return req
 
@@ -79,7 +81,7 @@ const useAxios = (authentication=false) => {
         })
 
 
-    return {axiosInstance, getAll, get, create, update, remove} // axiosInstance
+    return {axiosInstance, getAll, get, create, update, remove}
 }
 
 export default useAxios

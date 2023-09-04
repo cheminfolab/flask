@@ -3,9 +3,9 @@ version: '3.9'
 services:
 
   database:
-    image: postgres:15.1
-    #restart: unless-stopped
     container_name: eln_db
+    #restart: unless-stopped
+    image: postgres:15.1
     env_file: .env
     volumes:
       - eln_db:/var/lib/postgresql/data/
@@ -25,15 +25,16 @@ services:
       - POSTGRES_HOST=database
     ports:
       - "8000:8000"
+    depends_on:
+      - database
     volumes:
       - ./backend:/app
     networks:
       - eln
-    depends_on:
-      - database
 
 volumes:
   eln_db:
 
 networks:
   eln:
+    name: flask_eln

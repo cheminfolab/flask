@@ -12,13 +12,14 @@ import {
 } from 'react-bootstrap';
 import { Link } from "react-router-dom";
 
-// import AuthContext from "../context/AuthContext";
-import Logo from "../flask.png";
+import AuthContext from "../context/AuthContext"
+import {AuthContextType} from "../@types/authorization"
 
+import Logo from "../flask.png"
 
 const NavbarComp = () => {
 
-    // let {user, logoutUser} = useContext(AuthContext);
+    let {user, logoutUser} = useContext(AuthContext) as AuthContextType
 
     return (
         <div>
@@ -41,8 +42,8 @@ const NavbarComp = () => {
                     <Nav.Link as={Link} to={"/projects"}>Projects</Nav.Link>
                     <NavDropdown title="Inventory" id="basic-nav-dropdown">
                         <NavDropdown.Item as={Link} to={"/chemicals"}>Chemicals</NavDropdown.Item>
+                        <NavDropdown.Item as={Link} to={"/#"}>Substances</NavDropdown.Item>
                         <NavDropdown.Item as={Link} to={"/#"}>Equipment</NavDropdown.Item>
-                        <NavDropdown.Item as={Link} to={"/#"}>Something</NavDropdown.Item>
 
                         <NavDropdown.Divider />
 
@@ -70,11 +71,11 @@ const NavbarComp = () => {
 
                         <Dropdown.Divider />
 
-                        {/*{user ? (*/}
-                        {/*    <Dropdown.Item onClick={logoutUser}>Logout</Dropdown.Item>*/}
-                        {/*):(*/}
+                        {user ? (
+                            <Dropdown.Item onClick={logoutUser}>Logout</Dropdown.Item>
+                        ):(
                             <Dropdown.Item as={Link} to={"/login"}>Login</Dropdown.Item>
-                        {/*)}*/}
+                        )}
                       </DropdownButton>
                   </Nav>
                 </Navbar.Collapse>
