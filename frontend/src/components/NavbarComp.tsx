@@ -1,4 +1,4 @@
-import React, {useContext} from 'react';
+import  {useContext} from 'react';
 import {
     Container,
     Navbar,
@@ -42,7 +42,7 @@ const NavbarComp = () => {
                     <Nav.Link as={Link} to={"/projects"}>Projects</Nav.Link>
                     <NavDropdown title="Inventory" id="basic-nav-dropdown">
                         <NavDropdown.Item as={Link} to={"/chemicals"}>Chemicals</NavDropdown.Item>
-                        <NavDropdown.Item as={Link} to={"/#"}>Substances</NavDropdown.Item>
+                        <NavDropdown.Item as={Link} to={"/substances"}>Substances</NavDropdown.Item>
                         <NavDropdown.Item as={Link} to={"/#"}>Equipment</NavDropdown.Item>
 
                         <NavDropdown.Divider />
@@ -50,6 +50,7 @@ const NavbarComp = () => {
                         <NavDropdown.Item href="#action/3.4">Separated link</NavDropdown.Item>
                     </NavDropdown>
                     <Nav.Link as={Link} to={"/"}>Wiki</Nav.Link>
+                    <Nav.Link as={Link} to={"/"}>Analytics</Nav.Link>
                   </Nav>
                   <Form className="d-flex mx-auto">
                     <FormControl
@@ -66,8 +67,8 @@ const NavbarComp = () => {
                         variant={'secondary'}
                         title={<i className="bi bi-gear"></i>}
                       >
-                        <Dropdown.Item eventKey="1">Account</Dropdown.Item>
-                        <Dropdown.Item eventKey="2">Another action</Dropdown.Item>
+                        <Dropdown.Item eventKey="1">Settings</Dropdown.Item>
+                        <Dropdown.Item eventKey="2">Profile</Dropdown.Item>
 
                         <Dropdown.Divider />
 

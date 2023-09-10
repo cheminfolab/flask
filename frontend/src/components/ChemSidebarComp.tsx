@@ -2,10 +2,8 @@ import {Accordion, Form, FormControl} from "react-bootstrap";
 // https://getbootstrap.com/docs/5.0/examples/sidebars/#
 // https://stackoverflow.com/questions/60482018/make-a-sidebar-from-react-bootstrap
 
-const ChemSidebarComp = () => {
-    return(
-        <div>
-        <h3>Chemicals</h3>
+const ChemSidebarComp = () => (
+    <div>
         <Accordion defaultActiveKey={['0']} alwaysOpen>
           <Accordion.Item eventKey="0">
             <Accordion.Header>Filter</Accordion.Header>
@@ -54,7 +52,7 @@ const ChemSidebarComp = () => {
                 <Form.Check
                         type="radio"
                         id={`default-radio`}
-                        label={"Huy"}
+                        label={"Huber"}
                       />
               Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
               eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad
@@ -66,20 +64,16 @@ const ChemSidebarComp = () => {
             </Accordion.Body>
           </Accordion.Item>
           <Accordion.Item eventKey="2">
-            <Accordion.Header>Accordion Item #3</Accordion.Header>
+            <Accordion.Header>Properties</Accordion.Header>
             <Accordion.Body>
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-              eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad
-              minim veniam, quis nostrud exercitation ullamco laboris nisi ut
-              aliquip ex ea commodo consequat. Duis aute irure dolor in
-              reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla
-              pariatur. Excepteur sint occaecat cupidatat non proident, sunt in
-              culpa qui officia deserunt mollit anim id est laborum.
+                formula<br/>
+                labels:
+
             </Accordion.Body>
           </Accordion.Item>
         </Accordion>
-        </div>
-    )
-}
+    </div>
+)
+
 
 export default ChemSidebarComp
