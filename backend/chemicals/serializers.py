@@ -28,7 +28,15 @@ class ContainerSerializer(ModelSerializer):
         fields = '__all__'
 
 
+class StructureSerializer(ModelSerializer):
+    class Meta:
+        model = Structure
+        fields = '__all__'
+
+
 class SubstanceSerializer(ModelSerializer):
+    structure = StructureSerializer(many=True)
+
     class Meta:
         model = Substance
         fields = '__all__'

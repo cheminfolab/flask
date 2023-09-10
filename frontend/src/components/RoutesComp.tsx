@@ -3,7 +3,7 @@ import PrivateRoute from "../utils/PrivateRoute";
 
 import HomePage from "../pages/HomePage";
 import AuthPage from "../pages/AuthPage";
-import ChemPage from "../pages/ChemPage";
+import {ComPage, SubPage} from "../pages/ChemPage";
 import ProjectPage from "../pages/ProjectPage";
 import '../pages/AuthPage.css'
 
@@ -22,7 +22,11 @@ const RoutesComp = () => {
                 />
                 <Route
                     path="/chemicals"
-                    element={<PrivateRoute><ChemPage/></PrivateRoute>}
+                    element={<PrivateRoute><ComPage/></PrivateRoute>}
+                />
+                <Route
+                    path="/substances"
+                    element={<PrivateRoute><SubPage/></PrivateRoute>}
                 />
                 <Route
                     path="/projects"

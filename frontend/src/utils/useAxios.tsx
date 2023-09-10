@@ -5,15 +5,13 @@ import * as dayjs from "dayjs";
 import AuthContext from "../context/AuthContext";
 import {AuthContextType, User} from "../@types/authorization";
 
-const baseURL = 'http://127.0.0.1:8000/api'
-// todo: use environment variable
+const apiPath = `${process.env.REACT_APP_API_BASE_URL}/api`
 
 const useAxios = (authentication=false) => {
-
     const { authTokens, setAuthTokens, setUser, logoutUser } = useContext(AuthContext) as AuthContextType
     const axiosInstance = axios
         .create({
-            baseURL,
+            baseURL: apiPath,
             timeout: 5000, // ms
             headers:{
                 'Content-Type': 'application/json',
@@ -31,7 +29,7 @@ const useAxios = (authentication=false) => {
                 if (!isExpired) return req
 
                 // if token is expired, request new token
-                const response = await axios.post(`${baseURL}/token/refresh/`, {
+                const response = await axios.post(`${apiPath}/token/refresh/`, {
                     refresh:authTokens.refresh
                 })
 

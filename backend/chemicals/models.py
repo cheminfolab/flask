@@ -87,13 +87,6 @@ class UnitCell(models.Model):
 
 
 class Structure(models.Model):
-    # IDENTIFIERS
-    smiles = models.CharField(blank=True, max_length=100)
-    # smarts
-    inchi = models.CharField(blank=True, max_length=100)
-    inchi_key = models.CharField(blank=True, max_length=100)
-    # todo: add validators
-
     # COORDINATES
     atoms = ArrayField(
         models.CharField(blank=True, max_length=3),
@@ -156,6 +149,12 @@ class Substance(models.Model):
     formula = models.CharField(blank=True, max_length=100)  # todo: add validators (Hill notation)
 
     # IDENTIFIERS
+    smiles = models.CharField(blank=True, max_length=100)
+    # smarts
+    inchi = models.CharField(blank=True, max_length=100)
+    inchi_key = models.CharField(blank=True, max_length=100)
+    # todo: add validators
+
     cas = models.CharField(blank=True, max_length=12)  # todo: add validator
     pubchem_sid = models.IntegerField(blank=True, null=True)
 
