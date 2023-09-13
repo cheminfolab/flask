@@ -44,7 +44,7 @@ class CustomViewSet(ViewSet):
     def create(self, request):
         serializer = self.serializer_class(data=request.data)
         if serializer.is_valid():
-            # todo: problems with create user?
+            # todo: problems with create_user?!
             self.model.objects.create(**serializer.validated_data)
             return Response(serializer.validated_data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
