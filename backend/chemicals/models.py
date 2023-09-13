@@ -157,6 +157,7 @@ class Substance(models.Model):
 
     cas = models.CharField(blank=True, max_length=12)  # todo: add validator
     pubchem_sid = models.IntegerField(blank=True, null=True)
+    pubchem_cid = models.IntegerField(blank=True, null=True)
 
     # STRUCTURE
     structure = models.ManyToManyField(Structure, blank=True, related_name='substance_structures')
@@ -203,8 +204,6 @@ class Compound(models.Model):
     purity = models.FloatField(
         validators=[MinValueValidator(0.0), MaxValueValidator(1.00)], default=1.00
     )
-
-    pubchem_cid = models.IntegerField(blank=True, null=True)
 
     # PROPERTIES
     density = models.FloatField(null=True, blank=True)

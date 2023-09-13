@@ -3,42 +3,28 @@ import {Col, Container, Pagination, Row} from "react-bootstrap";
 import ChemComTable from "../components/ChemComTable";
 import ChemSidebarComp from "../components/ChemSidebarComp";
 import useAxios from "../utils/useAxios";
-// import ChemDetailComp from "../components/ChemDetailComp";
-import {Compound, Substance} from "../@types/chemicals";
+import {Compound, Substance, Unit} from "../@types/chemicals";
 import ChemSubTable from "../components/ChemSubTable";
-import {ChemSubNavbar} from "../components/ChemNavbars";
+import {ChemSubNavbar} from "../components/ChemNavbar";
 
 
 export const SubPage = () => {
 
     let ApiService = useAxios(true)
+    let [units, setUnits] = useState<Unit[]>([])
     let [substances, setSubstances] = useState<Substance[]>([])
     let [selected, setSelected] = useState<number[]>([])
-    // let [containers, setContainers] = useState([])
-    // let [containerDetail, setContainerDetail] = useState({
-    //     id: null,
-    //     substance: {image:null}
-    // })
-    // let [containerId, setContainerId] = useState()
-    // let [show, setShow] = useState(false)
 
     useEffect(() => {
+        ApiService
+            .getAll('unit')
+            .then(res => setUnits(res))
+            .catch(error => console.log('getAll error:', error))
         ApiService
             .getAll('substance')
             .then(res => setSubstances(res))
             .catch(error => console.log('getAll error:', error))
     }, [])
-
-    // useEffect(() => console.log(substances), [substances])
-
-    // useEffect(() => {
-    //     console.log('substanceId', substanceId)
-    //     if (substanceId) {
-    //     ApiService
-    //         .get('substance', substanceId)
-    //         .then(returnedsubstance => setsubstanceDetail(returnedsubstance))
-    //         .catch(error => console.log('get error:', error))
-    // }}, [substanceId])
 
     return (
         <Container fluid>
@@ -60,20 +46,14 @@ export const SubPage = () => {
                 </Col>
                 <Col  xs={10} id="page-content-wrapper">
                     <div className="overflow-auto">
-                    <ChemSubTable
-                        substances={substances}
-                        selected={selected}
-                        setSelected={setSelected}
-                        // setShow={setShow}
-                        // setSubstanceId={setSubstanceId}
-                    />
-
+                        {/* todo: overflow not working */}
+                        <ChemSubTable
+                            units={units}
+                            substances={substances}
+                            selected={selected}
+                            setSelected={setSelected}
+                        />
                     </div>
-                    {/*<ChemDetailComp*/}
-                    {/*    show={show}*/}
-                    {/*    setShow={setShow}*/}
-                    {/*    substanceId={substanceId}*/}
-                    {/*/>*/}
                 </Col>
             </Row>
             <Row>

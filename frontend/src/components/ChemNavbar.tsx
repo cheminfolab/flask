@@ -18,8 +18,8 @@ export const ChemSubNavbar = ({substances, selected, setSelected}) => {
     return (
         <Card>
             <Card.Header>
-                <Row>
-                    <Col xs={2} >
+                <Row className={"align-items-center"}>
+                    <Col xs={1} >
                         <Nav className="me-auto">
                             <Form>
                                 <Form.Check
@@ -32,7 +32,7 @@ export const ChemSubNavbar = ({substances, selected, setSelected}) => {
                             </Form>
                         </Nav>
                     </Col>
-                    <Col xs={3}>
+                    <Col xs={4}>
                         <Nav className="me-auto d-flex justify-content-center">
                             <NavDropdown title={<i className="bi bi-plus-square"/>} id="basic-nav-dropdown">
                                 <NavDropdown.Item as={Link} to={"#"}>
@@ -66,10 +66,16 @@ export const ChemSubNavbar = ({substances, selected, setSelected}) => {
                         </Nav>
                     </Col>
                     <Col xs={3}>
-                        <Nav className="me-auto d-flex justify-content-center">
-                            <Nav.Link as={Link} to={"#"} disabled={selected.length === 0}><i className="bi bi-share"/></Nav.Link>
-                            <Nav.Link as={Link} to={"#"} disabled={selected.length === 0}><i className="bi bi-database"/></Nav.Link>
-                            <Nav.Link as={Link} to={"#"} disabled={selected.length !== 1}><i className="bi bi-cart3"/></Nav.Link>
+                        <Nav className="d-flex justify-content-center">
+                            <Nav.Link as={Link} to={"#"} disabled={selected.length === 0}>
+                                <i className="bi bi-share"/>
+                            </Nav.Link>
+                            <Nav.Link as={Link} to={"#"} disabled={selected.length === 0}>
+                                <i className="bi bi-database"/>
+                            </Nav.Link>
+                            <Nav.Link as={Link} to={"#"} disabled={selected.length !== 1}>
+                                <i className="bi bi-cart3"/>
+                            </Nav.Link>
                             {/*<Nav.Link as={Link} to={"#"}><i className="bi bi-bag-check"/></Nav.Link>*/}
                             {/*<Nav.Link as={Link} to={"#"}><i className="bi bi-bag-plus"/></Nav.Link>*/}
                         </Nav>

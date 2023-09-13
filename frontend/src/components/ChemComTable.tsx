@@ -1,8 +1,7 @@
 import {Row, Table} from "react-bootstrap";
 import SubstanceImage from "./SubstanceImage";
-import "./ChemTableComp.css"
 
-const ChemTableComp = ({compounds}) => {
+const ChemComTable = ({compounds}) => {
     if (compounds.length === 0) return(<Row>No data available.</Row>)
     return(
         compounds.map(compound => (
@@ -118,4 +117,4 @@ const ChemTableComp = ({compounds}) => {
     // );
 }
 
-export default ChemTableComp
+export default ChemComTable

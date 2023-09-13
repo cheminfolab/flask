@@ -1,5 +1,13 @@
+export type Id = number
+
+export interface Unit {
+    id: Id
+    name: string
+    symbol: string
+}
+
 export interface Substance {
-    id: number
+    id: Id
     name: string
     synonyms: string[]
     label: string
@@ -21,7 +29,7 @@ export interface Component {
 }
 
 export interface Compound {
-    id: number
+    id: Id
     substances: Component[]
     name: string
     synonyms: string[]

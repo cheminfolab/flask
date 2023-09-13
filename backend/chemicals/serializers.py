@@ -15,7 +15,7 @@ class CurrencySerializer(ModelSerializer):
 class UnitSerializer(ModelSerializer):
     class Meta:
         model = Unit
-        exclude = ['id']
+        fields = '__all__'
 
 
 class ContainerSerializer(ModelSerializer):

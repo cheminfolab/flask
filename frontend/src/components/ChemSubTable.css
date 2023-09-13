@@ -1,0 +1,9 @@
+td {
+    text-align: left;
+    white-space: nowrap;
+    padding: 0rem 0.5rem;
+}
+
+.modal-90w {
+    min-width: 90%;
+}
