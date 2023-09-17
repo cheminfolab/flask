@@ -25,8 +25,13 @@ const SubstanceCard = ({units, substance, selected, setSelected, setDetail}) => 
                             />
                         </Form>
                     </Col>
-                    <Col xs={11} className="fs-5 text-lg-start text-wrap">
-                        <span onClick={() => setDetail(substance)}>{substance.name} {substance.label ? <span>({substance.label})</span> : null}</span>
+                    <Col
+                        xs={11}
+                        className="fs-5 text-lg-start text-wrap"
+                        onClick={() => setDetail(substance)}
+                        style={{cursor: 'pointer'}}
+                    >
+                        <span>{substance.name} {substance.label ? <span>({substance.label})</span> : null}</span>
                     </Col>
                 </Row>
             </Card.Header>
@@ -41,41 +46,40 @@ const SubstanceCard = ({units, substance, selected, setSelected, setDetail}) => 
                               />
                             : null}
                     </Col>
-                    <Col xs={4}>
+                    <Col xs={5}>
                         <Table borderless>
                             <tbody>
                                 <DataRow
                                     name={"CAS"}
                                     data={substance.cas}
+                                    edit={false}
                                 />
                                 <DataRow
                                     name={"formula"}
                                     data={substance.formula}
                                     text={<FormulaFormatter formula={substance.formula}/>}
+                                    edit={false}
                                 />
                                 <DataRow
                                     name={"molar mass"}
                                     data={substance.mol_weight}
-                                    text={`${substance.mol_weight} ${
-                                        units.find(u => u.id === substance.mol_weight_unit).symbol
-                                    }`}
+                                    units={units}
+                                    unit={substance.mol_weight_unit}
+                                    edit={false}
                                 />
                             </tbody>
                         </Table>
                     </Col>
-                    <Col xs={4}>
-                        Acronym(s), label<br/>
-                        Structures (3D)<br/>
-                        Databases<br/>
-                        (related structures)
-                    </Col>
-                    <Col xs={2} className="text-lg-start">
-                        <div>
-                            <b>synonyms:</b><br/>
-                            {substance.synonyms.length
-                                ? substance.synonyms.map((syn, index) => <span key={index}>{syn}<br/></span>)
-                                : <span>-</span>}
-                        </div>
+                    <Col xs={5}>
+                        <Table borderless>
+                            <tbody>
+                                <DataRow
+                                    name={"synonyms"}
+                                    data={substance.synonyms}
+                                    edit={false}
+                                />
+                            </tbody>
+                        </Table>
                     </Col>
                 </Row>
             </Card.Body>
