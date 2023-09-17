@@ -73,7 +73,7 @@ export default function AuthPage() {
     const validName = name => NAME_REGEX.test(name)
     const validPassword = pwd => PWD_REGEX.test(pwd)
 
-    // LOGIN
+    // todo: LOGIN
     // https://www.youtube.com/watch?v=86uXSFm3ND0
 
     // REGISTRATION
@@ -101,13 +101,9 @@ export default function AuthPage() {
   const handleSubmit = event => {
     event.preventDefault()
     const formErrors = validateForm()
-    if (Object.keys(formErrors).length > 0){
-      setErrors(formErrors)
-    } else if (authMode === 'login'){
-      loginUser(event)
-    } else {
-      registerUser(event)
-    }
+    if (Object.keys(formErrors).length > 0) setErrors(formErrors)
+    else if (authMode === 'login') loginUser(event)
+    else registerUser(event)
   }
 
 
