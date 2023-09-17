@@ -4,11 +4,8 @@ import SubstanceImage from "./SubstanceImage";
 import FormulaFormatter from "./FormulaFormatter";
 import "./ChemSubTable.css"
 import {Substance} from "../@types/chemicals";
-
-const DataRow = ({name, data, text=null}) => <tr>
-    <td className={"py-0"}><b>{name}:</b></td>
-    <td className={"py-0"} onClick={() => {navigator.clipboard.writeText(data)}}>{text? text : data}</td>
-</tr>
+import SubstanceDetail from "./ChemSubDetail";
+import DataRow from "./DataRow";
 
 const SubstanceCard = ({units, substance, selected, setSelected, setDetail}) => {
     const setSelection = () => {
