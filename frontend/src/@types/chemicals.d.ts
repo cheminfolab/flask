@@ -8,18 +8,21 @@ export interface Unit {
 
 export interface Substance {
     id: Id
+    structure: number[]
     name: string
     synonyms: string[]
     label: string
     formula: string
+    inchi: string
+    inchi_key: string
     cas: string
-    pubchem_sid: null
+    pubchem_sid: number
+    pubchem_cid: number
     mol_weight: number
     exact_mass: number
     image: string
     mol_weight_unit: number
     exact_mass_unit: number
-    structure: number[]
 }
 
 export interface Component {
