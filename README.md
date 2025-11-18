@@ -1,3 +1,17 @@
+# Overview
+
+- [Overview](#overview)
+- [Installation](#installation)
+    - [Setting up the `.env` file](#setting-up-the-env-file)
+  - [Installation using Docker Containers](#installation-using-docker-containers)
+  - [Native Installation](#native-installation)
+    - [Django](#django)
+    - [React](#react)
+- [Running the ELN instance](#running-the-eln-instance)
+  - [Docker](#docker)
+    - [Running a frontend development server](#running-a-frontend-development-server)
+    - [Stop running the instances](#stop-running-the-instances)
+
 # Installation
 
 ### Setting up the `.env` file
@@ -47,8 +61,8 @@ npm install
 ````
 
 # Running the ELN instance
+## Docker
 
-### Backend
 ````bash
 docker compose up -d --build
 ````
@@ -56,15 +70,15 @@ or with a respective .env file:
 ````bash
 docker compose --env-file .env up -d --build
 ````
-### Frontend
+### Running a frontend development server
 
 In `frontend/`, run:
 
 ````bash
-npm start
+npm run dev
 ````
 
-#### Stop running the Postgres Instance
+### Stop running the instances
 
 ````bash
 docker compose down
