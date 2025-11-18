@@ -15,3 +15,6 @@ docker-compose.yml
 
 # JetBrains
 .idea
+
+# nodejs
+**/node_modules
