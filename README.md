@@ -1,13 +1,6 @@
 # Installation
 
-Install prerequisites:
-- conda
-- npm (node.js)
-
-or 
-- docker
-
-Setting up the `.env` file:
+### Setting up the `.env` file
 
 ```python
 # .env
@@ -24,6 +17,17 @@ POSTGRES_PASSWORD='<admin_password>'
 #CORS_ALLOW_ALL_ORIGINS=True
 CORS_ALLOWED_ORIGINS='<allowed_origins>, ... '
 ```
+
+## Installation using Docker Containers
+
+Install prerequisites:
+- docker
+
+## Native Installation
+
+Install prerequisites:
+- conda
+- npm (node.js)
 
 ### Django
 
@@ -52,16 +56,16 @@ or with a respective .env file:
 ````bash
 docker compose --env-file .env up -d --build
 ````
-
-#### Stop running the Postgres Instance
-
-````bash
-docker compose down
-````
 ### Frontend
 
 In `frontend/`, run:
 
 ````bash
 npm start
+````
+
+#### Stop running the Postgres Instance
+
+````bash
+docker compose down
 ````
