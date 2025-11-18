@@ -19,7 +19,9 @@ const PrivateRoute = ({children}: {children: ReactNode}) => {
     return user ? children : <Navigate to="/login" />
 }
 
-const Routing = (): ReactNode => (
+type RoutingType = () => ReactNode
+
+const Routing: RoutingType = () => (
     <Routes>
         <Route path="/" element={<PrivateRoute><Home/></PrivateRoute>}>
             <Route path="settings" element={<SettingsDialog/>}/>
