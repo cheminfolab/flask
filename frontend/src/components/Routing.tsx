@@ -1,52 +1,41 @@
-import React, {useContext} from "react";
-import {Navigate, Route, Routes} from "react-router-dom";
+import { useContext, type ReactNode } from "react"
+import {
+    Navigate, 
+    Route, 
+    Routes
+} from "react-router"
+import Home from "@/pages/home"
+import Substances from "@/pages/substances"
+import Login from "@/pages/login"
+import Signup from "@/pages/signup"
+import { SettingsDialog } from "@/components/settings-dialog"
+import AuthContext from "@/contexts/AuthContext"
+import type { AuthContextType } from "../types/authorization"
 
-import HomePage from "../pages/HomePage";
-import AuthPage from "../pages/AuthPage";
-import {SubstancePage} from "../pages/ChemPage";
-import ProjectPage from "../pages/ProjectPage";
-import {ChemProvider} from "../contexts/ChemContext";
-import AuthContext from "../contexts/AuthContext";
-import {AuthContextType} from "../@types/authorization";
-import '../pages/AuthPage.css'
+// const SettingsRoute = () => (
+//     <Route path="settings" element={<SettingsDialog/>}>
+        
+//     </Route>
 
-const PrivateRoute: React.FC<any> = ({children}) => {
+// )
+
+// TODO: use layout routes
+
+const PrivateRoute = ({children}: {children: ReactNode}) => {
     const {user} = useContext(AuthContext) as AuthContextType
-    return user ? children : <Navigate to="/login"/>
-}
-const Routing: React.FC = () => {
-    return (
-        <div>
-            <Routes>
-                <Route
-                    path="/"
-                    element={<PrivateRoute><HomePage/></PrivateRoute>}
-                />
-                <Route
-                    path="/login"
-                    element={<AuthPage/>}
-                />
-                {/*<Route*/}
-                {/*    path="/chemicals"*/}
-                {/*    element={<PrivateRoute><ComPage/></PrivateRoute>}*/}
-                {/*/>*/}
-                <Route
-                    path="/substances"
-                    element={
-                        <PrivateRoute>
-                            <ChemProvider>
-                                <SubstancePage/>
-                            </ChemProvider>
-                        </PrivateRoute>
-                    }
-                />
-                <Route
-                    path="/projects"
-                    element={<PrivateRoute><ProjectPage/></PrivateRoute>}
-                />
-            </Routes>
-        </div>
-    );
+    return user ? children : <Navigate to="/login" />
 }
 
-export default Routing;
+const Routing = () => (
+    <Routes>
+        <Route path="/" element={<PrivateRoute><Home/></PrivateRoute>}>
+            <Route path="settings" element={<SettingsDialog/>}/>
+        </Route>
+        <Route path="login" element={<Login/>}/>
+        <Route path="signup" element={<Signup/>}/>
+        <Route path="substances" element={<PrivateRoute><Substances/></PrivateRoute>}>
+            <Route path="settings" element={<SettingsDialog/>}/>
+        </Route>
+    </Routes>
+)
+export default Routing

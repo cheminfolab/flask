@@ -1,5 +1,5 @@
-import {createContext, useState} from "react";
-import {ChemContextType, Selected, Substance, Unit} from "../@types/chemicals";
+import type { ChemContextType, Substance, Unit } from "@/types/chemicals"
+import { createContext, useState } from "react"
 
 const ChemContext = createContext<ChemContextType | {}>({})
 export default ChemContext
@@ -18,7 +18,6 @@ export const ChemProvider = ({children}: any) => {
 
     return(
         <ChemContext.Provider value={contextData}>
-            {/*{loading ? null : children}*/}
             {children}
         </ChemContext.Provider>
     )

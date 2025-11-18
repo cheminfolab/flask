@@ -1,82 +1,87 @@
-import {createContext, useEffect, useState} from "react";
-import {useNavigate} from 'react-router-dom'
-import jwt_decode from 'jwt-decode';
-import useAxios from "../hooks/useAxios";
-import {Tokens, User, LoginUserType, LogoutUserType, RegisterUserType, AuthContextType} from "../@types/authorization"
-
+import { 
+    createContext, 
+    useEffect, 
+    useState, 
+    type FormEventHandler, 
+    type ReactNode 
+} from "react"
+import type { 
+    AuthContextType, 
+    LogoutUserType, 
+    RegisterUserType, 
+    Tokens, 
+    User 
+} from "@/types/authorization"
+import { useNavigate } from "react-router"
+import { jwtDecode } from "jwt-decode"
+import useAxios from "@/hooks/useAxios"
 
 const AuthContext = createContext<AuthContextType | {}>({})
 export default AuthContext
 
-export const AuthProvider = ({children}: any) => {
+export const Authprovider = ({children}: {children: ReactNode}) => {
+    
+    const localTokens = localStorage.getItem("authTokens")
+    const [authTokens, setAuthTokens] = useState<Tokens|null>(null)
+    const [user, setUser] = useState<User|null>(null)
+    const [loading, setLoading] = useState<boolean>(true)
 
-    let localTokens = localStorage.getItem('authTokens')
-
-    let [authTokens, setAuthTokens] = useState<Tokens | null>(() => localTokens ? JSON.parse(localTokens) : null)
-    let [user, setUser] = useState<User | null>(() => localTokens ? jwt_decode(localTokens) : null)
-    let [loading, setLoading] = useState<boolean>(true)
-
+    const api = useAxios()
     const navigate = useNavigate()
-    let api = useAxios()
-
-    let loginUser:LoginUserType = (event) => {
-        event.preventDefault()
-        api
-            .axiosInstance // todo: use axiosInstance.create
-            .post('/token/', {
-                'email':event.target.email.value,
-                'password':event.target.password.value
-            })
-            .then(response => {
-                if (response.status === 200) {
-                    const data = response.data
-                    setAuthTokens(data)
-                    setUser(jwt_decode(data.access))
-                    localStorage.setItem('authTokens', JSON.stringify(data))
-                    navigate(-2) // redirects to element from PrivateRoute
-                } else {
-                    alert('Something went wrong.')
-                }
-            })
-            .catch(error => console.log(error))
-    }
-
-    let registerUser:RegisterUserType = event => {
-        event.preventDefault()
-        api
-            .axiosInstance
-            .post('/member/register/', {
-                first_name: event.target.first_name.value,
-                last_name: event.target.last_name.value,
-                email: event.target.email.value,
-                password:event.target.password.value,
-                working_group: event.target.working_group.value
-            })
-            .then(response => {
-                if (response.status === 200) {
-                    loginUser(event)
-                    // todo:
-                    //      notification / redirection to user page (prompt user for additional info: phone etc.)
-                    //      feedback page ("Thanks for registering", check emails etc...)
-                } else {
-                    alert('Something went wrong!')
-                }
-            })
-            .catch( (error) => console.log(error))
-    }
-
-    let logoutUser:LogoutUserType = () => {
-        setUser(null)
-        setAuthTokens(null)
-        localStorage.removeItem('authTokens')
-        navigate('/')
-    }
 
     useEffect(() => {
-        if (authTokens) setUser(jwt_decode(authTokens.access))
+        if (localTokens) {
+            setAuthTokens(JSON.parse(localTokens))
+            setUser(jwtDecode(localTokens))
+        }
+    },[])
+
+    useEffect(() => {
+        if (authTokens) setUser(jwtDecode(authTokens.access))
         setLoading(false)
     }, [authTokens, loading])
 
+    interface LoginEventTarget extends EventTarget {
+        email: {value: string},
+        password: {value: string}
+    }
+
+    const loginUser:FormEventHandler<HTMLFormElement> = (event) => {
+        event.preventDefault()
+        const target = event.target as LoginEventTarget
+        api
+            .create("/token/", {
+                "email": target.email.value,
+                "password": target.password.value
+            })
+            .then(data =>{
+                setAuthTokens(data)
+                setUser(jwtDecode(data.access))
+                localStorage.setItem('authTokens', JSON.stringify(data))
+                navigate(-2) // redirects to element from PrivateRoute
+            })
+    }
+
+    const registerUser:RegisterUserType = event => {
+        event.preventDefault()
+        api
+            .create("/member/register/", {
+                first_name: event.target.first_name.value,
+                last_name: event.target.last_name.value,
+                email: event.target.email.value,
+                password: event.target.password.value,
+                working_group: event.target.working_group.value
+            })
+            .then(() => loginUser(event)) // TODO: landing page for inactive users, captcha?
+    }
+
+    const logoutUser:LogoutUserType = () => {
+        setUser(null)
+        setAuthTokens(null)
+        localStorage.removeItem('authTokens')
+        navigate("/")
+    }
+    
     let contextData = {
         user,
         setUser,
