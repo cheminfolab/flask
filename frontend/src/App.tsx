@@ -1,7 +1,7 @@
 import { BrowserRouter } from 'react-router'
 import Routing from '@/components/routing'
+import { Authprovider } from '@/contexts/AuthContext'
 import './App.css'
-import { Authprovider } from './contexts/AuthContext'
 
 const App = () => (
     <BrowserRouter>

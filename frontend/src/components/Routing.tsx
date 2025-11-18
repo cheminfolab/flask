@@ -10,14 +10,7 @@ import Login from "@/pages/login"
 import Signup from "@/pages/signup"
 import { SettingsDialog } from "@/components/settings-dialog"
 import AuthContext from "@/contexts/AuthContext"
-import type { AuthContextType } from "../types/authorization"
-
-// const SettingsRoute = () => (
-//     <Route path="settings" element={<SettingsDialog/>}>
-        
-//     </Route>
-
-// )
+import type { AuthContextType } from "@/types/authorization"
 
 // TODO: use layout routes
 
