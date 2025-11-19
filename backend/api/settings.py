@@ -14,7 +14,7 @@ from pathlib import Path
 from decouple import config, Csv  # Config, RepositoryEnv, Csv  #
 from datetime import timedelta
 
-# config = Config(RepositoryEnv(Path(Path(__file__).resolve().parent.parent.parent, ".backend.env")))
+# config = Config(RepositoryEnv(Path(Path(__file__).resolve().parent.parent.parent, ".env")))
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -180,11 +180,12 @@ USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.0/howto/static-files/
+STATIC_ROOT = Path(BASE_DIR, 'static')
 STATIC_URL = 'static/'
 
 # Media files
-MEDIA_ROOT = Path(BASE_DIR, 'chemicals', 'static', 'chemicals', 'images')
-MEDIA_URL = 'images/'
+MEDIA_ROOT = Path(BASE_DIR, 'media')
+MEDIA_URL = 'media/'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.0/ref/settings/#default-auto-field

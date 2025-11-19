@@ -1,23 +1,13 @@
-import {BrowserRouter as Router} from "react-router-dom";
-import {AuthProvider} from "./context/AuthContext";
-import NavbarComp from "./components/NavbarComp";
-import RoutesComp from "./components/RoutesComp";
+import { BrowserRouter } from 'react-router'
+import Routing from '@/components/routing'
+import { Authprovider } from '@/contexts/AuthContext'
+import './App.css'
 
-import './App.css';
-import 'bootstrap/dist/css/bootstrap.min.css'
-import "bootstrap-icons/font/bootstrap-icons.css"
-
-function App() {
-  return (
-    <div className="App">
-      <Router>
-        <AuthProvider>
-            <NavbarComp/>
-            <RoutesComp/>
-        </AuthProvider>
-      </Router>
-    </div>
-  );
-}
-
-export default App;
+const App = () => (
+    <BrowserRouter>
+        <Authprovider>
+            <Routing />
+        </Authprovider>
+    </BrowserRouter>
+)
+export default App

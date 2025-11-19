@@ -1,4 +1,4 @@
-const FormulaFormatter = ({formula}) => {
+const FormulaFormatter = ({formula}: {formula: string}) => {
     return(
         <span>{
             formula

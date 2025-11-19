@@ -1,18 +1,37 @@
-version: '3.9'
-
 services:
 
   database:
     container_name: eln_db
     # restart: unless-stopped
     image: postgres:15.1
-    env_file: .backend.env
+    env_file: .env
+    environment:
+      - POSTGRES_HOST=localhost
+      - POSTGRES_PORT=5432
     volumes:
       - eln_db:/var/lib/postgresql/data/
     ports:
-      - "${POSTGRES_PORT}:5432"
+      - "5432:5432"
     networks:
       - eln
+
+  frontend:
+    container_name: eln_frontend
+    # restart: unless-stopped
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+#    ports:
+#      - "3000:3000"
+#    depends_on:
+#      - backend
+    volumes:
+      - build:/app/dist
+      # - ./frontend:/app
+#    stdin_open: true
+#    tty: true
+#    networks:
+#      - eln
 
   backend:
     container_name: eln_backend
@@ -20,22 +39,25 @@ services:
     build:
       context: ./backend
       dockerfile: Dockerfile
-    env_file: .backend.env
+    env_file: .env
     environment:
       - POSTGRES_HOST=database
+      - POSTGRES_PORT=5432
     ports:
       - "8000:8000"
     depends_on:
       - database
     volumes:
       - ./backend:/app
+      - static:/app/static
+      - media:/app/media
     networks:
       - eln
 
   nginx:
     container_name: nginx
     image: nginx:1.23-alpine
-    restart: unless-stopped
+    # restart: unless-stopped
     ports:
       - "80:80"
       - "443:443"
@@ -43,9 +65,13 @@ services:
       - ./nginx/conf.d:/etc/nginx/conf.d
       # - ./certbot/conf:/etc/nginx/ssl
       # - ./certbot/data:/usr/share/nginx/html/letsencrypt
+      - build:/var/www/frontend
+      - static:/static
+      - media:/media
     depends_on:
       - database
       - backend
+      - frontend
     networks:
       - eln
 
@@ -63,6 +89,9 @@ services:
 
 volumes:
   eln_db:
+  build:
+  static:
+  media:
 
 networks:
   eln:
