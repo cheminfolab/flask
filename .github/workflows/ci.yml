@@ -33,7 +33,7 @@ jobs:
             echo CORS_ALLOW_ALL_ORIGINS=True >> backend/.env
 
         - name: build docker container
-          run: docker compose up -d --build
+          run: docker compose --env-file .env up -d --build
         
         - name: Django unit tests
           run: docker exec -i eln_backend python3 manage.py test
