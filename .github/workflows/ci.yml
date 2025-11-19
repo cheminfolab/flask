@@ -34,10 +34,7 @@ jobs:
 
         - name: build docker container
           run: docker compose up -d --build
-
-        - name: list docker containers
-          run: docker ps
         
-        # - name: Django unit tests
-        #   run: docker compose exec eln_backend -it python3 backend/manage.py test
+        - name: Django unit tests
+          run: docker exec -it eln_backend python3 manage.py test
 
