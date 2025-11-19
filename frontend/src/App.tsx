@@ -1,5 +1,5 @@
 import { BrowserRouter } from 'react-router'
-// ts-ignore
+// @ts-ignore
 import Routing from '@/components/routing'
 import { Authprovider } from '@/contexts/AuthContext'
 import './App.css'
