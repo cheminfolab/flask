@@ -65,7 +65,7 @@ export const Authprovider = ({children}: {children: ReactNode}) => {
     const registerUser:RegisterUserType = event => {
         event.preventDefault()
         api
-            .create("/member/register/", {
+            .create("/members/register/", {
                 first_name: event.target.first_name.value,
                 last_name: event.target.last_name.value,
                 email: event.target.email.value,
