@@ -11,22 +11,22 @@ from locations.views import BuildingViewSet
 from chemicals.views import UnitViewSet, SubstanceViewSet, ComponentViewSet, CompoundViewSet, ContainerViewSet
 
 router = routers.SimpleRouter()
-router.register(r'member', MemberViewSet, basename='members')
-router.register(r'group', WorkingGroupViewSet, basename='groups')
-router.register(r'building', BuildingViewSet, basename='buildings')
-router.register(r'unit', UnitViewSet, basename='units')
-router.register(r'substance', SubstanceViewSet, basename='substances')
-router.register(r'component', ComponentViewSet, basename='components')
-router.register(r'compound', CompoundViewSet, basename='compounds')
-router.register(r'container', ContainerViewSet, basename='containers')
+router.register("members", MemberViewSet, basename="members")
+router.register("group", WorkingGroupViewSet, basename="groups")
+router.register("building", BuildingViewSet, basename="buildings")
+router.register("unit", UnitViewSet, basename="units")
+router.register("substance", SubstanceViewSet, basename="substances")
+router.register("component", ComponentViewSet, basename="components")
+router.register("compound", CompoundViewSet, basename="compounds")
+router.register("container", ContainerViewSet, basename="containers")
 
 urlpatterns = [
     # ADMIN
-    path('admin/', admin.site.urls),
+    path("admin/", admin.site.urls),
     # API
-    path('api/token/', CustomTokenObtainPairView.as_view(), name='token_obtain_pair'),
-    path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
-    path('api/', include(router.urls))
+    path("api/token/", CustomTokenObtainPairView.as_view(), name="token_obtain_pair"),
+    path("api/token/refresh/", TokenRefreshView.as_view(), name="token_refresh"),
+    path("api/", include(router.urls))
 ]
 
 if settings.DEBUG:
