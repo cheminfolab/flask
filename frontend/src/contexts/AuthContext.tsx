@@ -69,8 +69,7 @@ export const Authprovider = ({children}: {children: ReactNode}) => {
                 first_name: event.target.first_name.value,
                 last_name: event.target.last_name.value,
                 email: event.target.email.value,
-                password: event.target.password.value,
-                working_group: event.target.working_group.value
+                password: event.target.password.value
             })
             .then(() => loginUser(event)) // TODO: landing page for inactive users, captcha?
     }
