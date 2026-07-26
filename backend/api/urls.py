@@ -6,12 +6,13 @@ from django.conf.urls.static import static
 from rest_framework import routers
 from rest_framework_simplejwt.views import TokenRefreshView
 
-from accounts.views import CustomTokenObtainPairView, MemberViewSet, WorkingGroupViewSet
+from accounts.views import CustomTokenObtainPairView, MemberViewSet, RoleViewSet, WorkingGroupViewSet
 from locations.views import BuildingViewSet
 from chemicals.views import UnitViewSet, SubstanceViewSet, ComponentViewSet, CompoundViewSet, ContainerViewSet
 
 router = routers.SimpleRouter()
 router.register("members", MemberViewSet, basename="members")
+router.register("roles", RoleViewSet, basename="roles")
 router.register("group", WorkingGroupViewSet, basename="groups")
 router.register("building", BuildingViewSet, basename="buildings")
 router.register("unit", UnitViewSet, basename="units")
