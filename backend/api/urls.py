@@ -13,13 +13,13 @@ from chemicals.views import UnitViewSet, SubstanceViewSet, ComponentViewSet, Com
 router = routers.SimpleRouter()
 router.register("members", MemberViewSet, basename="members")
 router.register("roles", RoleViewSet, basename="roles")
-router.register("group", WorkingGroupViewSet, basename="groups")
-router.register("building", BuildingViewSet, basename="buildings")
-router.register("unit", UnitViewSet, basename="units")
-router.register("substance", SubstanceViewSet, basename="substances")
-router.register("component", ComponentViewSet, basename="components")
-router.register("compound", CompoundViewSet, basename="compounds")
-router.register("container", ContainerViewSet, basename="containers")
+router.register("groups", WorkingGroupViewSet, basename="groups")
+router.register("buildings", BuildingViewSet, basename="buildings")
+router.register("units", UnitViewSet, basename="units")
+router.register("substances", SubstanceViewSet, basename="substances")
+router.register("components", ComponentViewSet, basename="components")
+router.register("compounds", CompoundViewSet, basename="compounds")
+router.register("containers", ContainerViewSet, basename="containers")
 
 urlpatterns = [
     # ADMIN
