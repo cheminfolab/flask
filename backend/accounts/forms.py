@@ -13,7 +13,7 @@ class MemberCreationForm(forms.ModelForm):
     password1 = forms.CharField(label='Password', widget=forms.PasswordInput)
     password2 = forms.CharField(label='Password confirmation', widget=forms.PasswordInput)
 
-    role = forms.ModelMultipleChoiceField(
+    roles = forms.ModelMultipleChoiceField(
         queryset=Role.objects.all(),
         required=False,
         widget=FilteredSelectMultiple(
@@ -66,7 +66,7 @@ class MemberChangeForm(forms.ModelForm):
     """
     password = ReadOnlyPasswordHashField()
 
-    role = forms.ModelMultipleChoiceField(
+    roles = forms.ModelMultipleChoiceField(
         queryset=Role.objects.all(),
         required=False,
         widget=FilteredSelectMultiple(

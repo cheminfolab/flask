@@ -79,7 +79,7 @@ class Member(AbstractBaseUser, PermissionsMixin):
     # permissions
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
-    role = models.ManyToManyField(Role, blank=True, related_name='permitted_members')
+    roles = models.ManyToManyField(Role, blank=True, related_name='permitted_members')
 
     # important dates
     date_joined = models.DateTimeField(default=timezone.now, verbose_name='date joined')

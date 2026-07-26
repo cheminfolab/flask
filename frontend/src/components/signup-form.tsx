@@ -1,6 +1,6 @@
 import {
     useContext,
-    useEffect, 
+    // useEffect, 
     useState, 
     type ComponentProps, 
     type FormEventHandler 
@@ -22,7 +22,7 @@ import {
   FieldLabel,
 } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
-import type { Group } from "@/types/accounts"
+// import type { Group } from "@/types/accounts"
 import AuthContext from "@/contexts/AuthContext"
 import type { 
     AuthContextType, 
@@ -30,25 +30,23 @@ import type {
     FormValidator, 
     RegistrationForm 
 } from "@/types/authorization"
-import useAxios from "@/hooks/useAxios"
-import { 
-    Select, 
-    SelectContent, 
-    SelectGroup, 
-    SelectItem, 
-    SelectLabel, 
-    SelectTrigger, 
-    SelectValue 
-} from "./ui/select"
+// import useAxios from "@/hooks/useAxios"
+// import { 
+//     Select, 
+//     SelectContent, 
+//     SelectGroup, 
+//     SelectItem, 
+//     SelectLabel, 
+//     SelectTrigger, 
+//     SelectValue 
+// } from "./ui/select"
 
 const SignupForm = ({ ...props }: ComponentProps<typeof Card>) => {
 
     const {registerUser} = useContext(AuthContext) as AuthContextType
-    const [groups, setGroups] = useState<Group[]>([])
     const emptyForm = {
         first_name: undefined,
         last_name: undefined,
-        working_group: undefined,
         status: undefined,
         email: undefined,
         password: undefined,
@@ -57,15 +55,16 @@ const SignupForm = ({ ...props }: ComponentProps<typeof Card>) => {
     const [errors, setErrors] = useState<Errors>(emptyForm)
     const [form, setForm] = useState<RegistrationForm>(emptyForm)
     const [submitted, setSubmitted] = useState<boolean>(false)
+    // const [status, setStatus] = useState()
 
-    const api = useAxios()
+    // const api = useAxios()
 
-    useEffect(() => {
-        api
-            .getAll("/group/")
-            .then(groups => setGroups(groups))
-            .catch() // TODO: alert!
-    }, [])
+    // useEffect(() => {
+    //     api
+    //         .getAll("/group/")
+    //         .then(groups => setGroups(groups))
+    //         .catch() // TODO: alert!
+    // }, [])
 
     const setField = (field: keyof RegistrationForm, value: number | string) => {
         setForm({...form, [field]: value})
@@ -90,10 +89,8 @@ const SignupForm = ({ ...props }: ComponentProps<typeof Card>) => {
         else if (!validName(form.last_name)) {
             newErrors.last_name = "Please enter a valid name. It must have 2 to 24 characters and begin with a letter. Special characters are not allowed."
         }
-        // working group
-        if (!form.working_group) newErrors.working_group = "Please select a working group."
-        // role
-        if (!form.status) newErrors.status = "Please select your status."
+        // member status
+        // if (!form.status) newErrors.status = "Please select your status."
         // email
         if (!form.email || form.email === "") newErrors.email = "Please enter an email address."
         // password
@@ -112,10 +109,14 @@ const SignupForm = ({ ...props }: ComponentProps<typeof Card>) => {
     const handleSubmit: FormEventHandler<HTMLFormElement> = event => {
         event.preventDefault()
         const formErrors = validateForm()
-        if (Object.keys(formErrors).length > 0) {
+        if (Object.values(formErrors).filter(value => value !== undefined).length > 0) {
+            console.log("errors not empty:", formErrors)
             setErrors(formErrors)
         }
-        else registerUser(event)
+        else {
+            console.log("registered user")
+            registerUser(event)
+        }
         setSubmitted(true)
         // TODO: handle already registered user
     }
@@ -136,7 +137,10 @@ const SignupForm = ({ ...props }: ComponentProps<typeof Card>) => {
                 </CardDescription>
             </CardHeader>
             <CardContent>
-                <form onSubmit={handleSubmit}>
+                <form onSubmit={event => {
+                    console.log("onsubmit")
+                    handleSubmit(event)
+                }}>
                     <FieldGroup>
                         <div className="grid grid-cols-2 gap-4">
                             <Field data-invalid={!!errors.first_name}>
@@ -164,58 +168,30 @@ const SignupForm = ({ ...props }: ComponentProps<typeof Card>) => {
                                 <FieldFeedback name="last_name" />
                             </Field>
                         </div>
-                        <div className="grid grid-cols-3 gap-4">
-                            <Field 
-                                data-invalid={!!errors.working_group}
-                                className="col-span-2"
+                        {/* <Field data-invalid={!!errors.status} >
+                            <FieldLabel htmlFor="status">Status</FieldLabel>
+                            <Select
+                                aria-invalid={!!errors.status}
                             >
-                                <FieldLabel htmlFor="working_group">Group</FieldLabel>
-                                <Select
-                                    aria-invalid={!!errors.working_group}
-                                >
-                                    <SelectTrigger>
-                                        <SelectValue placeholder="Select a working group" />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        <SelectGroup>
-                                            <SelectLabel>Ruhr-Universität Bochum</SelectLabel>
-                                            {groups.map(group => (
-                                                <SelectItem
-                                                    key={group.id}
-                                                    value={group.id.toString()}
-                                                >
-                                                    {group.name}
-                                                </SelectItem>
-                                            ))}
-                                        </SelectGroup>
-                                    </SelectContent>
-                                </Select>
-                                {/* <Input 
-                                    id="working_group" 
-                                    type="text" 
-                                    placeholder="John"
-                                    onChange={event => setField("working_group", event.target.value)}
-                                    aria-invalid={!!errors.working_group}
-                                    // required
-                                /> */}
-                                <FieldFeedback name="working_group" />
-                            </Field>
-                            <Field
-                                data-invalid={!!errors.status}
-                                className="col-span-1"
-                            >
-                                <FieldLabel htmlFor="status">Role</FieldLabel>
-                                <Input 
-                                    id="status" 
-                                    type="text"
-                                    placeholder="PhD"
-                                    onChange={event => setField("status", event.target.value)}
-                                    aria-invalid={!!errors.status}
-                                    // required  
-                                />
-                                <FieldFeedback name="status" />
-                            </Field>
-                        </div>
+                                <SelectTrigger>
+                                    <SelectValue placeholder="Select a status" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    <SelectGroup>
+                                        <SelectLabel>Ruhr-Universität Bochum</SelectLabel>
+                                        {roles.map(roles => (
+                                            <SelectItem
+                                                key={role.id}
+                                                value={role.id.toString()}
+                                            >
+                                                {role.name}
+                                            </SelectItem>
+                                        ))}
+                                    </SelectGroup>
+                                </SelectContent>
+                            </Select>
+                            <FieldFeedback name="status" />
+                        </Field> */}
                         <Field>
                             <FieldLabel htmlFor="email">Email</FieldLabel>
                             <Input

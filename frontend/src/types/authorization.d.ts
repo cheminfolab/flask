@@ -30,7 +30,6 @@ export interface AuthContextType {
 export interface RegistrationForm {
     first_name: undefined | string
     last_name: undefined | string
-    working_group: undefined | number
     status: undefined | number
     email: undefined | string
     password: undefined | string
@@ -40,7 +39,6 @@ export interface RegistrationForm {
 export interface Errors {
     first_name?: string
     last_name?: string
-    working_group?: string
     status?: string
     email?: string
     password?: string

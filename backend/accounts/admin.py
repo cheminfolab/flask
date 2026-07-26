@@ -46,7 +46,7 @@ class MemberAdmin(UserAdmin):
                 'is_active',
                 'is_staff',
                 'is_superuser',
-                'role',
+                'roles',
                 'user_permissions',
             )
         }),
@@ -70,7 +70,7 @@ class MemberAdmin(UserAdmin):
                 'is_active',
                 'is_staff',
                 'is_superuser',
-                'role',
+                'roles',
                 'user_permissions',
             ),
         }),
@@ -78,7 +78,7 @@ class MemberAdmin(UserAdmin):
 
 
 admin.site.register(WorkingGroup, WorkingGroupAdmin)
-# unregister Group model to use custom Role (proxy) model:
+# unregister Group model to use custom Roles (proxy) model:
 admin.site.unregister(Group)
 admin.site.register(Role)  # , GroupAdmin)
 admin.site.register(Member, MemberAdmin)

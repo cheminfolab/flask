@@ -19,6 +19,11 @@ class WorkingGroupViewSet(CustomViewSet):
     serializer_class = WorkingGroupSerializer
 
 
+class RoleViewSet(CustomViewSet):
+    model = Role
+    serializer_class = RoleSerializer
+
+
 class MemberViewSet(CustomViewSet):
     model = Member
     serializer_class = MemberSerializer
