@@ -70,7 +70,7 @@ class Member(AbstractBaseUser, PermissionsMixin):
     last_name = models.CharField(max_length=50)
 
     # academic title (legal/ordering)
-    working_group = models.ForeignKey(WorkingGroup, null=True, on_delete=models.PROTECT, related_name='members')
+    working_group = models.ForeignKey(WorkingGroup, blank=True, null=True, on_delete=models.PROTECT, related_name='members')
     phones = models.ManyToManyField(PhoneNumber, blank=True, related_name='contacts')
     rooms = models.ManyToManyField(Room, blank=True, related_name='team')
 
