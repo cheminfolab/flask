@@ -1,42 +1,12 @@
+# Native development environment:  conda env create -f environment.yml
+# Python packages come from backend/requirements.txt (the same pins as the Docker image and CI).
 name: flask
 channels:
   - conda-forge
-  - defaults
 dependencies:
-  - asgiref=3.8.1
-  - bzip2=1.0.8
-  - ca-certificates
-  - django=5.0.4
-  - djangorestframework=3.15.1
-  - icu=73.2
-  - krb5=1.21.2
-  - libcxx=16.0.6
-  - libedit=3.1.20191231
-  - libexpat=2.6.2
-  - libffi=3.4.2
-  - libiconv=1.17
-  - libpq=16.2
-  - libsqlite=3.45.2
-  - libxml2=2.12.6
-  - libzlib=1.2.13
-  - ncurses=6.4.20240210
-  - openssl=3.2.1
-  - pip=24.0
-  - postgresql=16.2
-  - python=3.12.2
-  - readline=8.2
-  - setuptools=69.2.0
-  - sqlparse=0.4.4
-  - tk=8.6.13
-  - typing_extensions=4.11.0
-  - tzcode=2024a
-  - tzdata=2024a
-  - wheel=0.43.0
-  - xz=5.2.6
+  - python=3.12
+  - postgresql=15        # optional: local database server for development and tests
+  - nodejs=22            # frontend tooling (LTS)
+  - pip
   - pip:
-      - django-cors-headers==4.3.1
-      - djangorestframework-simplejwt==5.3.1
-      - pillow==10.3.0
-      - psycopg2==2.9.9
-      - pyjwt==2.8.0
-      - python-decouple==3.8
+      - -r backend/requirements.txt

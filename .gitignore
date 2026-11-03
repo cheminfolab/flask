@@ -69,6 +69,7 @@ db.sqlite3
 db.sqlite3-journal
 backend/database
 backend/media
+backend/private_media
 **/static
 tmp/
 

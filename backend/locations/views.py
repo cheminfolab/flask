@@ -1,20 +1,15 @@
-from api.views import CustomViewSet
-from .models import *
-from .serializers import *
+from api.views import BaseModelViewSet
+
+from .models import Building, Storage
+from .serializers import BuildingSerializer, StorageSerializer
 
 
-class BuildingViewSet(CustomViewSet):
-
-    model = Building
+class BuildingViewSet(BaseModelViewSet):
+    # Permissions: inherited ReadOnlyOrAdmin (authenticated read, staff write).
+    queryset = Building.objects.all()
     serializer_class = BuildingSerializer
 
-    def get_permissions(self):
-        """
-        Instantiates and returns the list of permissions that this view requires.
-        """
-        if self.action == 'list':
-            permission_classes = []
-        else:
-            permission_classes = []  # IsAdminUser
-        return [permission() for permission in permission_classes]
 
+class StorageViewSet(BaseModelViewSet):
+    queryset = Storage.objects.select_related('room__building')
+    serializer_class = StorageSerializer

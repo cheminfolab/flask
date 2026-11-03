@@ -4,10 +4,10 @@ from django.db import models
 
 class Building(models.Model):
     name = models.CharField(unique=True, max_length=50)
-    address = models.CharField(max_length=100)
+    street = models.CharField(max_length=100)
     city = models.CharField(max_length=60)
     state = models.CharField(blank=True, max_length=60)
-    zipcode = models.CharField(max_length=5)
+    zipcode = models.CharField(max_length=10)
     country = models.CharField(max_length=50, default='Germany')
 
     def __str__(self):
@@ -15,14 +15,19 @@ class Building(models.Model):
 
 
 class Room(models.Model):
-    number = models.IntegerField(primary_key=True)
+    # not the primary key: room numbers repeat across buildings
+    number = models.IntegerField()
     floor = models.IntegerField(blank=True, null=True)
-    building = models.ForeignKey(Building, blank=True, null=True, on_delete=models.CASCADE, related_name='rooms')
+    # PROTECT: deleting a building must not silently delete its rooms
+    building = models.ForeignKey(Building, blank=True, null=True, on_delete=models.PROTECT, related_name='rooms')
     type = models.TextField(
         blank=True,
         choices=[
-            ('office', 'office'), ('lab', 'laboratory'), ('lec', 'lecture hall'), ('sem', 'seminar room'),
-            ('none', 'other')
+            ('office', 'office'),
+            ('lab', 'laboratory'),
+            ('lec', 'lecture hall'),
+            ('sem', 'seminar room'),
+            ('none', 'other'),
         ]
     )
 
@@ -32,7 +37,10 @@ class Room(models.Model):
         return f"R{self.number}"
 
     class Meta:
-        unique_together = (('number', 'floor', 'building'),)
+        constraints = [
+            # NULLS NOT DISTINCT (PostgreSQL 15+): one room 101 per building, also among rooms without a building
+            models.UniqueConstraint(fields=['building', 'number'], name='room_unique_number_per_building', nulls_distinct=False),
+        ]
 
 
 class PhoneNumber(models.Model):
@@ -49,11 +57,15 @@ class Storage(models.Model):
     compartment = models.CharField(blank=True, max_length=50)
 
     def __str__(self):
+        prefix = f"R{self.room.number}: " if self.room else ""
         if self.compartment:
-            return f"R{self.room.number}: {self.name} ({self.compartment})"
-        return f"R{self.room.number}: {self.name}"
+            return f"{prefix}{self.name} ({self.compartment})"
+        return f"{prefix}{self.name}"
 
     class Meta:
-        unique_together = (('room', 'name', 'compartment'),)
+        constraints = [
+            # NULLS NOT DISTINCT: a storage without a room must not be duplicated either
+            models.UniqueConstraint(fields=['room', 'name', 'compartment'], name='storage_unique_per_room', nulls_distinct=False),
+        ]
 
     # todo: warnings for congregated storing of multiple compounds(containers)

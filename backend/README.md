@@ -1,97 +1,69 @@
-## Setting up the PostgreSQL Database
+# Backend (Django)
 
-### Native
+Overview, configuration and the notebook rules are in the [main README](../README.md).
+This file covers the local database, administration tasks and backups.
 
-In the terminal (backend/), initialize a postgres database by:
-````bash
-initdb -D database
-````
+## Local PostgreSQL server (native development)
 
-start the server modus/instance of postgres
+With the conda environment active, in `backend/`:
 
-````bash
-pg_ctl -D database -l logfile start
-
-#waiting for server to start.... done
-#server started
-````
-
-create a non-superuser:
-
-````bash
-createuser --encrypted --pwprompt admin
-# asks for name and password
-````
-
-using this superuser, create inner database inside the base database
-
-````bash
+```bash
+initdb -D database                       # once; `database/` is git-ignored
+pg_ctl -D database -l logfile start      # start the server
+createuser --encrypted --pwprompt admin  # database user (asks for a password)
 createdb --owner=admin flask_database
-````
-
-### Populating the Database
-
-Migrations to the database need to be applied by:
-```python
-python3 manage.py makemigrations
-python3 manage.py migrate
-```
-If you want to add entries to the database yourself, you need to create a superuser first:
-```python
-python3 manage.py createsuperuser
-```
-Otherwise, you can populate the database with example data (including superuser (email:'admin@admin.com', password:'admin'))
-```python
-python3 manage.py loaddata init.json
 ```
 
-### Backing up the Database
+Put the same user, password and database name into `.env`. Stop the server with
+`pg_ctl -D database stop`.
 
-#### Via Django
+## Schema and first user
 
-````bash
-python3 manage.py dumpdata --indent=2 > init.json
-````
+```bash
+python manage.py makemigrations   # migrations are generated, not committed (see main README)
+python manage.py migrate
+python manage.py createsuperuser
+```
 
-#### Using pg_dump
+In Docker the container runs `ensure_superuser` on start: it creates a superuser from
+`DJANGO_SUPERUSER_EMAIL` / `DJANGO_SUPERUSER_PASSWORD` only if no superuser exists, and never
+changes existing accounts. There is no default admin account.
 
-See: [pg_dump manual](https://www.postgresql.org/docs/12/app-pgdump.html)
+Self-registered accounts are inactive until an admin activates them (`/admin/` → *Members* → *Is active*).
 
-````bash
-pg_dump -h [host] -U [option] -W -F [file_type] [database_name] > [backup_name]
-````
+## Useful commands
 
-for example:
+| Command | Purpose |
+|---|---|
+| `python manage.py test --parallel auto` | run the test suite (needs PostgreSQL) |
+| `python manage.py check --deploy` | production settings check |
+| `python manage.py spectacular --file ../openapi/schema.yml --validate --fail-on-warn` | regenerate the API schema after API changes (commit it) |
+| `python manage.py ensure_superuser` | create the first superuser from the environment |
 
-````bash
-pg_dump -h localhost -U admin -W -F t userinterface_db > ./init.tar
-````
+## Backups
 
+A complete backup has two parts: the **database** and the **files** (substance images in `media/`,
+experiment attachments in `private_media/`). Attachments are referenced by the database and verified
+by their SHA-256 checksum, so back up both together.
 
-### Stop running the Postgres Instance
+Database (consistent snapshot while the application is running):
 
-monitor whether a postgres instance/server is running or not
-````bash
-ps aux | grep postgres
-````
-if no instance is running, you will see only one line as the answer to your query - which is from your grep search,
-ending with: grep --color=auto postgres
-(ignore this line)
+```bash
+docker compose exec database pg_dump -U "$POSTGRES_USER" -Fc "$POSTGRES_DB" > flask_$(date +%F).dump
+```
 
-e.g. the output of `ps aux | grep postgres` was:
-````bash
-# username  2673  0.0  0.0  14760   512 pts/11   S+   07:34   0:00 grep --color=auto postgres
-# username 30550  0.0  0.0 179144 18996 ?        S    Jun13   0:01 /home/username/miniconda3/envs/django/bin/postgres -D mylocal_db
-# username 30552  0.0  0.0 179276  4756 ?        Ss   Jun13   0:00 postgres: checkpointer process   
-# username 30553  0.0  0.0 179144  5216 ?        Ss   Jun13   0:01 postgres: writer process   
-# username 30554  0.0  0.0 179144  8464 ?        Ss   Jun13   0:01 postgres: wal writer process   
-# username 30555  0.0  0.0 179700  5792 ?        Ss   Jun13   0:01 postgres: autovacuum launcher process   
-# username 30556  0.0  0.0  34228  3416 ?        Ss   Jun13   0:03 postgres: stats collector process  
-````
+Files (Docker volumes):
 
-if an instance of postgresql server is running, then several processes are running
-you can kill the server by the first number of the leading line!
+```bash
+docker run --rm -v flask_media:/media -v flask_private_media:/private_media -v "$PWD":/backup alpine \
+  tar czf /backup/flask_files_$(date +%F).tar.gz /media /private_media
+```
 
-````bash
-kill <number>
-````
+(Volume names are prefixed with the Compose project name, by default the directory name; check
+with `docker volume ls`.)
+
+Restore into an empty database with `pg_restore -U <user> -d <db> --clean --if-exists <file>.dump`
+and unpack the file archive into the volumes. Test a restore before relying on a backup.
+
+`manage.py dumpdata` is not a backup: it is not a consistent snapshot of a running system and
+does not include files.
