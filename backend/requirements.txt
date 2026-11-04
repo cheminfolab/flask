@@ -1,4 +1,5 @@
-# Pinned runtime dependencies (Docker image, CI and the conda environment all install this file).
+# Pinned Python dependencies: the Docker image, CI and local environments all install this file
+# (`pip install -r backend/requirements.txt`).
 asgiref==3.13.0
 certifi==2026.10.23
 django==5.2.19                      # LTS, supported until April 2028
@@ -9,7 +10,7 @@ djangorestframework-simplejwt==5.5.1
 drf-spectacular==0.30.0
 gunicorn==26.2.0
 pillow==13.0.0
-psycopg2==2.9.13
+psycopg[binary]==3.3.8              # PostgreSQL driver; prebuilt wheels, no compiler or pg_config needed
 pyjwt==2.15.1
 python-decouple==3.8
 sqlparse==0.6.1

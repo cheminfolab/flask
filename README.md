@@ -92,11 +92,19 @@ The database (5432) and backend (8000) ports are published on `127.0.0.1` only; 
 
 ## Native development
 
-Prerequisites: conda (or Python 3.12 + Node 22), a PostgreSQL 15+ server.
+Prerequisites: Python 3.12, Node 22, and a PostgreSQL 15+ server (the Compose `database` service is enough).
+
+Python packages come only from `backend/requirements.txt`, the same pins as the Docker image and CI.
+With conda, use it for the interpreter (and optionally PostgreSQL/Node), and pip for every Python package:
 
 ```bash
-conda env create -f environment.yml     # Python deps from backend/requirements.txt, Node 22, PostgreSQL 15
+conda create -n flask python=3.12                     # or: python3.12 -m venv .venv && source .venv/bin/activate
 conda activate flask
+pip install -r backend/requirements.txt
+# optional, instead of Docker for the database / a system Node:
+# conda install -c conda-forge postgresql=15 nodejs=22
+
+docker compose up -d database            # PostgreSQL on 127.0.0.1:5432, credentials from .env
 
 cd backend
 python manage.py makemigrations          # see "Database migrations"
@@ -109,7 +117,10 @@ npm ci
 npm run dev                              # http://localhost:3000, proxies /api to :8000
 ```
 
-See [backend/README.md](backend/README.md) for setting up a local PostgreSQL server and backups,
+Do not install Python packages with `conda install` into this environment: conda and pip would manage
+the same packages. After changing `requirements.txt`, run the `pip install` line again.
+
+See [backend/README.md](backend/README.md) for a database without Docker and for backups,
 and [frontend/README.md](frontend/README.md) for frontend scripts.
 
 ## Accounts

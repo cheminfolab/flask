@@ -186,7 +186,7 @@ WSGI_APPLICATION = 'api.wsgi.application'
 # https://docs.djangoproject.com/en/4.0/ref/settings/#databases
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'ENGINE': 'django.db.backends.postgresql',  # uses psycopg 3
         'NAME': config('POSTGRES_DB', default='flask_database'),
         'USER': config('POSTGRES_USER', default='admin'),
         'PASSWORD': config('POSTGRES_PASSWORD'),  # required, no default
