@@ -1,0 +1,9 @@
+{
+    // editor
+    "editor.wordWrap": "wordWrapColumn",
+    "editor.wordWrapColumn": 120,
+    "editor.wrappingIndent": "same",
+    // python
+    "python.analysis.inlayHints.functionReturnTypes": true,
+    "python.analysis.completeFunctionParens": true,
+}
