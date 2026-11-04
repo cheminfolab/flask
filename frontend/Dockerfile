@@ -1,10 +1,10 @@
-FROM node:25-alpine
+FROM node:22-alpine
 
 WORKDIR /app
 
-COPY package.json .
-
-RUN npm install
+# install exactly what package-lock.json pins
+COPY package.json package-lock.json ./
+RUN npm ci
 
 COPY . .
 

@@ -8,42 +8,40 @@ import {
     SidebarHeader, 
     SidebarMenu,
     SidebarMenuItem,
-    SidebarSeparator
+    SidebarSeparator,
 } from "./ui/sidebar"
 import {
     Collapsible, 
     CollapsibleContent, 
-    CollapsibleTrigger 
+    CollapsibleTrigger,
 } from "./ui/collapsible"
 import { ChevronRight } from "lucide-react"
+import { useEffect, useState } from "react"
+import useAxios from "@/hooks/useAxios"
+import type { Storage, WorkingGroup } from "@/types/api"
 import {
-    MultiSelect, 
-    MultiSelectContent, 
-    MultiSelectGroup, 
-    MultiSelectItem, 
-    MultiSelectTrigger, 
-    MultiSelectValue 
+    MultiSelect,
+    MultiSelectContent,
+    MultiSelectGroup,
+    MultiSelectItem,
+    MultiSelectTrigger,
+    MultiSelectValue,
 } from "./ui/multi-select"
 
-const SubstanceSidebar = () => {
+const ContainerSidebar = () => {
 
     // identifiers: CAS, InChI, InChIKey, names
     // properties: formula, molecular weight, physical properties etc.
     // tags
 
-    const owners = [
-        {id: "huber", name: "Huber"},
-        {id: "merten", name: "Merten"},
-        {id: "goossen", name: "Gooßen"},
-        {id: "dyker", name: "Dyker"},
-        {id: "gessner", name: "Däschlein-Gessner"}
-    ]
+    const api = useAxios()
+    const [owners, setOwners] = useState<WorkingGroup[]>([])
+    const [storages, setStorages] = useState<Storage[]>([])
 
-    const locations = [
-        {room: "NC 4/159", storages: [
-            {name: "solvent cabinet"},
-        ]}
-    ]
+    useEffect(() => {
+        api.getAll<WorkingGroup[]>("groups").then(setOwners).catch(() => setOwners([]))
+        api.getAll<Storage[]>("storages").then(setStorages).catch(() => setStorages([]))
+    }, [api])
 
     return(
         <Sidebar collapsible="offcanvas" side="right">
@@ -73,10 +71,10 @@ const SubstanceSidebar = () => {
                                             </MultiSelectTrigger>
                                             <MultiSelectContent>
                                                 <MultiSelectGroup>
-                                                    {owners.map((owner, index) => (
+                                                    {owners.map(owner => (
                                                         <MultiSelectItem
-                                                            key={index}
-                                                            value={owner.id}
+                                                            key={owner.id}
+                                                            value={String(owner.id)}
                                                         >
                                                             {owner.name}
                                                         </MultiSelectItem>
@@ -91,19 +89,16 @@ const SubstanceSidebar = () => {
                                                 <MultiSelectValue placeholder="Select locations..." />
                                             </MultiSelectTrigger>
                                             <MultiSelectContent>
-                                                {locations.map((location, locationIndex) => (
-                                                    <MultiSelectGroup key={locationIndex}>
-                                                        {location.storages.map((storage, storageIndex) => (
-                                                            <MultiSelectItem
-                                                                key={storageIndex}
-                                                                value={storage.name}
-                                                            >
-                                                                {storage.name}
-                                                            </MultiSelectItem>
-                                                        ))}
-                                                    </MultiSelectGroup>
-
-                                                ))}
+                                                <MultiSelectGroup>
+                                                    {storages.map(storage => (
+                                                        <MultiSelectItem
+                                                            key={storage.id}
+                                                            value={String(storage.id)}
+                                                        >
+                                                            {storage.label}
+                                                        </MultiSelectItem>
+                                                    ))}
+                                                </MultiSelectGroup>
                                             </MultiSelectContent>
                                         </MultiSelect>
                                     </SidebarMenuItem>
@@ -119,4 +114,4 @@ const SubstanceSidebar = () => {
     )
 }
 
-export default SubstanceSidebar
+export default ContainerSidebar

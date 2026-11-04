@@ -1,99 +1,82 @@
-import { 
-    createContext, 
-    useEffect, 
-    useState, 
-    type FormEventHandler, 
-    type ReactNode 
+import {
+    createContext,
+    useEffect,
+    useState,
+    type FormEventHandler,
+    type ReactNode
 } from "react"
-import type { 
-    AuthContextType, 
-    LogoutUserType, 
-    RegisterUserType, 
-    Tokens, 
-    User 
+import type {
+    AuthContextType,
+    LoginEventTarget,
+    LogoutUserType,
+    RegisterUserType,
+    Tokens,
 } from "@/types/authorization"
-import { useNavigate } from "react-router"
-import { jwtDecode } from "jwt-decode"
-import useAxios from "@/hooks/useAxios"
+import { useNavigate, type Location } from "react-router"
+import axios from "axios"
+import { api, decodeUser, errorMessage, getTokens, onAuthChange, setTokens } from "@/lib/api"
 
-const AuthContext = createContext<AuthContextType | {}>({})
+const AuthContext = createContext<AuthContextType | null>(null)
 export default AuthContext
 
 export const Authprovider = ({children}: {children: ReactNode}) => {
-    
-    const localTokens = localStorage.getItem("authTokens")
-    const [authTokens, setAuthTokens] = useState<Tokens|null>(null)
-    const [user, setUser] = useState<User|null>(null)
-    const [loading, setLoading] = useState<boolean>(true)
-
-    const api = useAxios()
+    // restored synchronously from storage (expired or malformed sessions are dropped)
+    const [authTokens, setAuthTokens] = useState<Tokens | null>(getTokens)
+    const [loginError, setLoginError] = useState<string | null>(null)
+    const [redirect, setRedirect] = useState<Location | null>(null)
     const navigate = useNavigate()
 
-    useEffect(() => {
-        if (localTokens) {
-            setAuthTokens(JSON.parse(localTokens))
-            setUser(jwtDecode(localTokens))
-        }
-    },[])
+    // follow token changes made by the API client (refresh, failed refresh = logout)
+    useEffect(() => onAuthChange(setAuthTokens), [])
 
-    useEffect(() => {
-        if (authTokens) setUser(jwtDecode(authTokens.access))
-        setLoading(false)
-    }, [authTokens, loading])
-
-    interface LoginEventTarget extends EventTarget {
-        email: {value: string},
-        password: {value: string}
-    }
-
-    const loginUser:FormEventHandler<HTMLFormElement> = (event) => {
+    const loginUser: FormEventHandler<HTMLFormElement> = event => {
         event.preventDefault()
         const target = event.target as LoginEventTarget
+        setLoginError(null)
         api
-            .create("/token/", {
-                "email": target.email.value,
-                "password": target.password.value
+            .post<Tokens>("/token/", {
+                email: target.email.value,
+                password: target.password.value,
+            }, { skipAuth: true })
+            .then(response => {
+                setTokens(response.data)
+                navigate(redirect ?? "/")
             })
-            .then(data =>{
-                setAuthTokens(data)
-                setUser(jwtDecode(data.access))
-                localStorage.setItem('authTokens', JSON.stringify(data))
-                navigate(-2) // redirects to element from PrivateRoute
+            .catch(error => {
+                // the backend answers 401 both for wrong credentials and for not-yet-approved accounts
+                if (axios.isAxiosError(error) && error.response?.status === 401) {
+                    setLoginError("Invalid email or password, or your account has not been approved yet.")
+                } else {
+                    setLoginError(errorMessage(error))
+                }
             })
     }
 
-    const registerUser:RegisterUserType = event => {
-        event.preventDefault()
-        api
-            .create("/members/register/", {
-                first_name: event.target.first_name.value,
-                last_name: event.target.last_name.value,
-                email: event.target.email.value,
-                password: event.target.password.value
-            })
-            .then(() => loginUser(event)) // TODO: landing page for inactive users, captcha?
+    // New accounts are inactive until an admin approves them, so registration
+    // does not log the user in. Errors propagate to the caller (the signup form).
+    const registerUser: RegisterUserType = form => api
+        .post("/members/register/", form, { skipAuth: true })
+        .then(() => undefined)
+
+    const logoutUser: LogoutUserType = () => {
+        setTokens(null)
+        navigate("/login")
     }
 
-    const logoutUser:LogoutUserType = () => {
-        setUser(null)
-        setAuthTokens(null)
-        localStorage.removeItem('authTokens')
-        navigate("/")
-    }
-    
-    let contextData = {
-        user,
-        setUser,
+    const contextData: AuthContextType = {
+        user: decodeUser(authTokens),
         authTokens,
-        setAuthTokens,
         loginUser,
+        loginError,
         logoutUser,
-        registerUser
+        registerUser,
+        redirect,
+        setRedirect,
     }
 
     return(
         <AuthContext.Provider value={contextData}>
-            {loading ? null : children}
+            {children}
         </AuthContext.Provider>
     )
 }

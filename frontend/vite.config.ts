@@ -15,5 +15,11 @@ export default defineConfig({
     },
   },
   base: "/",
-  server: {port: 3000}
+  server: {
+    port: 3000,
+    // `npm run dev`: forward API calls to the Django backend (no CORS setup needed)
+    proxy: {
+      "/api": process.env.VITE_DEV_API_TARGET ?? "http://127.0.0.1:8000",
+    },
+  },
 })

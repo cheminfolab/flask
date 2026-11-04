@@ -2,13 +2,15 @@ from django.db import models
 # from django_rdkit import models as rk_models
 from django.contrib.postgres.fields import ArrayField
 from django.core.validators import MaxValueValidator, MinValueValidator
-import uuid
+from django.db.models import Q, F
+from simple_history.models import HistoricalRecords
 
 # from barcode_field.fields import BarcodeField
 
 from accounts.models import WorkingGroup, Member, Supplier
 from locations.models import Storage
 from ghs.models import GHS
+from api.models import Tag, TrackedModel
 
 
 class Prefix(models.Model):
@@ -36,38 +38,6 @@ class Currency(models.Model):
 
     class Meta:
         verbose_name_plural = 'Currencies'
-
-
-class Category(models.Model):
-    name = models.CharField(max_length=100)
-
-    class Meta:
-        verbose_name_plural = 'Categories'
-
-    def __str__(self):
-        return self.name
-
-    class Meta:
-        verbose_name_plural = 'Categories'
-
-    # compound class:
-    #
-    # Organika
-    # Anorganika
-    # Biozide & Pestizide
-    # Arzneistoffe
-    # Betäubungsmittel
-    # Psychoaktive Stoffe
-    # Lebensmittelzusatzstoffe
-    # Futtermittel
-    # Enzyme
-    # Biologische Arbeitsstoffe
-    # Mikroorganismen
-    # Verbrauchsmaterialien & Trennmaterialien
-    # Dual-Use-Stoffe
-    # Biowaffen & Chemiewaffen
-    # FCKW & Klimagase
-    # Standard-Referenz-Materialien uva
 
 
 # CHEMICALS
@@ -140,22 +110,23 @@ class Structure(models.Model):
     # ffp2 = models.BfpField(null=True)
 
 
-class Substance(models.Model):
+class Substance(TrackedModel):
     # id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     name = models.CharField(max_length=250)  # IUPAC
     synonyms = ArrayField(
-        models.CharField(blank=True, null=True, max_length=250),
+        models.CharField(max_length=250),
         blank=True,
-        default=list
+        null=True,
+        default=list,
     )
     label = models.CharField(blank=True, null=True, max_length=250)  # trivial name
     formula = models.CharField(blank=True, null=True, max_length=100)  # todo: add validators (Hill notation)
 
-    # IDENTIFIERS
-    smiles = models.CharField(blank=True, null=True, max_length=100)
+    # IDENTIFIERS (SMILES and InChI have no practical length limit)
+    smiles = models.TextField(blank=True, null=True)
     # smarts
-    inchi = models.CharField(blank=True, null=True, max_length=100)
-    inchi_key = models.CharField(blank=True, null=True, max_length=100)
+    inchi = models.TextField(blank=True, null=True)
+    inchi_key = models.CharField(blank=True, null=True, max_length=27)  # InChIKeys are 27 characters
     # todo: add validators
 
     cas = models.CharField(blank=True, null=True, max_length=12)  # todo: add validator
@@ -163,7 +134,8 @@ class Substance(models.Model):
     pubchem_cid = models.IntegerField(blank=True, null=True)
 
     # STRUCTURE
-    structure = models.ManyToManyField(Structure, blank=True, related_name='substance_structures')
+    # structure = models.ManyToManyField(Structure, blank=True, related_name='substance_structures')
+    molfile = models.TextField(blank=True)
     # STEREOCHEMISTRY?? enantiomers, distereomers, racemic mixtures?
 
     # PROPERTIES
@@ -178,24 +150,33 @@ class Substance(models.Model):
 
     image = models.ImageField(blank=True, null=True, upload_to=substance_directory_path)
 
+    history = HistoricalRecords()
+
     def __str__(self):
         if self.label:
             return self.label
         return self.name
 
 
-class Component(models.Model):
+class Component(TrackedModel):
     substance = models.ForeignKey(Substance, on_delete=models.PROTECT, related_name='components')
     fraction = models.FloatField(
         validators=[MinValueValidator(0.0), MaxValueValidator(1.00)], default=1.00
     )
     type = models.CharField(blank=True, null=True, max_length=50)
 
+    history = HistoricalRecords()
+
+    class Meta:
+        constraints = [
+            models.CheckConstraint(condition=Q(fraction__gte=0) & Q(fraction__lte=1), name='component_fraction_0_1'),
+        ]
+
     def __str__(self):
         return f"{self.substance.name} ({self.fraction*100}%)"
 
 
-class Compound(models.Model):
+class Compound(TrackedModel):
     name = models.CharField(max_length=250)  # IUPAC
     synonyms = ArrayField(
         models.CharField(max_length=250),
@@ -239,7 +220,8 @@ class Compound(models.Model):
     # todo: properties as array? (substance vs compound?)
 
     # SAFETY
-    ghs = models.OneToOneField(
+    # ForeignKey: several compounds may share the same GHS classification
+    ghs = models.ForeignKey(
         GHS, blank=True, null=True, on_delete=models.PROTECT, related_name='hazardous_compounds'
     )
     # SDS (pdf)
@@ -269,15 +251,17 @@ class Compound(models.Model):
     # Einstufung als Biologischer Arbeitsstoff
     # Gruppe in der Seveso III-Verordnung
 
-    categories = models.ManyToManyField(Category, blank=True, related_name='categorized_compounds')
+    categories = models.ManyToManyField(Tag, blank=True, related_name='categorized_compounds')
     # related compounds (hydrates, hydrochlorides, etc.), see also fingeprints
 
     # spectra
 
-    created = models.DateField(auto_now_add=True)
-    created_by = models.ForeignKey(
-        Member, null=True, on_delete=models.SET_NULL, related_name='compounds_created'
-    )
+    history = HistoricalRecords(m2m_fields=[substances, categories])
+
+    class Meta:
+        constraints = [
+            models.CheckConstraint(condition=Q(purity__gte=0) & Q(purity__lte=1), name='compound_purity_0_1'),
+        ]
 
     def __str__(self):
         if self.label:
@@ -285,7 +269,7 @@ class Compound(models.Model):
         return f"{self.name} {self.purity*100}%"
 
 
-class Container(models.Model):
+class Container(TrackedModel):
     parent = models.ForeignKey(
         'self', blank=True, null=True, on_delete=models.SET_NULL, related_name="children"
     )
@@ -324,22 +308,33 @@ class Container(models.Model):
 
     conditions = models.CharField(blank=True, null=True, max_length=50)  # argon, molecular sieve etc. (checkboxes?)
 
-    created = models.DateField(auto_now_add=True)
-    created_by = models.ForeignKey(
-        Member, null=True, on_delete=models.SET_NULL, related_name='containers_created'
-    )
     opened = models.DateField(blank=True, null=True)
     last_used = models.DateField(blank=True, null=True)
-    last_user = models.OneToOneField(
-        Member, blank=True, null=True, on_delete=models.SET_NULL, related_name='compounds_used_last'
+    # ForeignKey, not OneToOne: one member can be the last user of many containers
+    last_user = models.ForeignKey(
+        Member, blank=True, null=True, on_delete=models.SET_NULL, related_name='containers_used_last'
     )
     # future user ??
 
     # spectra
     # inspection cycle
 
+    history = HistoricalRecords()
+
+    class Meta:
+        constraints = [
+            models.CheckConstraint(condition=Q(amount__gte=0), name='container_amount_non_negative'),
+            models.CheckConstraint(condition=Q(amount_left__gte=0), name='container_amount_left_non_negative'),
+            models.CheckConstraint(
+                condition=Q(amount_left__isnull=True) | Q(amount__isnull=True) | Q(amount_left__lte=F('amount')),
+                name='container_amount_left_lte_amount',
+            ),
+            models.CheckConstraint(condition=Q(tara__gte=0), name='container_tara_non_negative'),
+            models.CheckConstraint(condition=Q(price__gte=0), name='container_price_non_negative'),
+        ]
+
     def __str__(self):
-        return f"{self.compound.__str__()} ({self.supplier})"
+        return f"{self.compound} ({self.supplier})"
 
 
 # DATABASES

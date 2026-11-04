@@ -20,4 +20,13 @@ export default defineConfig([
       globals: globals.browser,
     },
   },
+  {
+    // generated shadcn/ui components export variants and hooks next to components by design
+    files: ['src/components/ui/**/*.{ts,tsx}'],
+    rules: { 'react-refresh/only-export-components': 'off' },
+  },
+  {
+    // generated from the OpenAPI schema (npm run gen:api)
+    ignores: ['src/types/api.gen.ts'],
+  },
 ])
