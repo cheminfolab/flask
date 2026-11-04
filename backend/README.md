@@ -5,7 +5,11 @@ This file covers the local database, administration tasks and backups.
 
 ## Local PostgreSQL server (native development)
 
-With the conda environment active, in `backend/`:
+The simplest database for development is the Compose service: `docker compose up -d database`
+(listens on `127.0.0.1:5432`, user, password and database from `.env`).
+
+Without Docker, use any PostgreSQL 15+ installation, for example from conda-forge
+(`conda install -c conda-forge postgresql=15` in your environment). Then, in `backend/`:
 
 ```bash
 initdb -D database                       # once; `database/` is git-ignored
