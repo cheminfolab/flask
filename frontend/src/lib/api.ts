@@ -153,9 +153,44 @@ export const errorMessage = (error: unknown): string => {
     return "An unexpected error occurred."
 }
 
+/** One page of a list endpoint (every list endpoint is paginated). */
+export interface Page<T> {
+    count: number
+    next: string | null
+    previous: string | null
+    results: T[]
+}
+
+export type ListParams = Record<string, string | number | boolean | undefined> & {
+    page?: number
+    page_size?: number
+}
+
+/** Largest page the backend accepts (DefaultPagination.max_page_size). */
+const MAX_PAGE_SIZE = 500
+/** getAll() is for small reference lists; refuse to pull more than this many rows. */
+const GET_ALL_LIMIT = 10_000
+
+const list = <T>(resource: string, params: ListParams = {}) =>
+    api.get<Page<T>>(resourceUrl(resource), { params }).then(r => r.data)
+
+/** Every row of a small list (working groups, storages, ...), fetched page by page. */
+const getAll = async <T>(resource: string, params: ListParams = {}): Promise<T[]> => {
+    const rows: T[] = []
+    for (let page = 1; ; page += 1) {
+        const data = await list<T>(resource, { ...params, page, page_size: MAX_PAGE_SIZE })
+        rows.push(...data.results)
+        if (!data.next) return rows
+        if (rows.length >= GET_ALL_LIMIT) {
+            throw new Error(`${resource}: more than ${GET_ALL_LIMIT} rows; use list() with paging instead`)
+        }
+    }
+}
+
 /** Thin CRUD wrapper returning response bodies. */
 export const apiClient = {
-    getAll: <T = unknown>(resource: string) => api.get<T>(resourceUrl(resource)).then(r => r.data),
+    list,
+    getAll,
     get: <T = unknown>(resource: string, id: string | number) => api.get<T>(resourceUrl(resource, id)).then(r => r.data),
     create: <T = unknown>(resource: string, body: object) => api.post<T>(resourceUrl(resource), body).then(r => r.data),
     update: <T = unknown>(resource: string, id: string | number, body: object) =>
@@ -166,3 +201,17 @@ export const apiClient = {
 }
 
 export type ApiClient = typeof apiClient
+
+/**
+ * Log out: forget the tokens locally right away and ask the backend to blacklist
+ * the refresh token, so a copied token cannot be used to stay logged in.
+ */
+export const endSession = (): Promise<void> => {
+    const refresh = currentTokens?.refresh
+    setTokens(null)
+    if (!refresh) return Promise.resolve()
+    return api
+        .post("/token/blacklist/", { refresh }, { skipAuth: true })
+        .then(() => undefined)
+        .catch(() => undefined)  // already expired or blacklisted: nothing left to revoke
+}

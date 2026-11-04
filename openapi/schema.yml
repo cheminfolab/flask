@@ -11,6 +11,19 @@ paths:
       description: |-
         Files are stored outside the public media directory and only served by
         `download`, after the same read check as the experiment.
+      parameters:
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
       tags:
       - attachments
       security:
@@ -20,9 +33,7 @@ paths:
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Attachment'
+                $ref: '#/components/schemas/PaginatedAttachmentList'
           description: ''
     post:
       operationId: attachments_create
@@ -133,6 +144,19 @@ paths:
           (override `permission_classes` or `get_permissions` explicitly).
         - Server-assigned provenance (ProvenanceMixin).
         - Every request runs in a database transaction (ATOMIC_REQUESTS).
+      parameters:
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
       tags:
       - buildings
       security:
@@ -142,9 +166,7 @@ paths:
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Building'
+                $ref: '#/components/schemas/PaginatedBuildingList'
           description: ''
     post:
       operationId: buildings_create
@@ -391,6 +413,19 @@ paths:
           (override `permission_classes` or `get_permissions` explicitly).
         - Server-assigned provenance (ProvenanceMixin).
         - Every request runs in a database transaction (ATOMIC_REQUESTS).
+      parameters:
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
       tags:
       - components
       security:
@@ -400,9 +435,7 @@ paths:
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Component'
+                $ref: '#/components/schemas/PaginatedComponentList'
           description: ''
     post:
       operationId: components_create
@@ -649,6 +682,19 @@ paths:
           (override `permission_classes` or `get_permissions` explicitly).
         - Server-assigned provenance (ProvenanceMixin).
         - Every request runs in a database transaction (ATOMIC_REQUESTS).
+      parameters:
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
       tags:
       - compounds
       security:
@@ -658,9 +704,7 @@ paths:
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/CompoundList'
+                $ref: '#/components/schemas/PaginatedCompoundListList'
           description: ''
     post:
       operationId: compounds_create
@@ -907,6 +951,19 @@ paths:
           (override `permission_classes` or `get_permissions` explicitly).
         - Server-assigned provenance (ProvenanceMixin).
         - Every request runs in a database transaction (ATOMIC_REQUESTS).
+      parameters:
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
       tags:
       - containers
       security:
@@ -916,9 +973,7 @@ paths:
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Container'
+                $ref: '#/components/schemas/PaginatedContainerList'
           description: ''
     post:
       operationId: containers_create
@@ -1159,6 +1214,19 @@ paths:
     get:
       operationId: entries_list
       description: Common queryset filtering for objects that belong to one experiment.
+      parameters:
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
       tags:
       - entries
       security:
@@ -1168,9 +1236,7 @@ paths:
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Entry'
+                $ref: '#/components/schemas/PaginatedEntryList'
           description: ''
     post:
       operationId: entries_create
@@ -1307,6 +1373,19 @@ paths:
       operationId: experiment_shares_list
       description: Shares are visible to everyone who can read the target; only its
         owner manages them.
+      parameters:
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
       tags:
       - experiment-shares
       security:
@@ -1316,9 +1395,7 @@ paths:
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/ExperimentShare'
+                $ref: '#/components/schemas/PaginatedExperimentShareList'
           description: ''
     post:
       operationId: experiment_shares_create
@@ -1461,6 +1538,19 @@ paths:
       description: |-
         Provenance is assigned by the server: for TrackedModel subclasses,
         `created_by` / `updated_by` come from the authenticated user.
+      parameters:
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
       tags:
       - experiments
       security:
@@ -1470,9 +1560,7 @@ paths:
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Experiment'
+                $ref: '#/components/schemas/PaginatedExperimentList'
           description: ''
     post:
       operationId: experiments_create
@@ -1628,6 +1716,19 @@ paths:
           (override `permission_classes` or `get_permissions` explicitly).
         - Server-assigned provenance (ProvenanceMixin).
         - Every request runs in a database transaction (ATOMIC_REQUESTS).
+      parameters:
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
       tags:
       - groups
       security:
@@ -1637,9 +1738,7 @@ paths:
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/WorkingGroup'
+                $ref: '#/components/schemas/PaginatedWorkingGroupList'
           description: ''
     post:
       operationId: groups_create
@@ -1876,11 +1975,45 @@ paths:
               schema:
                 $ref: '#/components/schemas/WorkingGroup'
           description: ''
+  /api/health/:
+    get:
+      operationId: health_retrieve
+      description: |-
+        Liveness/readiness probe for Docker and load balancers: 200 when the
+        application can reach the database, 503 otherwise. Reveals nothing else.
+      tags:
+      - health
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Health'
+          description: ''
+        '503':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthFailure'
+          description: ''
   /api/materials/:
     get:
       operationId: materials_list
       description: 'No updates: correct a usage by deleting it (draft only) and recording
         a new one.'
+      parameters:
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
       tags:
       - materials
       security:
@@ -1890,9 +2023,7 @@ paths:
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/MaterialUsage'
+                $ref: '#/components/schemas/PaginatedMaterialUsageList'
           description: ''
     post:
       operationId: materials_create
@@ -1972,6 +2103,19 @@ paths:
           (override `permission_classes` or `get_permissions` explicitly).
         - Server-assigned provenance (ProvenanceMixin).
         - Every request runs in a database transaction (ATOMIC_REQUESTS).
+      parameters:
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
       tags:
       - members
       security:
@@ -1981,9 +2125,7 @@ paths:
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Member'
+                $ref: '#/components/schemas/PaginatedMemberList'
           description: ''
     post:
       operationId: members_create
@@ -2147,9 +2289,22 @@ paths:
           description: No response body
   /api/members/directory/:
     get:
-      operationId: members_directory_retrieve
+      operationId: members_directory_list
       description: Active members by name, for choosing whom to share a record with.
         No emails.
+      parameters:
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
       tags:
       - members
       security:
@@ -2159,7 +2314,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/MemberDirectory'
+                $ref: '#/components/schemas/PaginatedMemberDirectoryList'
           description: ''
   /api/members/download_csv/:
     get:
@@ -2296,6 +2451,19 @@ paths:
       operationId: project_shares_list
       description: Shares are visible to everyone who can read the target; only its
         owner manages them.
+      parameters:
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
       tags:
       - project-shares
       security:
@@ -2305,9 +2473,7 @@ paths:
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/ProjectShare'
+                $ref: '#/components/schemas/PaginatedProjectShareList'
           description: ''
     post:
       operationId: project_shares_create
@@ -2450,6 +2616,19 @@ paths:
       description: |-
         Provenance is assigned by the server: for TrackedModel subclasses,
         `created_by` / `updated_by` come from the authenticated user.
+      parameters:
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
       tags:
       - projects
       security:
@@ -2459,9 +2638,7 @@ paths:
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Project'
+                $ref: '#/components/schemas/PaginatedProjectList'
           description: ''
     post:
       operationId: projects_create
@@ -2613,6 +2790,19 @@ paths:
           (override `permission_classes` or `get_permissions` explicitly).
         - Server-assigned provenance (ProvenanceMixin).
         - Every request runs in a database transaction (ATOMIC_REQUESTS).
+      parameters:
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
       tags:
       - roles
       security:
@@ -2622,9 +2812,7 @@ paths:
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Role'
+                $ref: '#/components/schemas/PaginatedRoleList'
           description: ''
     post:
       operationId: roles_create
@@ -2871,6 +3059,19 @@ paths:
           (override `permission_classes` or `get_permissions` explicitly).
         - Server-assigned provenance (ProvenanceMixin).
         - Every request runs in a database transaction (ATOMIC_REQUESTS).
+      parameters:
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
       tags:
       - storages
       security:
@@ -2880,9 +3081,7 @@ paths:
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Storage'
+                $ref: '#/components/schemas/PaginatedStorageList'
           description: ''
     post:
       operationId: storages_create
@@ -3129,6 +3328,19 @@ paths:
           (override `permission_classes` or `get_permissions` explicitly).
         - Server-assigned provenance (ProvenanceMixin).
         - Every request runs in a database transaction (ATOMIC_REQUESTS).
+      parameters:
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
       tags:
       - substances
       security:
@@ -3138,9 +3350,7 @@ paths:
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Substance'
+                $ref: '#/components/schemas/PaginatedSubstanceList'
           description: ''
     post:
       operationId: substances_create
@@ -3400,6 +3610,28 @@ paths:
       responses:
         '200':
           description: No response body
+  /api/token/blacklist/:
+    post:
+      operationId: token_blacklist_create
+      description: 'Logout: blacklists the refresh token, so it cannot mint new access
+        tokens.'
+      tags:
+      - token
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TokenBlacklistRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/TokenBlacklistRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/TokenBlacklistRequest'
+        required: true
+      responses:
+        '200':
+          description: No response body
   /api/token/refresh/:
     post:
       operationId: token_refresh_create
@@ -3437,6 +3669,19 @@ paths:
           (override `permission_classes` or `get_permissions` explicitly).
         - Server-assigned provenance (ProvenanceMixin).
         - Every request runs in a database transaction (ATOMIC_REQUESTS).
+      parameters:
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
       tags:
       - units
       security:
@@ -3446,9 +3691,7 @@ paths:
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Unit'
+                $ref: '#/components/schemas/PaginatedUnitList'
           description: ''
     post:
       operationId: units_create
@@ -4647,6 +4890,20 @@ components:
         * `health` - health
         * `environmental` - environmental
         * `disposal` - disposal
+    Health:
+      type: object
+      properties:
+        status:
+          type: string
+      required:
+      - status
+    HealthFailure:
+      type: object
+      properties:
+        status:
+          type: string
+      required:
+      - status
     KindEnum:
       enum:
       - procedure
@@ -4819,6 +5076,420 @@ components:
       - first_name
       - last_name
       - password
+    PaginatedAttachmentList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Attachment'
+    PaginatedBuildingList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Building'
+    PaginatedComponentList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Component'
+    PaginatedCompoundListList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/CompoundList'
+    PaginatedContainerList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Container'
+    PaginatedEntryList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Entry'
+    PaginatedExperimentList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Experiment'
+    PaginatedExperimentShareList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/ExperimentShare'
+    PaginatedMaterialUsageList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/MaterialUsage'
+    PaginatedMemberDirectoryList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/MemberDirectory'
+    PaginatedMemberList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Member'
+    PaginatedProjectList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Project'
+    PaginatedProjectShareList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/ProjectShare'
+    PaginatedRoleList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Role'
+    PaginatedStorageList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Storage'
+    PaginatedSubstanceList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Substance'
+    PaginatedUnitList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Unit'
+    PaginatedWorkingGroupList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/WorkingGroup'
     PatchedBuildingRequest:
       type: object
       properties:
@@ -5609,6 +6280,15 @@ components:
           nullable: true
       required:
       - name
+    TokenBlacklistRequest:
+      type: object
+      properties:
+        refresh:
+          type: string
+          writeOnly: true
+          minLength: 1
+      required:
+      - refresh
     TokenRefresh:
       type: object
       properties:

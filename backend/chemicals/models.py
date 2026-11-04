@@ -126,10 +126,10 @@ class Substance(TrackedModel):
     smiles = models.TextField(blank=True, null=True)
     # smarts
     inchi = models.TextField(blank=True, null=True)
-    inchi_key = models.CharField(blank=True, null=True, max_length=27)  # InChIKeys are 27 characters
+    inchi_key = models.CharField(blank=True, null=True, max_length=27, db_index=True)  # InChIKeys are 27 characters
     # todo: add validators
 
-    cas = models.CharField(blank=True, null=True, max_length=12)  # todo: add validator
+    cas = models.CharField(blank=True, null=True, max_length=12, db_index=True)  # todo: add validator
     pubchem_sid = models.IntegerField(blank=True, null=True)
     pubchem_cid = models.IntegerField(blank=True, null=True)
 

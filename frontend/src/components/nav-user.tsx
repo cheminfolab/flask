@@ -41,7 +41,7 @@ export const NavUser = () => {
 
   useEffect(() => {
     api
-      .getAll<Member>("members/me")
+      .get<Member>("members", "me")
       .then(data => setMember(data))
       .catch(() => setMember(null))
   }, [api])

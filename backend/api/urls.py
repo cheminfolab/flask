@@ -8,9 +8,11 @@ from rest_framework import routers
 from rest_framework.authentication import SessionAuthentication
 from rest_framework.permissions import IsAdminUser
 from rest_framework_simplejwt.authentication import JWTAuthentication
-from rest_framework_simplejwt.views import TokenRefreshView
-
-from accounts.views import CustomTokenObtainPairView, MemberViewSet, RoleViewSet, WorkingGroupViewSet
+from accounts.views import (
+    CustomTokenObtainPairView, LogoutView, MemberViewSet, RoleViewSet, ThrottledTokenRefreshView,
+    WorkingGroupViewSet,
+)
+from .health import health
 from locations.views import BuildingViewSet, StorageViewSet
 from chemicals.views import UnitViewSet, SubstanceViewSet, ComponentViewSet, CompoundViewSet, ContainerViewSet
 from projects.views import (
@@ -46,7 +48,9 @@ urlpatterns = [
     path("admin/", admin.site.urls),
     # API
     path("api/token/", CustomTokenObtainPairView.as_view(), name="token_obtain_pair"),
-    path("api/token/refresh/", TokenRefreshView.as_view(), name="token_refresh"),
+    path("api/token/refresh/", ThrottledTokenRefreshView.as_view(), name="token_refresh"),
+    path("api/token/blacklist/", LogoutView.as_view(), name="token_blacklist"),
+    path("api/health/", health, name="health"),
     path("api/schema/", SpectacularAPIView.as_view(**_docs), name="schema"),
     path("api/docs/", SpectacularSwaggerView.as_view(url_name="schema", **_docs), name="docs"),
     path("api/", include(router.urls)),

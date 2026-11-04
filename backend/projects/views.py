@@ -136,7 +136,7 @@ class _ShareViewSet(mixins.ListModelMixin, mixins.CreateModelMixin, mixins.Retri
             return self.serializer_class.Meta.model.objects.none()
         queryset = self.serializer_class.Meta.model.objects.filter(
             **{f'{self.target_field}__in': self.readable_targets().values('pk')}
-        )
+        ).order_by('pk')
         target = self.request.query_params.get(self.target_field)
         if target:
             queryset = queryset.filter(**{f'{self.target_field}_id': target})

@@ -14,7 +14,7 @@ import type {
 } from "@/types/authorization"
 import { useNavigate, type Location } from "react-router"
 import axios from "axios"
-import { api, decodeUser, errorMessage, getTokens, onAuthChange, setTokens } from "@/lib/api"
+import { api, decodeUser, endSession, errorMessage, getTokens, onAuthChange, setTokens } from "@/lib/api"
 
 const AuthContext = createContext<AuthContextType | null>(null)
 export default AuthContext
@@ -59,7 +59,7 @@ export const Authprovider = ({children}: {children: ReactNode}) => {
         .then(() => undefined)
 
     const logoutUser: LogoutUserType = () => {
-        setTokens(null)
+        void endSession()  // revokes the refresh token on the server
         navigate("/login")
     }
 

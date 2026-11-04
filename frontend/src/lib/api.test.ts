@@ -83,7 +83,7 @@ describe("token refresh", () => {
                     return { status: 200, data: { access: fresh, refresh: "rotated" } }
                 }
                 sentWith.push(String(authHeader(config)))
-                return { status: 200, data: [] }
+                return { status: 200, data: { count: 0, next: null, previous: null, results: [] } }
             },
         )
 
@@ -99,7 +99,9 @@ describe("token refresh", () => {
         const stale = jwt(300)
         const { apiClient } = await loadApi({ access: stale, refresh: jwt(86400) }, config => {
             if (config.url === "/token/refresh/") return { status: 200, data: { access: fresh } }
-            return authHeader(config) === `Bearer ${fresh}` ? { status: 200, data: ["ok"] } : { status: 401 }
+            return authHeader(config) === `Bearer ${fresh}`
+                ? { status: 200, data: { count: 1, next: null, previous: null, results: ["ok"] } }
+                : { status: 401 }
         })
 
         await expect(apiClient.getAll("substances")).resolves.toEqual(["ok"])
@@ -144,5 +146,68 @@ describe("errorMessage", () => {
         const { apiClient, errorMessage } = await loadApi(null, () => ({ status: 403, data: { detail: "Not allowed." } }))
         const error = await apiClient.getAll("units").catch(e => e)
         expect(errorMessage(error)).toBe("Not allowed.")
+    })
+})
+
+describe("pagination", () => {
+    const page = (results: number[], next: boolean) => ({ count: 1200, next: next ? "more" : null, previous: null, results })
+
+    it("list() passes paging parameters and returns one page", async () => {
+        let params: unknown
+        const { apiClient } = await loadApi(null, config => {
+            params = config.params
+            return { status: 200, data: page([1, 2], true) }
+        })
+
+        const data = await apiClient.list<number>("substances", { page: 3, page_size: 2 })
+
+        expect(params).toEqual({ page: 3, page_size: 2 })
+        expect(data.results).toEqual([1, 2])
+    })
+
+    it("getAll() collects every page with the largest page size", async () => {
+        const requested: unknown[] = []
+        const { apiClient } = await loadApi(null, config => {
+            requested.push(config.params)
+            const current = (config.params as { page: number }).page
+            return { status: 200, data: page([current], current < 3) }
+        })
+
+        await expect(apiClient.getAll<number>("groups")).resolves.toEqual([1, 2, 3])
+        expect(requested).toEqual([1, 2, 3].map(p => ({ page: p, page_size: 500 })))
+    })
+
+    it("getAll() refuses unbounded lists", async () => {
+        const { apiClient } = await loadApi(null, () => ({
+            status: 200, data: page(Array.from({ length: 500 }, (_, i) => i), true),
+        }))
+
+        await expect(apiClient.getAll("substances")).rejects.toThrow(/use list\(\) with paging/)
+    })
+})
+
+describe("endSession", () => {
+    it("clears the session immediately and blacklists the refresh token", async () => {
+        const refresh = jwt(86400)
+        let posted: { url?: string, body?: unknown, auth?: unknown } = {}
+        const { endSession, getTokens } = await loadApi({ access: jwt(300), refresh }, config => {
+            posted = { url: config.url, body: JSON.parse(String(config.data)), auth: authHeader(config) }
+            return { status: 200, data: {} }
+        })
+
+        const pending = endSession()
+        expect(getTokens()).toBeNull()  // logged out before the request completes
+        await pending
+
+        expect(posted).toEqual({ url: "/token/blacklist/", body: { refresh }, auth: undefined })
+    })
+
+    it("still logs out when the server is unreachable", async () => {
+        const { endSession, getTokens } = await loadApi({ access: jwt(300), refresh: jwt(86400) }, () => {
+            throw new AxiosError("Network Error", "ERR_NETWORK")
+        })
+
+        await expect(endSession()).resolves.toBeUndefined()
+        expect(getTokens()).toBeNull()
     })
 })

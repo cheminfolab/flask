@@ -91,7 +91,7 @@ export const AppSidebar = ({...props}: ComponentProps<typeof Sidebar>) => {
   const subItems = [
     {
       title: "API",
-      url: "/api",
+      url: "/api/",
       icon: ChevronsLeftRightEllipsis,
     },
     {

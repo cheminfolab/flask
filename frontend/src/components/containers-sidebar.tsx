@@ -39,8 +39,8 @@ const ContainerSidebar = () => {
     const [storages, setStorages] = useState<Storage[]>([])
 
     useEffect(() => {
-        api.getAll<WorkingGroup[]>("groups").then(setOwners).catch(() => setOwners([]))
-        api.getAll<Storage[]>("storages").then(setStorages).catch(() => setStorages([]))
+        api.getAll<WorkingGroup>("groups").then(setOwners).catch(() => setOwners([]))
+        api.getAll<Storage>("storages").then(setStorages).catch(() => setStorages([]))
     }, [api])
 
     return(

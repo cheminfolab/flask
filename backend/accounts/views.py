@@ -1,8 +1,10 @@
+from drf_spectacular.utils import extend_schema
 from rest_framework import status
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.permissions import AllowAny, IsAuthenticated, IsAdminUser
-from rest_framework_simplejwt.views import TokenObtainPairView
+from rest_framework.throttling import ScopedRateThrottle
+from rest_framework_simplejwt.views import TokenBlacklistView, TokenObtainPairView, TokenRefreshView
 from django.contrib.auth import get_user_model
 
 
@@ -13,6 +15,19 @@ from .serializers import *
 class CustomTokenObtainPairView(TokenObtainPairView):
     serializer_class = CustomTokenObtainPairSerializer
     permission_classes = []
+    throttle_classes = [ScopedRateThrottle]
+    throttle_scope = 'login'
+
+
+class ThrottledTokenRefreshView(TokenRefreshView):
+    throttle_classes = [ScopedRateThrottle]
+    throttle_scope = 'token_refresh'
+
+
+class LogoutView(TokenBlacklistView):
+    """Logout: blacklists the refresh token, so it cannot mint new access tokens."""
+    throttle_classes = [ScopedRateThrottle]
+    throttle_scope = 'token_refresh'
 
 
 class WorkingGroupViewSet(BaseModelViewSet):
@@ -28,6 +43,7 @@ class RoleViewSet(BaseModelViewSet):
 class MemberViewSet(BaseModelViewSet):
     queryset = get_user_model().objects.prefetch_related('roles')
     serializer_class = MemberSerializer
+    throttle_scope = None  # set per action (register)
 
     def get_permissions(self):
         if self.action == 'register':
@@ -39,7 +55,8 @@ class MemberViewSet(BaseModelViewSet):
             permission_classes = [IsAdminUser]
         return [permission() for permission in permission_classes]
 
-    @action(detail=False, methods=['POST'], serializer_class=RegistrationSerializer)
+    @action(detail=False, methods=['POST'], serializer_class=RegistrationSerializer,
+            throttle_classes=[ScopedRateThrottle], throttle_scope='register')
     def register(self, request):
         serializer = RegistrationSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
@@ -50,8 +67,10 @@ class MemberViewSet(BaseModelViewSet):
     def me(self, request):
         return Response(MemberSerializer(request.user).data)
 
+    @extend_schema(responses=MemberDirectorySerializer(many=True))
     @action(detail=False, methods=['GET'], serializer_class=MemberDirectorySerializer)
     def directory(self, request):
         """Active members by name, for choosing whom to share a record with. No emails."""
-        members = get_user_model().objects.filter(is_active=True).order_by('last_name', 'first_name')
-        return Response(MemberDirectorySerializer(members, many=True).data)
+        members = get_user_model().objects.filter(is_active=True).order_by('last_name', 'first_name', 'id')
+        page = self.paginate_queryset(members)
+        return self.get_paginated_response(MemberDirectorySerializer(page, many=True).data)

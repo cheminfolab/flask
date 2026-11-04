@@ -1,105 +1,133 @@
 services:
 
   database:
-    container_name: eln_db
-    # restart: unless-stopped
-    image: postgres:15.1
-    env_file: .env
-    environment:
-      - POSTGRES_HOST=localhost
-      - POSTGRES_PORT=5432
+    restart: unless-stopped
+    # Debian-based like before: switching to Alpine changes text collation and can corrupt indexes
+    image: postgres:15.19
+    env_file: ${ENV_FILE:-.env}
     volumes:
       - eln_db:/var/lib/postgresql/data/
     # bound to localhost only: reachable from the host for development, not from the network
     ports:
-      - "127.0.0.1:5432:5432"
+      - "127.0.0.1:${DB_PORT:-5432}:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U \"$${POSTGRES_USER}\" -d \"$${POSTGRES_DB}\""]
+      interval: 5s
+      timeout: 5s
+      retries: 20
     networks:
       - eln
 
-  frontend:
-    container_name: eln_frontend
-    # restart: unless-stopped
-    build:
-      context: ./frontend
-      dockerfile: Dockerfile
-#    ports:
-#      - "3000:3000"
-#    depends_on:
-#      - backend
-    volumes:
-      - build:/app/dist
-      # - ./frontend:/app
-#    stdin_open: true
-#    tty: true
-#    networks:
-#      - eln
-
   backend:
-    container_name: eln_backend
-    # restart: unless-stopped
+    restart: unless-stopped
     build:
       context: ./backend
       dockerfile: Dockerfile
-    env_file: .env
+    env_file: ${ENV_FILE:-.env}
     environment:
       - POSTGRES_HOST=database
+      - POSTGRES_PORT=5432
       # attachments are streamed by nginx after Django's permission check
       - ATTACHMENT_X_ACCEL_PREFIX=/protected-attachments/
-      - POSTGRES_PORT=5432
     # localhost only: external traffic must go through nginx
     ports:
-      - "127.0.0.1:8000:8000"
+      - "127.0.0.1:${BACKEND_PORT:-8000}:8000"
     depends_on:
-      - database
+      database:
+        condition: service_healthy
     volumes:
+      # Source bind mount: keeps the migrations generated at startup on the host. Remove it
+      # once migrations are committed (see README "Database migrations").
       - ./backend:/app
       - static:/app/static
       - media:/app/media
       - private_media:/app/private_media
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/api/health/', timeout=5)"]
+      interval: 10s
+      timeout: 10s
+      retries: 5
+      start_period: 120s   # migrations and collectstatic run before gunicorn starts
     networks:
       - eln
 
   nginx:
-    container_name: nginx
-    image: nginx:1.23-alpine
-    # restart: unless-stopped
+    restart: unless-stopped
+    # nginx with the built SPA baked in (multi-stage build in frontend/Dockerfile)
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
     ports:
-      - "80:80"
-      - "443:443"
+      - "${HTTP_PORT:-80}:80"
     volumes:
-      - ./nginx/conf.d:/etc/nginx/conf.d
-      # - ./certbot/conf:/etc/nginx/ssl
-      # - ./certbot/data:/usr/share/nginx/html/letsencrypt
-      - build:/var/www/frontend
-      - static:/static
-      - media:/media
+      - ./nginx/conf.d:/etc/nginx/conf.d:ro
+      - static:/static:ro
+      - media:/media:ro
       - private_media:/private_media:ro
     depends_on:
-      - database
-      - backend
-      # - frontend
+      backend:
+        condition: service_healthy
+    healthcheck:
+      # checks the whole chain: nginx -> Django -> PostgreSQL
+      test: ["CMD", "wget", "-q", "-O", "/dev/null", "http://127.0.0.1/api/health/"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
     networks:
       - eln
 
-#  certbot:
-#    container_name: certbot
-#    image: certbot/certbot:latest
-#    restart: unless-stopped
-#    # command: certonly --webroot --webroot-path=/usr/share/nginx/html/letsencrypt --email email@email.com --agree-tos --no-eff-email -d domain.com
-#    volumes:
-#      - ./certbot/conf:/etc/letsencrypt
-#      - ./certbot/data:/usr/share/nginx/html/letsencrypt
-#      - ./certbot/logs:/var/log/letsencrypt
-#    networks:
-#      - flask_eln
+  backup:
+    restart: unless-stopped
+    # same server version as `database`, so pg_dump matches it
+    image: postgres:15.19
+    env_file: ${ENV_FILE:-.env}
+    environment:
+      - PGHOST=database
+    entrypoint: ["/bin/sh", "/scripts/backup-loop.sh"]
+    volumes:
+      - ./scripts:/scripts:ro
+      - backups:/backups
+      - media:/data/media:ro
+      - private_media:/data/private_media:ro
+    depends_on:
+      database:
+        condition: service_healthy
+    healthcheck:
+      # healthy while the last successful backup, or the container start, is under 26 hours old:
+      # unhealthy means no backup has succeeded for more than a day
+      test: ["CMD-SHELL", "find /backups/LAST_SUCCESS /tmp/backup-service-started -mmin -1560 2>/dev/null | grep -q ."]
+      interval: 5m
+      timeout: 10s
+      start_period: 30s
+      start_interval: 5s
+    networks:
+      - eln
+
+  # On-demand tool, not started by `up`: used by scripts/restore.sh.
+  restore:
+    profiles: ["tools"]
+    image: postgres:15.19
+    env_file: ${ENV_FILE:-.env}
+    environment:
+      - PGHOST=database
+    entrypoint: ["/bin/sh", "/scripts/restore-in-container.sh"]
+    volumes:
+      - ./scripts:/scripts:ro
+      - backups:/backups:ro
+      - media:/data/media
+      - private_media:/data/private_media
+    depends_on:
+      database:
+        condition: service_healthy
+    networks:
+      - eln
 
 volumes:
   eln_db:
-  build:
   static:
   media:
   private_media:
+  backups:
 
 networks:
   eln:
-    name: flask_eln

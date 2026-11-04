@@ -200,6 +200,12 @@ class PrivateMediaStorage(LazyObject):
 private_storage = PrivateMediaStorage()
 
 
+def get_private_storage():
+    # Passed as a callable so migrations record a reference to this function instead of
+    # the machine-specific storage path (which made every machine see a model change).
+    return private_storage
+
+
 def attachment_path(instance, filename):
     # server-generated name: user-supplied names never become paths
     return f"attachments/{instance.experiment_id}/{instance.id}"
@@ -209,7 +215,7 @@ class Attachment(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     experiment = models.ForeignKey(Experiment, on_delete=models.PROTECT, related_name='attachments')
     entry = models.ForeignKey(Entry, null=True, blank=True, on_delete=models.PROTECT, related_name='attachments')
-    file = models.FileField(storage=private_storage, upload_to=attachment_path, max_length=255)
+    file = models.FileField(storage=get_private_storage, upload_to=attachment_path, max_length=255)
     original_name = models.CharField(max_length=255)
     content_type = models.CharField(max_length=100)
     size = models.BigIntegerField()

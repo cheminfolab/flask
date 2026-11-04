@@ -139,3 +139,8 @@ class BaseModelViewSet(CsvMixin, ProvenanceMixin, ModelViewSet):
     - Every request runs in a database transaction (ATOMIC_REQUESTS).
     """
     permission_classes = [ReadOnlyOrAdmin]
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        # pagination needs a stable order; fall back to the primary key
+        return queryset if queryset.ordered else queryset.order_by('pk')

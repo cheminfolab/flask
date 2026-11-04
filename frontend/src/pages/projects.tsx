@@ -160,7 +160,7 @@ const Projects = () => {
     const [creating, setCreating] = useState(false)
 
     useEffect(() => {
-        api.getAll<Project[]>("projects")
+        api.getAll<Project>("projects")
             .then(setProjects)
             .catch(err => {
                 setProjects([])
