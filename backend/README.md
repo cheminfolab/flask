@@ -39,31 +39,25 @@ Self-registered accounts are inactive until an admin activates them (`/admin/` â
 | `python manage.py check --deploy` | production settings check |
 | `python manage.py spectacular --file ../openapi/schema.yml --validate --fail-on-warn` | regenerate the API schema after API changes (commit it) |
 | `python manage.py ensure_superuser` | create the first superuser from the environment |
+| `python manage.py verify_attachments` | check every attachment file against its recorded SHA-256 |
 
 ## Backups
 
-A complete backup has two parts: the **database** and the **files** (substance images in `media/`,
-experiment attachments in `private_media/`). Attachments are referenced by the database and verified
-by their SHA-256 checksum, so back up both together.
+In Docker, the `backup` service backs up the database and all files daily, and `scripts/restore.sh`
+restores them. See "Operations: health, logs, backups" in the [main README](../README.md).
 
-Database (consistent snapshot while the application is running):
-
-```bash
-docker compose exec database pg_dump -U "$POSTGRES_USER" -Fc "$POSTGRES_DB" > flask_$(date +%F).dump
-```
-
-Files (Docker volumes):
+After any restore, check the attachments against their recorded checksums:
 
 ```bash
-docker run --rm -v flask_media:/media -v flask_private_media:/private_media -v "$PWD":/backup alpine \
-  tar czf /backup/flask_files_$(date +%F).tar.gz /media /private_media
+python manage.py verify_attachments
 ```
 
-(Volume names are prefixed with the Compose project name, by default the directory name; check
-with `docker volume ls`.)
+For a native setup without Docker, back up both parts together:
 
-Restore into an empty database with `pg_restore -U <user> -d <db> --clean --if-exists <file>.dump`
-and unpack the file archive into the volumes. Test a restore before relying on a backup.
+```bash
+pg_dump -Fc -U <user> <db> > flask.dump        # database
+tar czf flask_files.tar.gz media private_media  # images and attachments
+```
 
 `manage.py dumpdata` is not a backup: it is not a consistent snapshot of a running system and
 does not include files.

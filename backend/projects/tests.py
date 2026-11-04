@@ -76,7 +76,7 @@ class ExperimentAccessTests(NotebookFixture):
         for name, can_read in expected.items():
             with self.subTest(user=name):
                 client = self.as_user(getattr(self, name))
-                listed = [e['id'] for e in client.get('/api/experiments/').data]
+                listed = [e['id'] for e in client.get('/api/experiments/').data['results']]
                 detail = client.get(self.url)
                 self.assertEqual(self.experiment.id in listed, can_read)
                 self.assertEqual(detail.status_code, status.HTTP_200_OK if can_read else status.HTTP_404_NOT_FOUND)
@@ -107,7 +107,7 @@ class ExperimentAccessTests(NotebookFixture):
         other = Project.objects.create(title='Other', owner=self.author)
         Experiment.objects.create(project=other, title='Elsewhere', owner=self.author)
 
-        listed = self.as_user(self.author).get(f'/api/experiments/?project={self.project.id}').data
+        listed = self.as_user(self.author).get(f'/api/experiments/?project={self.project.id}').data['results']
 
         self.assertEqual([e['title'] for e in listed], ['Suzuki coupling'])
 
@@ -159,7 +159,7 @@ class ProjectAccessTests(NotebookFixture):
                     'outsider': False, 'reader': False}
         for name, can_read in expected.items():
             with self.subTest(user=name):
-                listed = [p['id'] for p in self.as_user(getattr(self, name)).get('/api/projects/').data]
+                listed = [p['id'] for p in self.as_user(getattr(self, name)).get('/api/projects/').data['results']]
                 self.assertEqual(self.project.id in listed, can_read)
 
     def test_edit_access(self):
@@ -336,7 +336,7 @@ class LockAndCorrectionTests(NotebookFixture):
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
     def test_entries_of_unreadable_experiments_are_hidden(self):
-        self.assertEqual(self.as_user(self.outsider).get('/api/entries/').data, [])
+        self.assertEqual(self.as_user(self.outsider).get('/api/entries/').data['results'], [])
         self.assertEqual(
             self.as_user(self.outsider).get(f'/api/entries/{self.entry.id}/').status_code, status.HTTP_404_NOT_FOUND
         )
@@ -498,6 +498,27 @@ class AttachmentTests(NotebookFixture):
             self.as_user(self.author).delete(f'/api/attachments/{attachment_id}/').status_code, status.HTTP_409_CONFLICT
         )
 
+    def test_verify_attachments_detects_tampering_and_loss(self):
+        from io import StringIO
+        from django.core.management import call_command
+        from django.core.management.base import CommandError
+
+        first = Attachment.objects.get(pk=self.upload(self.author).data['id'])
+        second = Attachment.objects.get(pk=self.upload(self.author, name='b.txt', content=b'other').data['id'])
+        out = StringIO()
+        call_command('verify_attachments', stdout=out)
+        self.assertIn('All 2 attachments present and intact', out.getvalue())
+
+        with first.file.storage.open(first.file.name, 'wb') as handle:
+            handle.write(b'tampered')
+        second.file.storage.delete(second.file.name)
+
+        errors = StringIO()
+        with self.assertRaisesMessage(CommandError, '1 missing and 1 altered of 2 attachments'):
+            call_command('verify_attachments', stdout=StringIO(), stderr=errors)
+        self.assertIn(f'ALTERED: {first.id}', errors.getvalue())
+        self.assertIn(f'MISSING: {second.id}', errors.getvalue())
+
     def test_draft_delete_removes_file_after_commit(self):
         attachment_id = self.upload(self.author).data['id']
         stored = Attachment.objects.get(pk=attachment_id).file
@@ -517,8 +538,8 @@ class DirectoryAndDocsTests(NotebookFixture):
         response = self.as_user(self.outsider).get('/api/members/directory/')
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertIn('author', {m['first_name'] for m in response.data})
-        self.assertNotIn('email', response.data[0])
+        self.assertIn('author', {m['first_name'] for m in response.data['results']})
+        self.assertNotIn('email', response.data['results'][0])
 
     def test_schema_is_admin_only(self):
         self.client.force_authenticate(None)

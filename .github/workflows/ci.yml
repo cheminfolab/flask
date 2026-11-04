@@ -100,3 +100,29 @@ jobs:
 
       - name: type-check and build
         run: npm run build
+
+  # Builds the images and runs the whole stack: health checks, smoke test through nginx
+  # (including X-Accel attachment downloads) and a real backup -> restore cycle.
+  docker-e2e:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: write a throwaway env file
+        run: |
+          {
+            echo "SECRET_KEY=$(openssl rand -hex 32)"
+            echo "DEBUG=False"
+            echo "ALLOWED_HOSTS=localhost"
+            echo "TIME_ZONE=Europe/Berlin"
+            echo "POSTGRES_DB=eln"
+            echo "POSTGRES_USER=eln"
+            echo "POSTGRES_PASSWORD=$(openssl rand -hex 16)"
+            echo "DJANGO_SUPERUSER_EMAIL=ci-admin@example.org"
+            echo "DJANGO_SUPERUSER_PASSWORD=$(openssl rand -hex 16)"
+            echo "HTTP_PORT=8080"
+            echo "BACKUP_ON_START=false"
+          } > "$RUNNER_TEMP/e2e.env"
+
+      - name: end-to-end test
+        run: ENV_FILE="$RUNNER_TEMP/e2e.env" COMPOSE_PROJECT_NAME=flask-e2e sh scripts/e2e.sh

@@ -1,0 +1,8 @@
+# Build context: frontend/. The image installs its own node_modules (npm ci);
+# copying the host's (e.g. macOS binaries) would break or taint the Linux build.
+node_modules/
+dist/
+coverage/
+.env*
+*.tsbuildinfo
+Dockerfile

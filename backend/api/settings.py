@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.0/ref/settings/
 """
 
+import sys
 from pathlib import Path
 from decouple import config, Csv  # Config, RepositoryEnv, Csv  #
 from datetime import timedelta
@@ -30,6 +31,9 @@ SECRET_KEY = config('SECRET_KEY')
 DEBUG = config('DEBUG', default=False, cast=bool)
 
 ALLOWED_HOSTS = config('ALLOWED_HOSTS', default='127.0.0.1', cast=Csv())
+# container health checks call http://127.0.0.1/api/health/ from inside the network
+if '127.0.0.1' not in ALLOWED_HOSTS:
+    ALLOWED_HOSTS.append('127.0.0.1')
 
 
 # Application definition
@@ -73,7 +77,34 @@ REST_FRAMEWORK = {
     # 409 for deletes blocked by PROTECT instead of a 500
     'EXCEPTION_HANDLER': 'api.exceptions.exception_handler',
     'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
+    'DEFAULT_PAGINATION_CLASS': 'api.pagination.DefaultPagination',
+    # Brute-force protection for the public endpoints (scoped throttles, see accounts/views.py).
+    # Counters live in the file cache below, shared by all gunicorn workers of the container.
+    'DEFAULT_THROTTLE_RATES': {
+        'login': config('THROTTLE_LOGIN', default='10/minute'),
+        'token_refresh': config('THROTTLE_TOKEN_REFRESH', default='60/minute'),
+        'register': config('THROTTLE_REGISTER', default='5/hour'),
+    },
+    # proxies in front of Django (nginx): the client address is the entry they add to X-Forwarded-For
+    'NUM_PROXIES': config('NUM_PROXIES', default=1, cast=int),
 }
+
+# Not the database cache: requests run in transactions (ATOMIC_REQUESTS) that are rolled
+# back when a request fails, which would erase the throttle counts of failed logins.
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.filebased.FileBasedCache',
+        'LOCATION': config('CACHE_DIR', default='/tmp/flask-cache'),
+    }
+}
+
+# `manage.py test`: no state shared between tests or runs. Throttle tests set their own rates.
+TESTING = sys.argv[1:2] == ['test']
+if TESTING:
+    CACHES = {'default': {'BACKEND': 'django.core.cache.backends.locmem.LocMemCache'}}
+    REST_FRAMEWORK['DEFAULT_THROTTLE_RATES'] = {
+        scope: '100000/minute' for scope in REST_FRAMEWORK['DEFAULT_THROTTLE_RATES']
+    }
 
 SPECTACULAR_SETTINGS = {
     'TITLE': 'FLASK ELN API',
@@ -116,6 +147,7 @@ SIMPLE_JWT = {
 }
 
 MIDDLEWARE = [
+    'api.log.RequestIdMiddleware',
     'django.middleware.security.SecurityMiddleware',
 
     "corsheaders.middleware.CorsMiddleware",
@@ -232,3 +264,22 @@ SESSION_COOKIE_SECURE = HTTPS
 CSRF_COOKIE_SECURE = HTTPS
 SECURE_HSTS_SECONDS = config('SECURE_HSTS_SECONDS', default=0, cast=int) if HTTPS else 0
 
+
+# Structured logging: one JSON object per line on stdout, with the request id.
+LOG_LEVEL = config('LOG_LEVEL', default='INFO')
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'filters': {'request_id': {'()': 'api.log.RequestIdFilter'}},
+    'formatters': {'json': {'()': 'api.log.JsonFormatter'}},
+    'handlers': {
+        'stdout': {'class': 'logging.StreamHandler', 'formatter': 'json', 'filters': ['request_id']},
+    },
+    'root': {'handlers': ['stdout'], 'level': LOG_LEVEL},
+    'loggers': {
+        # 4xx/5xx responses and unhandled exceptions with traceback
+        'django.request': {'handlers': ['stdout'], 'level': 'WARNING', 'propagate': False},
+        'django.security': {'handlers': ['stdout'], 'level': 'WARNING', 'propagate': False},
+        'flask.security': {'handlers': ['stdout'], 'level': 'INFO', 'propagate': False},
+    },
+}

@@ -12,6 +12,7 @@ import { SearchForm } from "@/components/search-form"
 import type { ColumnDef } from "@tanstack/react-table"
 
 import useAxios from "@/hooks/useAxios"
+import { Button } from "@/components/ui/button"
 import { errorMessage } from "@/lib/api"
 import Layout, { Breadcrumbs } from "@/components/layout"
 import { DataTable } from "@/components/substance-table"
@@ -51,17 +52,30 @@ const SubstanceHeader = () => (
     </header>
 )
 
+const PAGE_SIZE = 50
+
 const Substances = () => {
     const [substances, setSubstances] = useState<Substance[]>([])
+    const [count, setCount] = useState(0)
+    const [page, setPage] = useState(1)
     const [error, setError] = useState<string | null>(null)
     const api = useAxios()
 
     useEffect(() => {
+        let current = true  // ignore responses of pages the user already left
         api
-            .getAll<Substance[]>("substances")
-            .then(data => setSubstances(data))
-            .catch(error => setError(errorMessage(error)))
-    }, [api])
+            .list<Substance>("substances", { page, page_size: PAGE_SIZE })
+            .then(data => {
+                if (!current) return
+                setSubstances(data.results)
+                setCount(data.count)
+                setError(null)
+            })
+            .catch(error => { if (current) setError(errorMessage(error)) })
+        return () => { current = false }
+    }, [api, page])
+
+    const pages = Math.max(1, Math.ceil(count / PAGE_SIZE))
 
     return(
         <Layout
@@ -70,6 +84,17 @@ const Substances = () => {
                 <div className="flex flex-1 flex-col gap-4 p-4">
                     {error ? <p role="alert" className="text-destructive text-sm">{error}</p> : null}
                     <DataTable columns={columns} data={substances} />
+                    <div className="flex items-center justify-end gap-2 text-sm">
+                        <span className="text-muted-foreground">
+                            {count} substances · page {page} of {pages}
+                        </span>
+                        <Button variant="outline" size="sm" disabled={page <= 1} onClick={() => setPage(page - 1)}>
+                            Previous
+                        </Button>
+                        <Button variant="outline" size="sm" disabled={page >= pages} onClick={() => setPage(page + 1)}>
+                            Next
+                        </Button>
+                    </div>
                 </div>
             }
         />

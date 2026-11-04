@@ -1,0 +1,12 @@
+# Build context: backend/. Keep local data, secrets and caches out of the image.
+.env*
+**/__pycache__/
+**/*.py[cod]
+database/
+logfile
+media/
+private_media/
+static/
+.idea/
+.vscode/
+Dockerfile*

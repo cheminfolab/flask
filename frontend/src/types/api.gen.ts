@@ -977,6 +977,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/health/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * @description Liveness/readiness probe for Docker and load balancers: 200 when the
+         *     application can reach the database, 503 otherwise. Reveals nothing else.
+         */
+        get: operations["health_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/materials/": {
         parameters: {
             query?: never;
@@ -1101,7 +1121,7 @@ export interface paths {
             cookie?: never;
         };
         /** @description Active members by name, for choosing whom to share a record with. No emails. */
-        get: operations["members_directory_retrieve"];
+        get: operations["members_directory_list"];
         put?: never;
         post?: never;
         delete?: never;
@@ -1800,6 +1820,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/token/blacklist/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** @description Logout: blacklists the refresh token, so it cannot mint new access tokens. */
+        post: operations["token_blacklist_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/token/refresh/": {
         parameters: {
             query?: never;
@@ -2299,6 +2336,12 @@ export interface components {
          * @enum {string}
          */
         HazardStatementCategoryEnum: "physical" | "health" | "environmental" | "disposal";
+        Health: {
+            status: string;
+        };
+        HealthFailure: {
+            status: string;
+        };
         /**
          * @description * `procedure` - procedure
          *     * `observation` - observation
@@ -2367,6 +2410,276 @@ export interface components {
             password: string;
             working_group?: number | null;
             roles?: number[];
+        };
+        PaginatedAttachmentList: {
+            /** @example 123 */
+            count: number;
+            /**
+             * Format: uri
+             * @example http://api.example.org/accounts/?page=4
+             */
+            next?: string | null;
+            /**
+             * Format: uri
+             * @example http://api.example.org/accounts/?page=2
+             */
+            previous?: string | null;
+            results: components["schemas"]["Attachment"][];
+        };
+        PaginatedBuildingList: {
+            /** @example 123 */
+            count: number;
+            /**
+             * Format: uri
+             * @example http://api.example.org/accounts/?page=4
+             */
+            next?: string | null;
+            /**
+             * Format: uri
+             * @example http://api.example.org/accounts/?page=2
+             */
+            previous?: string | null;
+            results: components["schemas"]["Building"][];
+        };
+        PaginatedComponentList: {
+            /** @example 123 */
+            count: number;
+            /**
+             * Format: uri
+             * @example http://api.example.org/accounts/?page=4
+             */
+            next?: string | null;
+            /**
+             * Format: uri
+             * @example http://api.example.org/accounts/?page=2
+             */
+            previous?: string | null;
+            results: components["schemas"]["Component"][];
+        };
+        PaginatedCompoundListList: {
+            /** @example 123 */
+            count: number;
+            /**
+             * Format: uri
+             * @example http://api.example.org/accounts/?page=4
+             */
+            next?: string | null;
+            /**
+             * Format: uri
+             * @example http://api.example.org/accounts/?page=2
+             */
+            previous?: string | null;
+            results: components["schemas"]["CompoundList"][];
+        };
+        PaginatedContainerList: {
+            /** @example 123 */
+            count: number;
+            /**
+             * Format: uri
+             * @example http://api.example.org/accounts/?page=4
+             */
+            next?: string | null;
+            /**
+             * Format: uri
+             * @example http://api.example.org/accounts/?page=2
+             */
+            previous?: string | null;
+            results: components["schemas"]["Container"][];
+        };
+        PaginatedEntryList: {
+            /** @example 123 */
+            count: number;
+            /**
+             * Format: uri
+             * @example http://api.example.org/accounts/?page=4
+             */
+            next?: string | null;
+            /**
+             * Format: uri
+             * @example http://api.example.org/accounts/?page=2
+             */
+            previous?: string | null;
+            results: components["schemas"]["Entry"][];
+        };
+        PaginatedExperimentList: {
+            /** @example 123 */
+            count: number;
+            /**
+             * Format: uri
+             * @example http://api.example.org/accounts/?page=4
+             */
+            next?: string | null;
+            /**
+             * Format: uri
+             * @example http://api.example.org/accounts/?page=2
+             */
+            previous?: string | null;
+            results: components["schemas"]["Experiment"][];
+        };
+        PaginatedExperimentShareList: {
+            /** @example 123 */
+            count: number;
+            /**
+             * Format: uri
+             * @example http://api.example.org/accounts/?page=4
+             */
+            next?: string | null;
+            /**
+             * Format: uri
+             * @example http://api.example.org/accounts/?page=2
+             */
+            previous?: string | null;
+            results: components["schemas"]["ExperimentShare"][];
+        };
+        PaginatedMaterialUsageList: {
+            /** @example 123 */
+            count: number;
+            /**
+             * Format: uri
+             * @example http://api.example.org/accounts/?page=4
+             */
+            next?: string | null;
+            /**
+             * Format: uri
+             * @example http://api.example.org/accounts/?page=2
+             */
+            previous?: string | null;
+            results: components["schemas"]["MaterialUsage"][];
+        };
+        PaginatedMemberDirectoryList: {
+            /** @example 123 */
+            count: number;
+            /**
+             * Format: uri
+             * @example http://api.example.org/accounts/?page=4
+             */
+            next?: string | null;
+            /**
+             * Format: uri
+             * @example http://api.example.org/accounts/?page=2
+             */
+            previous?: string | null;
+            results: components["schemas"]["MemberDirectory"][];
+        };
+        PaginatedMemberList: {
+            /** @example 123 */
+            count: number;
+            /**
+             * Format: uri
+             * @example http://api.example.org/accounts/?page=4
+             */
+            next?: string | null;
+            /**
+             * Format: uri
+             * @example http://api.example.org/accounts/?page=2
+             */
+            previous?: string | null;
+            results: components["schemas"]["Member"][];
+        };
+        PaginatedProjectList: {
+            /** @example 123 */
+            count: number;
+            /**
+             * Format: uri
+             * @example http://api.example.org/accounts/?page=4
+             */
+            next?: string | null;
+            /**
+             * Format: uri
+             * @example http://api.example.org/accounts/?page=2
+             */
+            previous?: string | null;
+            results: components["schemas"]["Project"][];
+        };
+        PaginatedProjectShareList: {
+            /** @example 123 */
+            count: number;
+            /**
+             * Format: uri
+             * @example http://api.example.org/accounts/?page=4
+             */
+            next?: string | null;
+            /**
+             * Format: uri
+             * @example http://api.example.org/accounts/?page=2
+             */
+            previous?: string | null;
+            results: components["schemas"]["ProjectShare"][];
+        };
+        PaginatedRoleList: {
+            /** @example 123 */
+            count: number;
+            /**
+             * Format: uri
+             * @example http://api.example.org/accounts/?page=4
+             */
+            next?: string | null;
+            /**
+             * Format: uri
+             * @example http://api.example.org/accounts/?page=2
+             */
+            previous?: string | null;
+            results: components["schemas"]["Role"][];
+        };
+        PaginatedStorageList: {
+            /** @example 123 */
+            count: number;
+            /**
+             * Format: uri
+             * @example http://api.example.org/accounts/?page=4
+             */
+            next?: string | null;
+            /**
+             * Format: uri
+             * @example http://api.example.org/accounts/?page=2
+             */
+            previous?: string | null;
+            results: components["schemas"]["Storage"][];
+        };
+        PaginatedSubstanceList: {
+            /** @example 123 */
+            count: number;
+            /**
+             * Format: uri
+             * @example http://api.example.org/accounts/?page=4
+             */
+            next?: string | null;
+            /**
+             * Format: uri
+             * @example http://api.example.org/accounts/?page=2
+             */
+            previous?: string | null;
+            results: components["schemas"]["Substance"][];
+        };
+        PaginatedUnitList: {
+            /** @example 123 */
+            count: number;
+            /**
+             * Format: uri
+             * @example http://api.example.org/accounts/?page=4
+             */
+            next?: string | null;
+            /**
+             * Format: uri
+             * @example http://api.example.org/accounts/?page=2
+             */
+            previous?: string | null;
+            results: components["schemas"]["Unit"][];
+        };
+        PaginatedWorkingGroupList: {
+            /** @example 123 */
+            count: number;
+            /**
+             * Format: uri
+             * @example http://api.example.org/accounts/?page=4
+             */
+            next?: string | null;
+            /**
+             * Format: uri
+             * @example http://api.example.org/accounts/?page=2
+             */
+            previous?: string | null;
+            results: components["schemas"]["WorkingGroup"][];
         };
         PatchedBuildingRequest: {
             name?: string;
@@ -2670,6 +2983,9 @@ export interface components {
             mol_weight_unit?: number | null;
             exact_mass_unit?: number | null;
         };
+        TokenBlacklistRequest: {
+            refresh: string;
+        };
         TokenRefresh: {
             readonly access: string;
             refresh: string;
@@ -2704,7 +3020,12 @@ export type $defs = Record<string, never>;
 export interface operations {
     attachments_list: {
         parameters: {
-            query?: never;
+            query?: {
+                /** @description A page number within the paginated result set. */
+                page?: number;
+                /** @description Number of results to return per page. */
+                page_size?: number;
+            };
             header?: never;
             path?: never;
             cookie?: never;
@@ -2716,7 +3037,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["Attachment"][];
+                    "application/json": components["schemas"]["PaginatedAttachmentList"];
                 };
             };
         };
@@ -2814,7 +3135,12 @@ export interface operations {
     };
     buildings_list: {
         parameters: {
-            query?: never;
+            query?: {
+                /** @description A page number within the paginated result set. */
+                page?: number;
+                /** @description Number of results to return per page. */
+                page_size?: number;
+            };
             header?: never;
             path?: never;
             cookie?: never;
@@ -2826,7 +3152,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["Building"][];
+                    "application/json": components["schemas"]["PaginatedBuildingList"];
                 };
             };
         };
@@ -3020,7 +3346,12 @@ export interface operations {
     };
     components_list: {
         parameters: {
-            query?: never;
+            query?: {
+                /** @description A page number within the paginated result set. */
+                page?: number;
+                /** @description Number of results to return per page. */
+                page_size?: number;
+            };
             header?: never;
             path?: never;
             cookie?: never;
@@ -3032,7 +3363,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["Component"][];
+                    "application/json": components["schemas"]["PaginatedComponentList"];
                 };
             };
         };
@@ -3226,7 +3557,12 @@ export interface operations {
     };
     compounds_list: {
         parameters: {
-            query?: never;
+            query?: {
+                /** @description A page number within the paginated result set. */
+                page?: number;
+                /** @description Number of results to return per page. */
+                page_size?: number;
+            };
             header?: never;
             path?: never;
             cookie?: never;
@@ -3238,7 +3574,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["CompoundList"][];
+                    "application/json": components["schemas"]["PaginatedCompoundListList"];
                 };
             };
         };
@@ -3432,7 +3768,12 @@ export interface operations {
     };
     containers_list: {
         parameters: {
-            query?: never;
+            query?: {
+                /** @description A page number within the paginated result set. */
+                page?: number;
+                /** @description Number of results to return per page. */
+                page_size?: number;
+            };
             header?: never;
             path?: never;
             cookie?: never;
@@ -3444,7 +3785,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["Container"][];
+                    "application/json": components["schemas"]["PaginatedContainerList"];
                 };
             };
         };
@@ -3638,7 +3979,12 @@ export interface operations {
     };
     entries_list: {
         parameters: {
-            query?: never;
+            query?: {
+                /** @description A page number within the paginated result set. */
+                page?: number;
+                /** @description Number of results to return per page. */
+                page_size?: number;
+            };
             header?: never;
             path?: never;
             cookie?: never;
@@ -3650,7 +3996,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["Entry"][];
+                    "application/json": components["schemas"]["PaginatedEntryList"];
                 };
             };
         };
@@ -3781,7 +4127,12 @@ export interface operations {
     };
     experiment_shares_list: {
         parameters: {
-            query?: never;
+            query?: {
+                /** @description A page number within the paginated result set. */
+                page?: number;
+                /** @description Number of results to return per page. */
+                page_size?: number;
+            };
             header?: never;
             path?: never;
             cookie?: never;
@@ -3793,7 +4144,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["ExperimentShare"][];
+                    "application/json": components["schemas"]["PaginatedExperimentShareList"];
                 };
             };
         };
@@ -3924,7 +4275,12 @@ export interface operations {
     };
     experiments_list: {
         parameters: {
-            query?: never;
+            query?: {
+                /** @description A page number within the paginated result set. */
+                page?: number;
+                /** @description Number of results to return per page. */
+                page_size?: number;
+            };
             header?: never;
             path?: never;
             cookie?: never;
@@ -3936,7 +4292,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["Experiment"][];
+                    "application/json": components["schemas"]["PaginatedExperimentList"];
                 };
             };
         };
@@ -4068,7 +4424,12 @@ export interface operations {
     };
     groups_list: {
         parameters: {
-            query?: never;
+            query?: {
+                /** @description A page number within the paginated result set. */
+                page?: number;
+                /** @description Number of results to return per page. */
+                page_size?: number;
+            };
             header?: never;
             path?: never;
             cookie?: never;
@@ -4080,7 +4441,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["WorkingGroup"][];
+                    "application/json": components["schemas"]["PaginatedWorkingGroupList"];
                 };
             };
         };
@@ -4272,7 +4633,7 @@ export interface operations {
             };
         };
     };
-    materials_list: {
+    health_retrieve: {
         parameters: {
             query?: never;
             header?: never;
@@ -4286,7 +4647,39 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["MaterialUsage"][];
+                    "application/json": components["schemas"]["Health"];
+                };
+            };
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HealthFailure"];
+                };
+            };
+        };
+    };
+    materials_list: {
+        parameters: {
+            query?: {
+                /** @description A page number within the paginated result set. */
+                page?: number;
+                /** @description Number of results to return per page. */
+                page_size?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PaginatedMaterialUsageList"];
                 };
             };
         };
@@ -4361,7 +4754,12 @@ export interface operations {
     };
     members_list: {
         parameters: {
-            query?: never;
+            query?: {
+                /** @description A page number within the paginated result set. */
+                page?: number;
+                /** @description Number of results to return per page. */
+                page_size?: number;
+            };
             header?: never;
             path?: never;
             cookie?: never;
@@ -4373,7 +4771,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["Member"][];
+                    "application/json": components["schemas"]["PaginatedMemberList"];
                 };
             };
         };
@@ -4502,9 +4900,14 @@ export interface operations {
             };
         };
     };
-    members_directory_retrieve: {
+    members_directory_list: {
         parameters: {
-            query?: never;
+            query?: {
+                /** @description A page number within the paginated result set. */
+                page?: number;
+                /** @description Number of results to return per page. */
+                page_size?: number;
+            };
             header?: never;
             path?: never;
             cookie?: never;
@@ -4516,7 +4919,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["MemberDirectory"];
+                    "application/json": components["schemas"]["PaginatedMemberDirectoryList"];
                 };
             };
         };
@@ -4630,7 +5033,12 @@ export interface operations {
     };
     project_shares_list: {
         parameters: {
-            query?: never;
+            query?: {
+                /** @description A page number within the paginated result set. */
+                page?: number;
+                /** @description Number of results to return per page. */
+                page_size?: number;
+            };
             header?: never;
             path?: never;
             cookie?: never;
@@ -4642,7 +5050,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["ProjectShare"][];
+                    "application/json": components["schemas"]["PaginatedProjectShareList"];
                 };
             };
         };
@@ -4773,7 +5181,12 @@ export interface operations {
     };
     projects_list: {
         parameters: {
-            query?: never;
+            query?: {
+                /** @description A page number within the paginated result set. */
+                page?: number;
+                /** @description Number of results to return per page. */
+                page_size?: number;
+            };
             header?: never;
             path?: never;
             cookie?: never;
@@ -4785,7 +5198,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["Project"][];
+                    "application/json": components["schemas"]["PaginatedProjectList"];
                 };
             };
         };
@@ -4916,7 +5329,12 @@ export interface operations {
     };
     roles_list: {
         parameters: {
-            query?: never;
+            query?: {
+                /** @description A page number within the paginated result set. */
+                page?: number;
+                /** @description Number of results to return per page. */
+                page_size?: number;
+            };
             header?: never;
             path?: never;
             cookie?: never;
@@ -4928,7 +5346,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["Role"][];
+                    "application/json": components["schemas"]["PaginatedRoleList"];
                 };
             };
         };
@@ -5122,7 +5540,12 @@ export interface operations {
     };
     storages_list: {
         parameters: {
-            query?: never;
+            query?: {
+                /** @description A page number within the paginated result set. */
+                page?: number;
+                /** @description Number of results to return per page. */
+                page_size?: number;
+            };
             header?: never;
             path?: never;
             cookie?: never;
@@ -5134,7 +5557,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["Storage"][];
+                    "application/json": components["schemas"]["PaginatedStorageList"];
                 };
             };
         };
@@ -5328,7 +5751,12 @@ export interface operations {
     };
     substances_list: {
         parameters: {
-            query?: never;
+            query?: {
+                /** @description A page number within the paginated result set. */
+                page?: number;
+                /** @description Number of results to return per page. */
+                page_size?: number;
+            };
             header?: never;
             path?: never;
             cookie?: never;
@@ -5340,7 +5768,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["Substance"][];
+                    "application/json": components["schemas"]["PaginatedSubstanceList"];
                 };
             };
         };
@@ -5556,6 +5984,30 @@ export interface operations {
             };
         };
     };
+    token_blacklist_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["TokenBlacklistRequest"];
+                "application/x-www-form-urlencoded": components["schemas"]["TokenBlacklistRequest"];
+                "multipart/form-data": components["schemas"]["TokenBlacklistRequest"];
+            };
+        };
+        responses: {
+            /** @description No response body */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
     token_refresh_create: {
         parameters: {
             query?: never;
@@ -5583,7 +6035,12 @@ export interface operations {
     };
     units_list: {
         parameters: {
-            query?: never;
+            query?: {
+                /** @description A page number within the paginated result set. */
+                page?: number;
+                /** @description Number of results to return per page. */
+                page_size?: number;
+            };
             header?: never;
             path?: never;
             cookie?: never;
@@ -5595,7 +6052,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["Unit"][];
+                    "application/json": components["schemas"]["PaginatedUnitList"];
                 };
             };
         };

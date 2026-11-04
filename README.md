@@ -13,17 +13,19 @@ experiment are booked out of inventory containers through a ledger.
 - [Notebook records: access and integrity](#notebook-records-access-and-integrity)
 - [API documentation and the frontend contract](#api-documentation-and-the-frontend-contract)
 - [Database migrations](#database-migrations)
+- [Operations: health, logs, backups](#operations-health-logs-backups)
 - [Testing](#testing)
 - [Not yet covered](#not-yet-covered)
 
 ## Architecture
 
 ```
-browser ── nginx :80 ─┬─ /             React SPA (frontend/dist, built by the frontend container)
+browser ── nginx :80 ─┬─ /             React SPA (built into the nginx image)
                       ├─ /api, /admin  Django + DRF (gunicorn, backend container)
                       ├─ /static, /media                    (public files)
                       └─ /protected-attachments  internal only, via X-Accel-Redirect
 Django ── PostgreSQL 15 (database container)
+backup container: daily pg_dump + file archive into the `backups` volume
 ```
 
 | Path | Contents |
@@ -45,13 +47,18 @@ Prerequisite: Docker with Compose.
 
 1. Create `.env` in the repository root (see below). At minimum set `SECRET_KEY`,
    `POSTGRES_PASSWORD`, `DJANGO_SUPERUSER_EMAIL` and `DJANGO_SUPERUSER_PASSWORD`.
-2. Start everything:
+2. Start everything (`--wait` returns once all health checks pass):
 
    ```bash
-   docker compose up -d --build
+   docker compose up -d --build --wait
    ```
 
 3. Open http://localhost/ and log in with the superuser. The Django admin is at http://localhost/admin/.
+
+Upgrading from a checkout before November 2026: the stack no longer uses the `<project>_build`
+volume or fixed container names (`eln_db`, `eln_backend`, `nginx`). Run
+`docker compose up -d --build --remove-orphans` once; `docker volume rm flask_build` removes the
+unused volume. The database volume is unchanged.
 
 Stop with `docker compose down` (add `-v` only if you want to delete the database and files).
 
@@ -73,6 +80,13 @@ Stop with `docker compose down` (add `-v` only if you want to delete the databas
 | `SECURE_HSTS_SECONDS` | | `0` | HSTS max-age when `HTTPS=True`, e.g. `31536000` |
 | `ATTACHMENT_MAX_SIZE_MB` | | `100` | upload limit; keep nginx `client_max_body_size` at least as large |
 | `PRIVATE_MEDIA_ROOT` | | `backend/private_media` | where attachment files are stored |
+| `THROTTLE_LOGIN`, `THROTTLE_TOKEN_REFRESH`, `THROTTLE_REGISTER` | | `10/minute`, `60/minute`, `5/hour` | request limits per client address |
+| `NUM_PROXIES` | | `1` | proxies in front of Django (nginx); used to find the real client address |
+| `GUNICORN_WORKERS`, `GUNICORN_TIMEOUT` | | `3`, `120` | application server processes and request timeout (s) |
+| `LOG_LEVEL` | | `INFO` | application log level |
+| `BACKUP_TIME`, `BACKUP_KEEP_DAYS`, `BACKUP_ON_START` | | `02:30`, `14`, `true` | daily backup time (in `TIME_ZONE`), retention, backup at container start |
+| `HTTP_PORT`, `DB_PORT`, `BACKEND_PORT` | | `80`, `5432`, `8000` | host ports (database and backend on `127.0.0.1` only) |
+| `ENV_FILE` | | `.env` | env file used by Compose (set in the shell, e.g. for a second test stack) |
 
 The database (5432) and backend (8000) ports are published on `127.0.0.1` only; external traffic goes through nginx.
 
@@ -156,6 +170,50 @@ from the models, also by the container on start (`makemigrations` then `migrate`
 choice while no database holds data that must be kept. Before the first production database, start
 committing migrations and remove `makemigrations` from `backend/entrypoint.sh`.
 
+## Operations: health, logs, backups
+
+**Health.** `GET /api/health/` returns `{"status": "ok"}` (200) when Django reaches the database,
+503 otherwise; it needs no login and reveals nothing else. Every container has a health check
+(`docker compose ps`); nginx's check covers the whole chain nginx → Django → PostgreSQL.
+The backup container turns unhealthy when the last successful backup is older than 26 hours.
+
+**Logs.** `docker compose logs -f backend` shows one JSON object per line. Every response carries an
+`X-Request-ID` header; nginx logs the same id (`rid=`), so a request can be followed through both.
+Failed logins are logged as `login_failed` with the client address, never with the email or password.
+Logs stay on the server; no external monitoring service is used.
+
+**Rate limits.** Login, token refresh and registration are throttled per client address
+(see `THROTTLE_*`); excess requests get 429.
+
+**Pagination.** All list endpoints return `{"count", "next", "previous", "results"}`;
+use `?page=` and `?page_size=` (at most 500).
+
+**Backups.** The `backup` service writes a backup at `BACKUP_TIME` every day (and at start) to the
+`backups` volume and keeps `BACKUP_KEEP_DAYS` days. Each backup is a folder with `database.dump`
+(pg_dump), `files.tar.gz` (images and attachments) and `SHA256SUMS`. A backup on the same disk does not
+protect against losing that disk: copy the folders off the server regularly, e.g.
+
+```bash
+docker compose cp backup:/backups ./offsite-copy     # then move ./offsite-copy elsewhere
+```
+
+Run a backup right now with `docker compose exec backup sh /scripts/backup.sh`.
+
+**Restore.**
+
+```bash
+scripts/restore.sh --list                      # available backups and the last success
+scripts/restore.sh 2026-11-04T023000Z --yes    # replaces ALL data with that backup
+```
+
+The script stops the application, verifies the checksums, restores database and files, starts the
+application again and runs `manage.py verify_attachments`, which checks every attachment against the
+checksum recorded at upload. To restore an off-site copy, copy its folder into the volume first
+(`docker compose cp ./2026-11-04T023000Z backup:/backups/`).
+
+`scripts/e2e.sh` runs a complete backup → change → restore cycle against a throwaway stack (CI does
+this on every push).
+
 ## Testing
 
 Backend (needs a PostgreSQL 15+ server; the runner creates and drops its own `test_*` database):
@@ -175,11 +233,18 @@ npm run lint
 npm run build     # type-check and production build
 ```
 
+End to end (builds the images and runs a separate, throwaway stack; needs Docker):
+
+```bash
+ENV_FILE=<test env file> COMPOSE_PROJECT_NAME=flask-e2e HTTP_PORT=8088 sh scripts/e2e.sh
+```
+
+The env file needs at least `SECRET_KEY`, `POSTGRES_PASSWORD` and `DJANGO_SUPERUSER_EMAIL`/`_PASSWORD`.
+
 CI (`.github/workflows/ci.yml`) runs all of this, plus the schema and type drift checks, on every push and pull request.
 
 ## Not yet covered
 
-- TLS in the nginx configuration (settings are ready: `HTTPS=True`).
-- Scheduled backups of the database and the `media` / `private_media` volumes, and a tested restore.
-- Pagination of list endpoints.
+- TLS in the nginx configuration (settings are ready: `HTTPS=True`); deliberately left to an upstream proxy for now.
+- Automatic off-site copies of backups (copy them off the server yourself, see above).
 - Frontend pages for experiments, entries and attachments (the API is complete; the Projects page lists and creates projects).

@@ -23,8 +23,8 @@ class ReadAccessTests(APITestCase):
         response = self.client.get('/api/substances/')
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response.data[0]['name'], 'sulfuric acid')
-        self.assertNotIn('structure', response.data[0])
+        self.assertEqual(response.data['results'][0]['name'], 'sulfuric acid')
+        self.assertNotIn('structure', response.data['results'][0])
 
 
 class ContainerPermissionTests(APITestCase):
