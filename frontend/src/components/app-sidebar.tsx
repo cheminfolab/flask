@@ -1,7 +1,9 @@
+import { useState, type ComponentProps } from "react"
+import { Link, Outlet } from "react-router"
 import { 
   Calendar, 
   Home, 
-  // Inbox, 
+  Inbox,
   Settings,
   FolderOpen,
   PillBottle,
@@ -11,7 +13,8 @@ import {
   FlaskRound,
   CircleQuestionMark,
   ChevronsLeftRightEllipsis,
-  BookMarked
+  BookMarked,
+  type LucideIcon
 } from "lucide-react"
 
 import {
@@ -28,15 +31,16 @@ import {
 } from "@/components/ui/sidebar"
 
 import { NavUser } from "./nav-user"
-import { useState, type ComponentProps } from "react"
-import { Link, Outlet } from "react-router"
  
 export const AppSidebar = ({...props}: ComponentProps<typeof Sidebar>) => {
-
-  // user, setUser = useContext()
+  type ItemType = {
+      title: string,
+      url: string,
+      icon: LucideIcon,
+  }
 
   // Menu items.
-  const items = [
+  const items: ItemType[] = [
     {
       title: "Home",
       url: "/",
@@ -44,7 +48,7 @@ export const AppSidebar = ({...props}: ComponentProps<typeof Sidebar>) => {
     },
     {
       title: "Projects",
-      url: "#",
+      url: "/projects",
       icon: FolderOpen,
     },
     {
@@ -54,7 +58,7 @@ export const AppSidebar = ({...props}: ComponentProps<typeof Sidebar>) => {
     },
     {
       title: "Containers",
-      url: "#",
+      url: "/containers",
       icon: PillBottle,
     },
     {
@@ -67,11 +71,11 @@ export const AppSidebar = ({...props}: ComponentProps<typeof Sidebar>) => {
       url: "#",
       icon: Cpu,
     },
-    // {
-    //   title: "Inbox",
-    //   url: "#",
-    //   icon: Inbox,
-    // },
+    {
+      title: "Inbox",
+      url: "#",
+      icon: Inbox,
+    },
     {
       title: "Calendar",
       url: "#",
@@ -102,13 +106,7 @@ export const AppSidebar = ({...props}: ComponentProps<typeof Sidebar>) => {
     },
   ]
 
-  const user = {
-    name: "shadcn",
-    email: "m@example.com",
-    avatar: "/avatars/shadcn.jpg",
-  }
-
-  const [activeItem, setActiveItem] = useState(items[0])
+  const [activeItem, setActiveItem] = useState<ItemType>(items[0])
 
   return(
     <Sidebar collapsible="icon" {...props}>
@@ -137,7 +135,7 @@ export const AppSidebar = ({...props}: ComponentProps<typeof Sidebar>) => {
               {items.map((item) => (
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton 
-                    isActive={activeItem.title === item.title}
+                    isActive={activeItem?.title === item.title}
                     onClick={() => setActiveItem(item)}
                     asChild
                   >
@@ -151,6 +149,7 @@ export const AppSidebar = ({...props}: ComponentProps<typeof Sidebar>) => {
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
+
         <SidebarGroup className="mt-auto">
           {/* <SidebarGroupLabel>Application</SidebarGroupLabel> */}
           <SidebarGroupContent>
@@ -158,7 +157,7 @@ export const AppSidebar = ({...props}: ComponentProps<typeof Sidebar>) => {
               {subItems.map((item) => (
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton 
-                    isActive={activeItem.title === item.title}
+                    isActive={activeItem?.title === item.title}
                     onClick={() => setActiveItem(item)}
                     asChild
                   >
@@ -170,7 +169,6 @@ export const AppSidebar = ({...props}: ComponentProps<typeof Sidebar>) => {
                 </SidebarMenuItem>
               ))}
               <SidebarMenuItem>
-                {/* <SettingsDialog /> */}
                 <Outlet />
               </SidebarMenuItem>
             </SidebarMenu>
@@ -178,7 +176,7 @@ export const AppSidebar = ({...props}: ComponentProps<typeof Sidebar>) => {
         </SidebarGroup>
       </SidebarContent>
       <SidebarFooter>
-        <NavUser user={user} />
+        <NavUser />
       </SidebarFooter>
     </Sidebar>
   )

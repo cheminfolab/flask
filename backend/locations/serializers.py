@@ -1,4 +1,4 @@
-from rest_framework.serializers import ModelSerializer
+from rest_framework.serializers import ModelSerializer, SerializerMethodField
 from .models import *
 
 
@@ -9,6 +9,11 @@ class BuildingSerializer(ModelSerializer):
 
 
 class StorageSerializer(ModelSerializer):
+    label = SerializerMethodField()
+
     class Meta:
         model = Storage
-        exclude = ['id']
+        fields = '__all__'
+
+    def get_label(self, obj) -> str:
+        return str(obj)

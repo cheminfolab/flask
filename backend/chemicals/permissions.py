@@ -1,28 +1,30 @@
 from rest_framework.permissions import BasePermission, SAFE_METHODS
-from django.contrib.auth import get_user_model
 
 
 class IsOwnerOrEditFieldOnly(BasePermission):
     """
-    Object-level permission to only allow members of object owning group to edit.
-    If member is not part of owning group, editing is restricted to specific field.
-    """
+    Object-level permission for containers.
 
-    def __init__(self):
-        super().__init__()
-        self.fields = ['amount_left', 'last_used', 'last_user']
-        self.message = f"Editing containers (exceptions: {self.fields}) is restricted to members of the owning group."
+    Staff and members of the owning working group may edit every field.
+    Everyone else may only update the fields listed in `fields`.
+    A container without an owner counts as owned by nobody: users without
+    a working group are *not* treated as members of it.
+    """
+    fields = ('amount_left',)
+    message = (
+        f"Editing containers (exceptions: {list(fields)}) "
+        "is restricted to members of the owning group."
+    )
 
     def has_object_permission(self, request, view, obj):
-        if not request.user.is_authenticated:
+        user = request.user
+        if not (user and user.is_authenticated):
             return False
-        update_fields = [key for key in request.data]
-        member = get_user_model()
-        working_group = member.objects.get(pk=request.user.id).working_group
-        owner = obj.owner
-        if working_group != owner:
-            return set(update_fields).issubset(set(self.fields))
-        return True
+        if user.is_staff:
+            return True
+        if obj.owner_id is not None and user.working_group_id == obj.owner_id:
+            return True
+        return set(request.data.keys()).issubset(self.fields)
 
 
 class UserWritePermission(BasePermission):

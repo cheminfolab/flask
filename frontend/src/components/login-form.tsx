@@ -17,11 +17,11 @@ import {
 } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
 import AuthContext from "@/contexts/AuthContext"
-import type { AuthContextType } from "../types/authorization"
+import type { AuthContextType } from "@/types/authorization"
 
 const LoginForm = ({className, ...props}: ComponentProps<"div">) => {
 
-    const {loginUser} = useContext(AuthContext) as AuthContextType
+    const {loginUser, loginError} = useContext(AuthContext) as AuthContextType
 
     return(
         <div className={cn("flex flex-col gap-6", className)} {...props}>
@@ -56,6 +56,9 @@ const LoginForm = ({className, ...props}: ComponentProps<"div">) => {
                         </div>
                         <Input id="password" type="password" required />
                         </Field>
+                        {loginError ? (
+                            <p role="alert" className="text-destructive text-sm">{loginError}</p>
+                        ) : null}
                         <Field>
                         <Button type="submit">Login</Button>
                         <FieldDescription className="text-center">

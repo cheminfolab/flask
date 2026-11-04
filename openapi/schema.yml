@@ -1,0 +1,5686 @@
+openapi: 3.0.3
+info:
+  title: FLASK ELN API
+  version: 0.1.0
+  description: Electronic lab notebook and chemical inventory. The frontend TypeScript
+    types are generated from this schema.
+paths:
+  /api/attachments/:
+    get:
+      operationId: attachments_list
+      description: |-
+        Files are stored outside the public media directory and only served by
+        `download`, after the same read check as the experiment.
+      tags:
+      - attachments
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Attachment'
+          description: ''
+    post:
+      operationId: attachments_create
+      description: |-
+        Files are stored outside the public media directory and only served by
+        `download`, after the same read check as the experiment.
+      tags:
+      - attachments
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AttachmentRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/AttachmentRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/AttachmentRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Attachment'
+          description: ''
+  /api/attachments/{id}/:
+    get:
+      operationId: attachments_retrieve
+      description: |-
+        Files are stored outside the public media directory and only served by
+        `download`, after the same read check as the experiment.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this attachment.
+        required: true
+      tags:
+      - attachments
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Attachment'
+          description: ''
+    delete:
+      operationId: attachments_destroy
+      description: |-
+        Files are stored outside the public media directory and only served by
+        `download`, after the same read check as the experiment.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this attachment.
+        required: true
+      tags:
+      - attachments
+      security:
+      - jwtAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/attachments/{id}/download/:
+    get:
+      operationId: attachments_download_retrieve
+      description: |-
+        Files are stored outside the public media directory and only served by
+        `download`, after the same read check as the experiment.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this attachment.
+        required: true
+      tags:
+      - attachments
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/octet-stream:
+              schema:
+                type: string
+                format: binary
+          description: The file, always as a download.
+  /api/buildings/:
+    get:
+      operationId: buildings_list
+      description: |-
+        Standard CRUD viewset for reference and inventory data.
+
+        - Deny by default: authenticated read access, staff-only writes
+          (override `permission_classes` or `get_permissions` explicitly).
+        - Server-assigned provenance (ProvenanceMixin).
+        - Every request runs in a database transaction (ATOMIC_REQUESTS).
+      tags:
+      - buildings
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Building'
+          description: ''
+    post:
+      operationId: buildings_create
+      description: |-
+        Standard CRUD viewset for reference and inventory data.
+
+        - Deny by default: authenticated read access, staff-only writes
+          (override `permission_classes` or `get_permissions` explicitly).
+        - Server-assigned provenance (ProvenanceMixin).
+        - Every request runs in a database transaction (ATOMIC_REQUESTS).
+      tags:
+      - buildings
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BuildingRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/BuildingRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/BuildingRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Building'
+          description: ''
+  /api/buildings/{id}/:
+    get:
+      operationId: buildings_retrieve
+      description: |-
+        Standard CRUD viewset for reference and inventory data.
+
+        - Deny by default: authenticated read access, staff-only writes
+          (override `permission_classes` or `get_permissions` explicitly).
+        - Server-assigned provenance (ProvenanceMixin).
+        - Every request runs in a database transaction (ATOMIC_REQUESTS).
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this building.
+        required: true
+      tags:
+      - buildings
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Building'
+          description: ''
+    put:
+      operationId: buildings_update
+      description: |-
+        Standard CRUD viewset for reference and inventory data.
+
+        - Deny by default: authenticated read access, staff-only writes
+          (override `permission_classes` or `get_permissions` explicitly).
+        - Server-assigned provenance (ProvenanceMixin).
+        - Every request runs in a database transaction (ATOMIC_REQUESTS).
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this building.
+        required: true
+      tags:
+      - buildings
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BuildingRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/BuildingRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/BuildingRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Building'
+          description: ''
+    patch:
+      operationId: buildings_partial_update
+      description: |-
+        Standard CRUD viewset for reference and inventory data.
+
+        - Deny by default: authenticated read access, staff-only writes
+          (override `permission_classes` or `get_permissions` explicitly).
+        - Server-assigned provenance (ProvenanceMixin).
+        - Every request runs in a database transaction (ATOMIC_REQUESTS).
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this building.
+        required: true
+      tags:
+      - buildings
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedBuildingRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedBuildingRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedBuildingRequest'
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Building'
+          description: ''
+    delete:
+      operationId: buildings_destroy
+      description: |-
+        Standard CRUD viewset for reference and inventory data.
+
+        - Deny by default: authenticated read access, staff-only writes
+          (override `permission_classes` or `get_permissions` explicitly).
+        - Server-assigned provenance (ProvenanceMixin).
+        - Every request runs in a database transaction (ATOMIC_REQUESTS).
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this building.
+        required: true
+      tags:
+      - buildings
+      security:
+      - jwtAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/buildings/download_csv/:
+    get:
+      operationId: buildings_download_csv_retrieve
+      description: |-
+        Standard CRUD viewset for reference and inventory data.
+
+        - Deny by default: authenticated read access, staff-only writes
+          (override `permission_classes` or `get_permissions` explicitly).
+        - Server-assigned provenance (ProvenanceMixin).
+        - Every request runs in a database transaction (ATOMIC_REQUESTS).
+      tags:
+      - buildings
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Building'
+          description: ''
+  /api/buildings/download_csv_template/:
+    get:
+      operationId: buildings_download_csv_template_retrieve
+      description: |-
+        Standard CRUD viewset for reference and inventory data.
+
+        - Deny by default: authenticated read access, staff-only writes
+          (override `permission_classes` or `get_permissions` explicitly).
+        - Server-assigned provenance (ProvenanceMixin).
+        - Every request runs in a database transaction (ATOMIC_REQUESTS).
+      tags:
+      - buildings
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Building'
+          description: ''
+  /api/buildings/upload_csv/:
+    post:
+      operationId: buildings_upload_csv_create
+      description: |-
+        Standard CRUD viewset for reference and inventory data.
+
+        - Deny by default: authenticated read access, staff-only writes
+          (override `permission_classes` or `get_permissions` explicitly).
+        - Server-assigned provenance (ProvenanceMixin).
+        - Every request runs in a database transaction (ATOMIC_REQUESTS).
+      tags:
+      - buildings
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BuildingRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/BuildingRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/BuildingRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Building'
+          description: ''
+  /api/components/:
+    get:
+      operationId: components_list
+      description: |-
+        Standard CRUD viewset for reference and inventory data.
+
+        - Deny by default: authenticated read access, staff-only writes
+          (override `permission_classes` or `get_permissions` explicitly).
+        - Server-assigned provenance (ProvenanceMixin).
+        - Every request runs in a database transaction (ATOMIC_REQUESTS).
+      tags:
+      - components
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Component'
+          description: ''
+    post:
+      operationId: components_create
+      description: |-
+        Standard CRUD viewset for reference and inventory data.
+
+        - Deny by default: authenticated read access, staff-only writes
+          (override `permission_classes` or `get_permissions` explicitly).
+        - Server-assigned provenance (ProvenanceMixin).
+        - Every request runs in a database transaction (ATOMIC_REQUESTS).
+      tags:
+      - components
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ComponentRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ComponentRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ComponentRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Component'
+          description: ''
+  /api/components/{id}/:
+    get:
+      operationId: components_retrieve
+      description: |-
+        Standard CRUD viewset for reference and inventory data.
+
+        - Deny by default: authenticated read access, staff-only writes
+          (override `permission_classes` or `get_permissions` explicitly).
+        - Server-assigned provenance (ProvenanceMixin).
+        - Every request runs in a database transaction (ATOMIC_REQUESTS).
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this component.
+        required: true
+      tags:
+      - components
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Component'
+          description: ''
+    put:
+      operationId: components_update
+      description: |-
+        Standard CRUD viewset for reference and inventory data.
+
+        - Deny by default: authenticated read access, staff-only writes
+          (override `permission_classes` or `get_permissions` explicitly).
+        - Server-assigned provenance (ProvenanceMixin).
+        - Every request runs in a database transaction (ATOMIC_REQUESTS).
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this component.
+        required: true
+      tags:
+      - components
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ComponentRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ComponentRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ComponentRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Component'
+          description: ''
+    patch:
+      operationId: components_partial_update
+      description: |-
+        Standard CRUD viewset for reference and inventory data.
+
+        - Deny by default: authenticated read access, staff-only writes
+          (override `permission_classes` or `get_permissions` explicitly).
+        - Server-assigned provenance (ProvenanceMixin).
+        - Every request runs in a database transaction (ATOMIC_REQUESTS).
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this component.
+        required: true
+      tags:
+      - components
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedComponentRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedComponentRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedComponentRequest'
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Component'
+          description: ''
+    delete:
+      operationId: components_destroy
+      description: |-
+        Standard CRUD viewset for reference and inventory data.
+
+        - Deny by default: authenticated read access, staff-only writes
+          (override `permission_classes` or `get_permissions` explicitly).
+        - Server-assigned provenance (ProvenanceMixin).
+        - Every request runs in a database transaction (ATOMIC_REQUESTS).
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this component.
+        required: true
+      tags:
+      - components
+      security:
+      - jwtAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/components/download_csv/:
+    get:
+      operationId: components_download_csv_retrieve
+      description: |-
+        Standard CRUD viewset for reference and inventory data.
+
+        - Deny by default: authenticated read access, staff-only writes
+          (override `permission_classes` or `get_permissions` explicitly).
+        - Server-assigned provenance (ProvenanceMixin).
+        - Every request runs in a database transaction (ATOMIC_REQUESTS).
+      tags:
+      - components
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Component'
+          description: ''
+  /api/components/download_csv_template/:
+    get:
+      operationId: components_download_csv_template_retrieve
+      description: |-
+        Standard CRUD viewset for reference and inventory data.
+
+        - Deny by default: authenticated read access, staff-only writes
+          (override `permission_classes` or `get_permissions` explicitly).
+        - Server-assigned provenance (ProvenanceMixin).
+        - Every request runs in a database transaction (ATOMIC_REQUESTS).
+      tags:
+      - components
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Component'
+          description: ''
+  /api/components/upload_csv/:
+    post:
+      operationId: components_upload_csv_create
+      description: |-
+        Standard CRUD viewset for reference and inventory data.
+
+        - Deny by default: authenticated read access, staff-only writes
+          (override `permission_classes` or `get_permissions` explicitly).
+        - Server-assigned provenance (ProvenanceMixin).
+        - Every request runs in a database transaction (ATOMIC_REQUESTS).
+      tags:
+      - components
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ComponentRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ComponentRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ComponentRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Component'
+          description: ''
+  /api/compounds/:
+    get:
+      operationId: compounds_list
+      description: |-
+        Standard CRUD viewset for reference and inventory data.
+
+        - Deny by default: authenticated read access, staff-only writes
+          (override `permission_classes` or `get_permissions` explicitly).
+        - Server-assigned provenance (ProvenanceMixin).
+        - Every request runs in a database transaction (ATOMIC_REQUESTS).
+      tags:
+      - compounds
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CompoundList'
+          description: ''
+    post:
+      operationId: compounds_create
+      description: |-
+        Standard CRUD viewset for reference and inventory data.
+
+        - Deny by default: authenticated read access, staff-only writes
+          (override `permission_classes` or `get_permissions` explicitly).
+        - Server-assigned provenance (ProvenanceMixin).
+        - Every request runs in a database transaction (ATOMIC_REQUESTS).
+      tags:
+      - compounds
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CompoundRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/CompoundRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/CompoundRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Compound'
+          description: ''
+  /api/compounds/{id}/:
+    get:
+      operationId: compounds_retrieve
+      description: |-
+        Standard CRUD viewset for reference and inventory data.
+
+        - Deny by default: authenticated read access, staff-only writes
+          (override `permission_classes` or `get_permissions` explicitly).
+        - Server-assigned provenance (ProvenanceMixin).
+        - Every request runs in a database transaction (ATOMIC_REQUESTS).
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this compound.
+        required: true
+      tags:
+      - compounds
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CompoundDetail'
+          description: ''
+    put:
+      operationId: compounds_update
+      description: |-
+        Standard CRUD viewset for reference and inventory data.
+
+        - Deny by default: authenticated read access, staff-only writes
+          (override `permission_classes` or `get_permissions` explicitly).
+        - Server-assigned provenance (ProvenanceMixin).
+        - Every request runs in a database transaction (ATOMIC_REQUESTS).
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this compound.
+        required: true
+      tags:
+      - compounds
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CompoundRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/CompoundRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/CompoundRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Compound'
+          description: ''
+    patch:
+      operationId: compounds_partial_update
+      description: |-
+        Standard CRUD viewset for reference and inventory data.
+
+        - Deny by default: authenticated read access, staff-only writes
+          (override `permission_classes` or `get_permissions` explicitly).
+        - Server-assigned provenance (ProvenanceMixin).
+        - Every request runs in a database transaction (ATOMIC_REQUESTS).
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this compound.
+        required: true
+      tags:
+      - compounds
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedCompoundRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedCompoundRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedCompoundRequest'
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Compound'
+          description: ''
+    delete:
+      operationId: compounds_destroy
+      description: |-
+        Standard CRUD viewset for reference and inventory data.
+
+        - Deny by default: authenticated read access, staff-only writes
+          (override `permission_classes` or `get_permissions` explicitly).
+        - Server-assigned provenance (ProvenanceMixin).
+        - Every request runs in a database transaction (ATOMIC_REQUESTS).
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this compound.
+        required: true
+      tags:
+      - compounds
+      security:
+      - jwtAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/compounds/download_csv/:
+    get:
+      operationId: compounds_download_csv_retrieve
+      description: |-
+        Standard CRUD viewset for reference and inventory data.
+
+        - Deny by default: authenticated read access, staff-only writes
+          (override `permission_classes` or `get_permissions` explicitly).
+        - Server-assigned provenance (ProvenanceMixin).
+        - Every request runs in a database transaction (ATOMIC_REQUESTS).
+      tags:
+      - compounds
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Compound'
+          description: ''
+  /api/compounds/download_csv_template/:
+    get:
+      operationId: compounds_download_csv_template_retrieve
+      description: |-
+        Standard CRUD viewset for reference and inventory data.
+
+        - Deny by default: authenticated read access, staff-only writes
+          (override `permission_classes` or `get_permissions` explicitly).
+        - Server-assigned provenance (ProvenanceMixin).
+        - Every request runs in a database transaction (ATOMIC_REQUESTS).
+      tags:
+      - compounds
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Compound'
+          description: ''
+  /api/compounds/upload_csv/:
+    post:
+      operationId: compounds_upload_csv_create
+      description: |-
+        Standard CRUD viewset for reference and inventory data.
+
+        - Deny by default: authenticated read access, staff-only writes
+          (override `permission_classes` or `get_permissions` explicitly).
+        - Server-assigned provenance (ProvenanceMixin).
+        - Every request runs in a database transaction (ATOMIC_REQUESTS).
+      tags:
+      - compounds
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CompoundRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/CompoundRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/CompoundRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Compound'
+          description: ''
+  /api/containers/:
+    get:
+      operationId: containers_list
+      description: |-
+        Standard CRUD viewset for reference and inventory data.
+
+        - Deny by default: authenticated read access, staff-only writes
+          (override `permission_classes` or `get_permissions` explicitly).
+        - Server-assigned provenance (ProvenanceMixin).
+        - Every request runs in a database transaction (ATOMIC_REQUESTS).
+      tags:
+      - containers
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Container'
+          description: ''
+    post:
+      operationId: containers_create
+      description: |-
+        Standard CRUD viewset for reference and inventory data.
+
+        - Deny by default: authenticated read access, staff-only writes
+          (override `permission_classes` or `get_permissions` explicitly).
+        - Server-assigned provenance (ProvenanceMixin).
+        - Every request runs in a database transaction (ATOMIC_REQUESTS).
+      tags:
+      - containers
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ContainerRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ContainerRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ContainerRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Container'
+          description: ''
+  /api/containers/{id}/:
+    get:
+      operationId: containers_retrieve
+      description: |-
+        Standard CRUD viewset for reference and inventory data.
+
+        - Deny by default: authenticated read access, staff-only writes
+          (override `permission_classes` or `get_permissions` explicitly).
+        - Server-assigned provenance (ProvenanceMixin).
+        - Every request runs in a database transaction (ATOMIC_REQUESTS).
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this container.
+        required: true
+      tags:
+      - containers
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Container'
+          description: ''
+    put:
+      operationId: containers_update
+      description: |-
+        Standard CRUD viewset for reference and inventory data.
+
+        - Deny by default: authenticated read access, staff-only writes
+          (override `permission_classes` or `get_permissions` explicitly).
+        - Server-assigned provenance (ProvenanceMixin).
+        - Every request runs in a database transaction (ATOMIC_REQUESTS).
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this container.
+        required: true
+      tags:
+      - containers
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ContainerRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ContainerRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ContainerRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Container'
+          description: ''
+    patch:
+      operationId: containers_partial_update
+      description: |-
+        Standard CRUD viewset for reference and inventory data.
+
+        - Deny by default: authenticated read access, staff-only writes
+          (override `permission_classes` or `get_permissions` explicitly).
+        - Server-assigned provenance (ProvenanceMixin).
+        - Every request runs in a database transaction (ATOMIC_REQUESTS).
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this container.
+        required: true
+      tags:
+      - containers
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedContainerRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedContainerRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedContainerRequest'
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Container'
+          description: ''
+    delete:
+      operationId: containers_destroy
+      description: |-
+        Standard CRUD viewset for reference and inventory data.
+
+        - Deny by default: authenticated read access, staff-only writes
+          (override `permission_classes` or `get_permissions` explicitly).
+        - Server-assigned provenance (ProvenanceMixin).
+        - Every request runs in a database transaction (ATOMIC_REQUESTS).
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this container.
+        required: true
+      tags:
+      - containers
+      security:
+      - jwtAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/containers/download_csv/:
+    get:
+      operationId: containers_download_csv_retrieve
+      description: |-
+        Standard CRUD viewset for reference and inventory data.
+
+        - Deny by default: authenticated read access, staff-only writes
+          (override `permission_classes` or `get_permissions` explicitly).
+        - Server-assigned provenance (ProvenanceMixin).
+        - Every request runs in a database transaction (ATOMIC_REQUESTS).
+      tags:
+      - containers
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Container'
+          description: ''
+  /api/containers/download_csv_template/:
+    get:
+      operationId: containers_download_csv_template_retrieve
+      description: |-
+        Standard CRUD viewset for reference and inventory data.
+
+        - Deny by default: authenticated read access, staff-only writes
+          (override `permission_classes` or `get_permissions` explicitly).
+        - Server-assigned provenance (ProvenanceMixin).
+        - Every request runs in a database transaction (ATOMIC_REQUESTS).
+      tags:
+      - containers
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Container'
+          description: ''
+  /api/containers/upload_csv/:
+    post:
+      operationId: containers_upload_csv_create
+      description: |-
+        Standard CRUD viewset for reference and inventory data.
+
+        - Deny by default: authenticated read access, staff-only writes
+          (override `permission_classes` or `get_permissions` explicitly).
+        - Server-assigned provenance (ProvenanceMixin).
+        - Every request runs in a database transaction (ATOMIC_REQUESTS).
+      tags:
+      - containers
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ContainerRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ContainerRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ContainerRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Container'
+          description: ''
+  /api/entries/:
+    get:
+      operationId: entries_list
+      description: Common queryset filtering for objects that belong to one experiment.
+      tags:
+      - entries
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Entry'
+          description: ''
+    post:
+      operationId: entries_create
+      description: Common queryset filtering for objects that belong to one experiment.
+      tags:
+      - entries
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EntryRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/EntryRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/EntryRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Entry'
+          description: ''
+  /api/entries/{id}/:
+    get:
+      operationId: entries_retrieve
+      description: Common queryset filtering for objects that belong to one experiment.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this entry.
+        required: true
+      tags:
+      - entries
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Entry'
+          description: ''
+    put:
+      operationId: entries_update
+      description: Common queryset filtering for objects that belong to one experiment.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this entry.
+        required: true
+      tags:
+      - entries
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EntryRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/EntryRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/EntryRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Entry'
+          description: ''
+    patch:
+      operationId: entries_partial_update
+      description: Common queryset filtering for objects that belong to one experiment.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this entry.
+        required: true
+      tags:
+      - entries
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedEntryRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedEntryRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedEntryRequest'
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Entry'
+          description: ''
+    delete:
+      operationId: entries_destroy
+      description: Common queryset filtering for objects that belong to one experiment.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this entry.
+        required: true
+      tags:
+      - entries
+      security:
+      - jwtAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/experiment-shares/:
+    get:
+      operationId: experiment_shares_list
+      description: Shares are visible to everyone who can read the target; only its
+        owner manages them.
+      tags:
+      - experiment-shares
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ExperimentShare'
+          description: ''
+    post:
+      operationId: experiment_shares_create
+      description: Shares are visible to everyone who can read the target; only its
+        owner manages them.
+      tags:
+      - experiment-shares
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ExperimentShareRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ExperimentShareRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ExperimentShareRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExperimentShare'
+          description: ''
+  /api/experiment-shares/{id}/:
+    get:
+      operationId: experiment_shares_retrieve
+      description: Shares are visible to everyone who can read the target; only its
+        owner manages them.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this experiment share.
+        required: true
+      tags:
+      - experiment-shares
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExperimentShare'
+          description: ''
+    put:
+      operationId: experiment_shares_update
+      description: Shares are visible to everyone who can read the target; only its
+        owner manages them.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this experiment share.
+        required: true
+      tags:
+      - experiment-shares
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ExperimentShareRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ExperimentShareRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ExperimentShareRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExperimentShare'
+          description: ''
+    patch:
+      operationId: experiment_shares_partial_update
+      description: Shares are visible to everyone who can read the target; only its
+        owner manages them.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this experiment share.
+        required: true
+      tags:
+      - experiment-shares
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedExperimentShareRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedExperimentShareRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedExperimentShareRequest'
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExperimentShare'
+          description: ''
+    delete:
+      operationId: experiment_shares_destroy
+      description: Shares are visible to everyone who can read the target; only its
+        owner manages them.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this experiment share.
+        required: true
+      tags:
+      - experiment-shares
+      security:
+      - jwtAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/experiments/:
+    get:
+      operationId: experiments_list
+      description: |-
+        Provenance is assigned by the server: for TrackedModel subclasses,
+        `created_by` / `updated_by` come from the authenticated user.
+      tags:
+      - experiments
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Experiment'
+          description: ''
+    post:
+      operationId: experiments_create
+      description: |-
+        Provenance is assigned by the server: for TrackedModel subclasses,
+        `created_by` / `updated_by` come from the authenticated user.
+      tags:
+      - experiments
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ExperimentRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ExperimentRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ExperimentRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Experiment'
+          description: ''
+  /api/experiments/{id}/:
+    get:
+      operationId: experiments_retrieve
+      description: |-
+        Provenance is assigned by the server: for TrackedModel subclasses,
+        `created_by` / `updated_by` come from the authenticated user.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this experiment.
+        required: true
+      tags:
+      - experiments
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Experiment'
+          description: ''
+    put:
+      operationId: experiments_update
+      description: |-
+        Provenance is assigned by the server: for TrackedModel subclasses,
+        `created_by` / `updated_by` come from the authenticated user.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this experiment.
+        required: true
+      tags:
+      - experiments
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ExperimentRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ExperimentRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ExperimentRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Experiment'
+          description: ''
+    patch:
+      operationId: experiments_partial_update
+      description: |-
+        Provenance is assigned by the server: for TrackedModel subclasses,
+        `created_by` / `updated_by` come from the authenticated user.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this experiment.
+        required: true
+      tags:
+      - experiments
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedExperimentRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedExperimentRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedExperimentRequest'
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Experiment'
+          description: ''
+  /api/experiments/{id}/complete/:
+    post:
+      operationId: experiments_complete_create
+      description: Lock the experiment. Only the author can do this; it cannot be
+        undone.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this experiment.
+        required: true
+      tags:
+      - experiments
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Experiment'
+          description: ''
+  /api/groups/:
+    get:
+      operationId: groups_list
+      description: |-
+        Standard CRUD viewset for reference and inventory data.
+
+        - Deny by default: authenticated read access, staff-only writes
+          (override `permission_classes` or `get_permissions` explicitly).
+        - Server-assigned provenance (ProvenanceMixin).
+        - Every request runs in a database transaction (ATOMIC_REQUESTS).
+      tags:
+      - groups
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/WorkingGroup'
+          description: ''
+    post:
+      operationId: groups_create
+      description: |-
+        Standard CRUD viewset for reference and inventory data.
+
+        - Deny by default: authenticated read access, staff-only writes
+          (override `permission_classes` or `get_permissions` explicitly).
+        - Server-assigned provenance (ProvenanceMixin).
+        - Every request runs in a database transaction (ATOMIC_REQUESTS).
+      tags:
+      - groups
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/WorkingGroupRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/WorkingGroupRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/WorkingGroupRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WorkingGroup'
+          description: ''
+  /api/groups/{id}/:
+    get:
+      operationId: groups_retrieve
+      description: |-
+        Standard CRUD viewset for reference and inventory data.
+
+        - Deny by default: authenticated read access, staff-only writes
+          (override `permission_classes` or `get_permissions` explicitly).
+        - Server-assigned provenance (ProvenanceMixin).
+        - Every request runs in a database transaction (ATOMIC_REQUESTS).
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this working group.
+        required: true
+      tags:
+      - groups
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WorkingGroup'
+          description: ''
+    put:
+      operationId: groups_update
+      description: |-
+        Standard CRUD viewset for reference and inventory data.
+
+        - Deny by default: authenticated read access, staff-only writes
+          (override `permission_classes` or `get_permissions` explicitly).
+        - Server-assigned provenance (ProvenanceMixin).
+        - Every request runs in a database transaction (ATOMIC_REQUESTS).
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this working group.
+        required: true
+      tags:
+      - groups
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/WorkingGroupRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/WorkingGroupRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/WorkingGroupRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WorkingGroup'
+          description: ''
+    patch:
+      operationId: groups_partial_update
+      description: |-
+        Standard CRUD viewset for reference and inventory data.
+
+        - Deny by default: authenticated read access, staff-only writes
+          (override `permission_classes` or `get_permissions` explicitly).
+        - Server-assigned provenance (ProvenanceMixin).
+        - Every request runs in a database transaction (ATOMIC_REQUESTS).
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this working group.
+        required: true
+      tags:
+      - groups
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedWorkingGroupRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedWorkingGroupRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedWorkingGroupRequest'
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WorkingGroup'
+          description: ''
+    delete:
+      operationId: groups_destroy
+      description: |-
+        Standard CRUD viewset for reference and inventory data.
+
+        - Deny by default: authenticated read access, staff-only writes
+          (override `permission_classes` or `get_permissions` explicitly).
+        - Server-assigned provenance (ProvenanceMixin).
+        - Every request runs in a database transaction (ATOMIC_REQUESTS).
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this working group.
+        required: true
+      tags:
+      - groups
+      security:
+      - jwtAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/groups/download_csv/:
+    get:
+      operationId: groups_download_csv_retrieve
+      description: |-
+        Standard CRUD viewset for reference and inventory data.
+
+        - Deny by default: authenticated read access, staff-only writes
+          (override `permission_classes` or `get_permissions` explicitly).
+        - Server-assigned provenance (ProvenanceMixin).
+        - Every request runs in a database transaction (ATOMIC_REQUESTS).
+      tags:
+      - groups
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WorkingGroup'
+          description: ''
+  /api/groups/download_csv_template/:
+    get:
+      operationId: groups_download_csv_template_retrieve
+      description: |-
+        Standard CRUD viewset for reference and inventory data.
+
+        - Deny by default: authenticated read access, staff-only writes
+          (override `permission_classes` or `get_permissions` explicitly).
+        - Server-assigned provenance (ProvenanceMixin).
+        - Every request runs in a database transaction (ATOMIC_REQUESTS).
+      tags:
+      - groups
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WorkingGroup'
+          description: ''
+  /api/groups/upload_csv/:
+    post:
+      operationId: groups_upload_csv_create
+      description: |-
+        Standard CRUD viewset for reference and inventory data.
+
+        - Deny by default: authenticated read access, staff-only writes
+          (override `permission_classes` or `get_permissions` explicitly).
+        - Server-assigned provenance (ProvenanceMixin).
+        - Every request runs in a database transaction (ATOMIC_REQUESTS).
+      tags:
+      - groups
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/WorkingGroupRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/WorkingGroupRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/WorkingGroupRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WorkingGroup'
+          description: ''
+  /api/materials/:
+    get:
+      operationId: materials_list
+      description: 'No updates: correct a usage by deleting it (draft only) and recording
+        a new one.'
+      tags:
+      - materials
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/MaterialUsage'
+          description: ''
+    post:
+      operationId: materials_create
+      description: 'No updates: correct a usage by deleting it (draft only) and recording
+        a new one.'
+      tags:
+      - materials
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MaterialUsageRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/MaterialUsageRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/MaterialUsageRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MaterialUsage'
+          description: ''
+  /api/materials/{id}/:
+    get:
+      operationId: materials_retrieve
+      description: 'No updates: correct a usage by deleting it (draft only) and recording
+        a new one.'
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this material usage.
+        required: true
+      tags:
+      - materials
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MaterialUsage'
+          description: ''
+    delete:
+      operationId: materials_destroy
+      description: 'No updates: correct a usage by deleting it (draft only) and recording
+        a new one.'
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this material usage.
+        required: true
+      tags:
+      - materials
+      security:
+      - jwtAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/members/:
+    get:
+      operationId: members_list
+      description: |-
+        Standard CRUD viewset for reference and inventory data.
+
+        - Deny by default: authenticated read access, staff-only writes
+          (override `permission_classes` or `get_permissions` explicitly).
+        - Server-assigned provenance (ProvenanceMixin).
+        - Every request runs in a database transaction (ATOMIC_REQUESTS).
+      tags:
+      - members
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Member'
+          description: ''
+    post:
+      operationId: members_create
+      description: |-
+        Standard CRUD viewset for reference and inventory data.
+
+        - Deny by default: authenticated read access, staff-only writes
+          (override `permission_classes` or `get_permissions` explicitly).
+        - Server-assigned provenance (ProvenanceMixin).
+        - Every request runs in a database transaction (ATOMIC_REQUESTS).
+      tags:
+      - members
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MemberRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/MemberRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/MemberRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Member'
+          description: ''
+  /api/members/{id}/:
+    get:
+      operationId: members_retrieve
+      description: |-
+        Standard CRUD viewset for reference and inventory data.
+
+        - Deny by default: authenticated read access, staff-only writes
+          (override `permission_classes` or `get_permissions` explicitly).
+        - Server-assigned provenance (ProvenanceMixin).
+        - Every request runs in a database transaction (ATOMIC_REQUESTS).
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this member.
+        required: true
+      tags:
+      - members
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Member'
+          description: ''
+    put:
+      operationId: members_update
+      description: |-
+        Standard CRUD viewset for reference and inventory data.
+
+        - Deny by default: authenticated read access, staff-only writes
+          (override `permission_classes` or `get_permissions` explicitly).
+        - Server-assigned provenance (ProvenanceMixin).
+        - Every request runs in a database transaction (ATOMIC_REQUESTS).
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this member.
+        required: true
+      tags:
+      - members
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MemberRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/MemberRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/MemberRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Member'
+          description: ''
+    patch:
+      operationId: members_partial_update
+      description: |-
+        Standard CRUD viewset for reference and inventory data.
+
+        - Deny by default: authenticated read access, staff-only writes
+          (override `permission_classes` or `get_permissions` explicitly).
+        - Server-assigned provenance (ProvenanceMixin).
+        - Every request runs in a database transaction (ATOMIC_REQUESTS).
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this member.
+        required: true
+      tags:
+      - members
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedMemberRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedMemberRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedMemberRequest'
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Member'
+          description: ''
+    delete:
+      operationId: members_destroy
+      description: |-
+        Standard CRUD viewset for reference and inventory data.
+
+        - Deny by default: authenticated read access, staff-only writes
+          (override `permission_classes` or `get_permissions` explicitly).
+        - Server-assigned provenance (ProvenanceMixin).
+        - Every request runs in a database transaction (ATOMIC_REQUESTS).
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this member.
+        required: true
+      tags:
+      - members
+      security:
+      - jwtAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/members/directory/:
+    get:
+      operationId: members_directory_retrieve
+      description: Active members by name, for choosing whom to share a record with.
+        No emails.
+      tags:
+      - members
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MemberDirectory'
+          description: ''
+  /api/members/download_csv/:
+    get:
+      operationId: members_download_csv_retrieve
+      description: |-
+        Standard CRUD viewset for reference and inventory data.
+
+        - Deny by default: authenticated read access, staff-only writes
+          (override `permission_classes` or `get_permissions` explicitly).
+        - Server-assigned provenance (ProvenanceMixin).
+        - Every request runs in a database transaction (ATOMIC_REQUESTS).
+      tags:
+      - members
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Member'
+          description: ''
+  /api/members/download_csv_template/:
+    get:
+      operationId: members_download_csv_template_retrieve
+      description: |-
+        Standard CRUD viewset for reference and inventory data.
+
+        - Deny by default: authenticated read access, staff-only writes
+          (override `permission_classes` or `get_permissions` explicitly).
+        - Server-assigned provenance (ProvenanceMixin).
+        - Every request runs in a database transaction (ATOMIC_REQUESTS).
+      tags:
+      - members
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Member'
+          description: ''
+  /api/members/me/:
+    get:
+      operationId: members_me_retrieve
+      description: |-
+        Standard CRUD viewset for reference and inventory data.
+
+        - Deny by default: authenticated read access, staff-only writes
+          (override `permission_classes` or `get_permissions` explicitly).
+        - Server-assigned provenance (ProvenanceMixin).
+        - Every request runs in a database transaction (ATOMIC_REQUESTS).
+      tags:
+      - members
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Member'
+          description: ''
+  /api/members/register/:
+    post:
+      operationId: members_register_create
+      description: |-
+        Standard CRUD viewset for reference and inventory data.
+
+        - Deny by default: authenticated read access, staff-only writes
+          (override `permission_classes` or `get_permissions` explicitly).
+        - Server-assigned provenance (ProvenanceMixin).
+        - Every request runs in a database transaction (ATOMIC_REQUESTS).
+      tags:
+      - members
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegistrationRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/RegistrationRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/RegistrationRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Registration'
+          description: ''
+  /api/members/upload_csv/:
+    post:
+      operationId: members_upload_csv_create
+      description: |-
+        Standard CRUD viewset for reference and inventory data.
+
+        - Deny by default: authenticated read access, staff-only writes
+          (override `permission_classes` or `get_permissions` explicitly).
+        - Server-assigned provenance (ProvenanceMixin).
+        - Every request runs in a database transaction (ATOMIC_REQUESTS).
+      tags:
+      - members
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MemberRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/MemberRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/MemberRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Member'
+          description: ''
+  /api/project-shares/:
+    get:
+      operationId: project_shares_list
+      description: Shares are visible to everyone who can read the target; only its
+        owner manages them.
+      tags:
+      - project-shares
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ProjectShare'
+          description: ''
+    post:
+      operationId: project_shares_create
+      description: Shares are visible to everyone who can read the target; only its
+        owner manages them.
+      tags:
+      - project-shares
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProjectShareRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ProjectShareRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ProjectShareRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProjectShare'
+          description: ''
+  /api/project-shares/{id}/:
+    get:
+      operationId: project_shares_retrieve
+      description: Shares are visible to everyone who can read the target; only its
+        owner manages them.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this project share.
+        required: true
+      tags:
+      - project-shares
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProjectShare'
+          description: ''
+    put:
+      operationId: project_shares_update
+      description: Shares are visible to everyone who can read the target; only its
+        owner manages them.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this project share.
+        required: true
+      tags:
+      - project-shares
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProjectShareRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ProjectShareRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ProjectShareRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProjectShare'
+          description: ''
+    patch:
+      operationId: project_shares_partial_update
+      description: Shares are visible to everyone who can read the target; only its
+        owner manages them.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this project share.
+        required: true
+      tags:
+      - project-shares
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedProjectShareRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedProjectShareRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedProjectShareRequest'
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProjectShare'
+          description: ''
+    delete:
+      operationId: project_shares_destroy
+      description: Shares are visible to everyone who can read the target; only its
+        owner manages them.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this project share.
+        required: true
+      tags:
+      - project-shares
+      security:
+      - jwtAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/projects/:
+    get:
+      operationId: projects_list
+      description: |-
+        Provenance is assigned by the server: for TrackedModel subclasses,
+        `created_by` / `updated_by` come from the authenticated user.
+      tags:
+      - projects
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Project'
+          description: ''
+    post:
+      operationId: projects_create
+      description: |-
+        Provenance is assigned by the server: for TrackedModel subclasses,
+        `created_by` / `updated_by` come from the authenticated user.
+      tags:
+      - projects
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProjectRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ProjectRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ProjectRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Project'
+          description: ''
+  /api/projects/{id}/:
+    get:
+      operationId: projects_retrieve
+      description: |-
+        Provenance is assigned by the server: for TrackedModel subclasses,
+        `created_by` / `updated_by` come from the authenticated user.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this project.
+        required: true
+      tags:
+      - projects
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Project'
+          description: ''
+    put:
+      operationId: projects_update
+      description: |-
+        Provenance is assigned by the server: for TrackedModel subclasses,
+        `created_by` / `updated_by` come from the authenticated user.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this project.
+        required: true
+      tags:
+      - projects
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProjectRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ProjectRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ProjectRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Project'
+          description: ''
+    patch:
+      operationId: projects_partial_update
+      description: |-
+        Provenance is assigned by the server: for TrackedModel subclasses,
+        `created_by` / `updated_by` come from the authenticated user.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this project.
+        required: true
+      tags:
+      - projects
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedProjectRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedProjectRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedProjectRequest'
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Project'
+          description: ''
+    delete:
+      operationId: projects_destroy
+      description: |-
+        Provenance is assigned by the server: for TrackedModel subclasses,
+        `created_by` / `updated_by` come from the authenticated user.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this project.
+        required: true
+      tags:
+      - projects
+      security:
+      - jwtAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/roles/:
+    get:
+      operationId: roles_list
+      description: |-
+        Standard CRUD viewset for reference and inventory data.
+
+        - Deny by default: authenticated read access, staff-only writes
+          (override `permission_classes` or `get_permissions` explicitly).
+        - Server-assigned provenance (ProvenanceMixin).
+        - Every request runs in a database transaction (ATOMIC_REQUESTS).
+      tags:
+      - roles
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Role'
+          description: ''
+    post:
+      operationId: roles_create
+      description: |-
+        Standard CRUD viewset for reference and inventory data.
+
+        - Deny by default: authenticated read access, staff-only writes
+          (override `permission_classes` or `get_permissions` explicitly).
+        - Server-assigned provenance (ProvenanceMixin).
+        - Every request runs in a database transaction (ATOMIC_REQUESTS).
+      tags:
+      - roles
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RoleRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/RoleRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/RoleRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Role'
+          description: ''
+  /api/roles/{id}/:
+    get:
+      operationId: roles_retrieve
+      description: |-
+        Standard CRUD viewset for reference and inventory data.
+
+        - Deny by default: authenticated read access, staff-only writes
+          (override `permission_classes` or `get_permissions` explicitly).
+        - Server-assigned provenance (ProvenanceMixin).
+        - Every request runs in a database transaction (ATOMIC_REQUESTS).
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this Role.
+        required: true
+      tags:
+      - roles
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Role'
+          description: ''
+    put:
+      operationId: roles_update
+      description: |-
+        Standard CRUD viewset for reference and inventory data.
+
+        - Deny by default: authenticated read access, staff-only writes
+          (override `permission_classes` or `get_permissions` explicitly).
+        - Server-assigned provenance (ProvenanceMixin).
+        - Every request runs in a database transaction (ATOMIC_REQUESTS).
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this Role.
+        required: true
+      tags:
+      - roles
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RoleRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/RoleRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/RoleRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Role'
+          description: ''
+    patch:
+      operationId: roles_partial_update
+      description: |-
+        Standard CRUD viewset for reference and inventory data.
+
+        - Deny by default: authenticated read access, staff-only writes
+          (override `permission_classes` or `get_permissions` explicitly).
+        - Server-assigned provenance (ProvenanceMixin).
+        - Every request runs in a database transaction (ATOMIC_REQUESTS).
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this Role.
+        required: true
+      tags:
+      - roles
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedRoleRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedRoleRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedRoleRequest'
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Role'
+          description: ''
+    delete:
+      operationId: roles_destroy
+      description: |-
+        Standard CRUD viewset for reference and inventory data.
+
+        - Deny by default: authenticated read access, staff-only writes
+          (override `permission_classes` or `get_permissions` explicitly).
+        - Server-assigned provenance (ProvenanceMixin).
+        - Every request runs in a database transaction (ATOMIC_REQUESTS).
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this Role.
+        required: true
+      tags:
+      - roles
+      security:
+      - jwtAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/roles/download_csv/:
+    get:
+      operationId: roles_download_csv_retrieve
+      description: |-
+        Standard CRUD viewset for reference and inventory data.
+
+        - Deny by default: authenticated read access, staff-only writes
+          (override `permission_classes` or `get_permissions` explicitly).
+        - Server-assigned provenance (ProvenanceMixin).
+        - Every request runs in a database transaction (ATOMIC_REQUESTS).
+      tags:
+      - roles
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Role'
+          description: ''
+  /api/roles/download_csv_template/:
+    get:
+      operationId: roles_download_csv_template_retrieve
+      description: |-
+        Standard CRUD viewset for reference and inventory data.
+
+        - Deny by default: authenticated read access, staff-only writes
+          (override `permission_classes` or `get_permissions` explicitly).
+        - Server-assigned provenance (ProvenanceMixin).
+        - Every request runs in a database transaction (ATOMIC_REQUESTS).
+      tags:
+      - roles
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Role'
+          description: ''
+  /api/roles/upload_csv/:
+    post:
+      operationId: roles_upload_csv_create
+      description: |-
+        Standard CRUD viewset for reference and inventory data.
+
+        - Deny by default: authenticated read access, staff-only writes
+          (override `permission_classes` or `get_permissions` explicitly).
+        - Server-assigned provenance (ProvenanceMixin).
+        - Every request runs in a database transaction (ATOMIC_REQUESTS).
+      tags:
+      - roles
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RoleRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/RoleRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/RoleRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Role'
+          description: ''
+  /api/storages/:
+    get:
+      operationId: storages_list
+      description: |-
+        Standard CRUD viewset for reference and inventory data.
+
+        - Deny by default: authenticated read access, staff-only writes
+          (override `permission_classes` or `get_permissions` explicitly).
+        - Server-assigned provenance (ProvenanceMixin).
+        - Every request runs in a database transaction (ATOMIC_REQUESTS).
+      tags:
+      - storages
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Storage'
+          description: ''
+    post:
+      operationId: storages_create
+      description: |-
+        Standard CRUD viewset for reference and inventory data.
+
+        - Deny by default: authenticated read access, staff-only writes
+          (override `permission_classes` or `get_permissions` explicitly).
+        - Server-assigned provenance (ProvenanceMixin).
+        - Every request runs in a database transaction (ATOMIC_REQUESTS).
+      tags:
+      - storages
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StorageRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/StorageRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/StorageRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Storage'
+          description: ''
+  /api/storages/{id}/:
+    get:
+      operationId: storages_retrieve
+      description: |-
+        Standard CRUD viewset for reference and inventory data.
+
+        - Deny by default: authenticated read access, staff-only writes
+          (override `permission_classes` or `get_permissions` explicitly).
+        - Server-assigned provenance (ProvenanceMixin).
+        - Every request runs in a database transaction (ATOMIC_REQUESTS).
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this storage.
+        required: true
+      tags:
+      - storages
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Storage'
+          description: ''
+    put:
+      operationId: storages_update
+      description: |-
+        Standard CRUD viewset for reference and inventory data.
+
+        - Deny by default: authenticated read access, staff-only writes
+          (override `permission_classes` or `get_permissions` explicitly).
+        - Server-assigned provenance (ProvenanceMixin).
+        - Every request runs in a database transaction (ATOMIC_REQUESTS).
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this storage.
+        required: true
+      tags:
+      - storages
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StorageRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/StorageRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/StorageRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Storage'
+          description: ''
+    patch:
+      operationId: storages_partial_update
+      description: |-
+        Standard CRUD viewset for reference and inventory data.
+
+        - Deny by default: authenticated read access, staff-only writes
+          (override `permission_classes` or `get_permissions` explicitly).
+        - Server-assigned provenance (ProvenanceMixin).
+        - Every request runs in a database transaction (ATOMIC_REQUESTS).
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this storage.
+        required: true
+      tags:
+      - storages
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedStorageRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedStorageRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedStorageRequest'
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Storage'
+          description: ''
+    delete:
+      operationId: storages_destroy
+      description: |-
+        Standard CRUD viewset for reference and inventory data.
+
+        - Deny by default: authenticated read access, staff-only writes
+          (override `permission_classes` or `get_permissions` explicitly).
+        - Server-assigned provenance (ProvenanceMixin).
+        - Every request runs in a database transaction (ATOMIC_REQUESTS).
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this storage.
+        required: true
+      tags:
+      - storages
+      security:
+      - jwtAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/storages/download_csv/:
+    get:
+      operationId: storages_download_csv_retrieve
+      description: |-
+        Standard CRUD viewset for reference and inventory data.
+
+        - Deny by default: authenticated read access, staff-only writes
+          (override `permission_classes` or `get_permissions` explicitly).
+        - Server-assigned provenance (ProvenanceMixin).
+        - Every request runs in a database transaction (ATOMIC_REQUESTS).
+      tags:
+      - storages
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Storage'
+          description: ''
+  /api/storages/download_csv_template/:
+    get:
+      operationId: storages_download_csv_template_retrieve
+      description: |-
+        Standard CRUD viewset for reference and inventory data.
+
+        - Deny by default: authenticated read access, staff-only writes
+          (override `permission_classes` or `get_permissions` explicitly).
+        - Server-assigned provenance (ProvenanceMixin).
+        - Every request runs in a database transaction (ATOMIC_REQUESTS).
+      tags:
+      - storages
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Storage'
+          description: ''
+  /api/storages/upload_csv/:
+    post:
+      operationId: storages_upload_csv_create
+      description: |-
+        Standard CRUD viewset for reference and inventory data.
+
+        - Deny by default: authenticated read access, staff-only writes
+          (override `permission_classes` or `get_permissions` explicitly).
+        - Server-assigned provenance (ProvenanceMixin).
+        - Every request runs in a database transaction (ATOMIC_REQUESTS).
+      tags:
+      - storages
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StorageRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/StorageRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/StorageRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Storage'
+          description: ''
+  /api/substances/:
+    get:
+      operationId: substances_list
+      description: |-
+        Standard CRUD viewset for reference and inventory data.
+
+        - Deny by default: authenticated read access, staff-only writes
+          (override `permission_classes` or `get_permissions` explicitly).
+        - Server-assigned provenance (ProvenanceMixin).
+        - Every request runs in a database transaction (ATOMIC_REQUESTS).
+      tags:
+      - substances
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Substance'
+          description: ''
+    post:
+      operationId: substances_create
+      description: |-
+        Standard CRUD viewset for reference and inventory data.
+
+        - Deny by default: authenticated read access, staff-only writes
+          (override `permission_classes` or `get_permissions` explicitly).
+        - Server-assigned provenance (ProvenanceMixin).
+        - Every request runs in a database transaction (ATOMIC_REQUESTS).
+      tags:
+      - substances
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SubstanceRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/SubstanceRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/SubstanceRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Substance'
+          description: ''
+  /api/substances/{id}/:
+    get:
+      operationId: substances_retrieve
+      description: |-
+        Standard CRUD viewset for reference and inventory data.
+
+        - Deny by default: authenticated read access, staff-only writes
+          (override `permission_classes` or `get_permissions` explicitly).
+        - Server-assigned provenance (ProvenanceMixin).
+        - Every request runs in a database transaction (ATOMIC_REQUESTS).
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this substance.
+        required: true
+      tags:
+      - substances
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Substance'
+          description: ''
+    put:
+      operationId: substances_update
+      description: |-
+        Standard CRUD viewset for reference and inventory data.
+
+        - Deny by default: authenticated read access, staff-only writes
+          (override `permission_classes` or `get_permissions` explicitly).
+        - Server-assigned provenance (ProvenanceMixin).
+        - Every request runs in a database transaction (ATOMIC_REQUESTS).
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this substance.
+        required: true
+      tags:
+      - substances
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SubstanceRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/SubstanceRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/SubstanceRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Substance'
+          description: ''
+    patch:
+      operationId: substances_partial_update
+      description: |-
+        Standard CRUD viewset for reference and inventory data.
+
+        - Deny by default: authenticated read access, staff-only writes
+          (override `permission_classes` or `get_permissions` explicitly).
+        - Server-assigned provenance (ProvenanceMixin).
+        - Every request runs in a database transaction (ATOMIC_REQUESTS).
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this substance.
+        required: true
+      tags:
+      - substances
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedSubstanceRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedSubstanceRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedSubstanceRequest'
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Substance'
+          description: ''
+    delete:
+      operationId: substances_destroy
+      description: |-
+        Standard CRUD viewset for reference and inventory data.
+
+        - Deny by default: authenticated read access, staff-only writes
+          (override `permission_classes` or `get_permissions` explicitly).
+        - Server-assigned provenance (ProvenanceMixin).
+        - Every request runs in a database transaction (ATOMIC_REQUESTS).
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this substance.
+        required: true
+      tags:
+      - substances
+      security:
+      - jwtAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/substances/download_csv/:
+    get:
+      operationId: substances_download_csv_retrieve
+      description: |-
+        Standard CRUD viewset for reference and inventory data.
+
+        - Deny by default: authenticated read access, staff-only writes
+          (override `permission_classes` or `get_permissions` explicitly).
+        - Server-assigned provenance (ProvenanceMixin).
+        - Every request runs in a database transaction (ATOMIC_REQUESTS).
+      tags:
+      - substances
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Substance'
+          description: ''
+  /api/substances/download_csv_template/:
+    get:
+      operationId: substances_download_csv_template_retrieve
+      description: |-
+        Standard CRUD viewset for reference and inventory data.
+
+        - Deny by default: authenticated read access, staff-only writes
+          (override `permission_classes` or `get_permissions` explicitly).
+        - Server-assigned provenance (ProvenanceMixin).
+        - Every request runs in a database transaction (ATOMIC_REQUESTS).
+      tags:
+      - substances
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Substance'
+          description: ''
+  /api/substances/upload_csv/:
+    post:
+      operationId: substances_upload_csv_create
+      description: |-
+        Standard CRUD viewset for reference and inventory data.
+
+        - Deny by default: authenticated read access, staff-only writes
+          (override `permission_classes` or `get_permissions` explicitly).
+        - Server-assigned provenance (ProvenanceMixin).
+        - Every request runs in a database transaction (ATOMIC_REQUESTS).
+      tags:
+      - substances
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SubstanceRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/SubstanceRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/SubstanceRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Substance'
+          description: ''
+  /api/token/:
+    post:
+      operationId: token_create
+      description: |-
+        Takes a set of user credentials and returns an access and refresh JSON web
+        token pair to prove the authentication of those credentials.
+      tags:
+      - token
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CustomTokenObtainPairRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/CustomTokenObtainPairRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/CustomTokenObtainPairRequest'
+        required: true
+      responses:
+        '200':
+          description: No response body
+  /api/token/refresh/:
+    post:
+      operationId: token_refresh_create
+      description: |-
+        Takes a refresh type JSON web token and returns an access type JSON web
+        token if the refresh token is valid.
+      tags:
+      - token
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TokenRefreshRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/TokenRefreshRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/TokenRefreshRequest'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TokenRefresh'
+          description: ''
+  /api/units/:
+    get:
+      operationId: units_list
+      description: |-
+        Standard CRUD viewset for reference and inventory data.
+
+        - Deny by default: authenticated read access, staff-only writes
+          (override `permission_classes` or `get_permissions` explicitly).
+        - Server-assigned provenance (ProvenanceMixin).
+        - Every request runs in a database transaction (ATOMIC_REQUESTS).
+      tags:
+      - units
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Unit'
+          description: ''
+    post:
+      operationId: units_create
+      description: |-
+        Standard CRUD viewset for reference and inventory data.
+
+        - Deny by default: authenticated read access, staff-only writes
+          (override `permission_classes` or `get_permissions` explicitly).
+        - Server-assigned provenance (ProvenanceMixin).
+        - Every request runs in a database transaction (ATOMIC_REQUESTS).
+      tags:
+      - units
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UnitRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/UnitRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/UnitRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Unit'
+          description: ''
+  /api/units/{id}/:
+    get:
+      operationId: units_retrieve
+      description: |-
+        Standard CRUD viewset for reference and inventory data.
+
+        - Deny by default: authenticated read access, staff-only writes
+          (override `permission_classes` or `get_permissions` explicitly).
+        - Server-assigned provenance (ProvenanceMixin).
+        - Every request runs in a database transaction (ATOMIC_REQUESTS).
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this unit.
+        required: true
+      tags:
+      - units
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Unit'
+          description: ''
+    put:
+      operationId: units_update
+      description: |-
+        Standard CRUD viewset for reference and inventory data.
+
+        - Deny by default: authenticated read access, staff-only writes
+          (override `permission_classes` or `get_permissions` explicitly).
+        - Server-assigned provenance (ProvenanceMixin).
+        - Every request runs in a database transaction (ATOMIC_REQUESTS).
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this unit.
+        required: true
+      tags:
+      - units
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UnitRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/UnitRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/UnitRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Unit'
+          description: ''
+    patch:
+      operationId: units_partial_update
+      description: |-
+        Standard CRUD viewset for reference and inventory data.
+
+        - Deny by default: authenticated read access, staff-only writes
+          (override `permission_classes` or `get_permissions` explicitly).
+        - Server-assigned provenance (ProvenanceMixin).
+        - Every request runs in a database transaction (ATOMIC_REQUESTS).
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this unit.
+        required: true
+      tags:
+      - units
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedUnitRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedUnitRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedUnitRequest'
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Unit'
+          description: ''
+    delete:
+      operationId: units_destroy
+      description: |-
+        Standard CRUD viewset for reference and inventory data.
+
+        - Deny by default: authenticated read access, staff-only writes
+          (override `permission_classes` or `get_permissions` explicitly).
+        - Server-assigned provenance (ProvenanceMixin).
+        - Every request runs in a database transaction (ATOMIC_REQUESTS).
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this unit.
+        required: true
+      tags:
+      - units
+      security:
+      - jwtAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/units/download_csv/:
+    get:
+      operationId: units_download_csv_retrieve
+      description: |-
+        Standard CRUD viewset for reference and inventory data.
+
+        - Deny by default: authenticated read access, staff-only writes
+          (override `permission_classes` or `get_permissions` explicitly).
+        - Server-assigned provenance (ProvenanceMixin).
+        - Every request runs in a database transaction (ATOMIC_REQUESTS).
+      tags:
+      - units
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Unit'
+          description: ''
+  /api/units/download_csv_template/:
+    get:
+      operationId: units_download_csv_template_retrieve
+      description: |-
+        Standard CRUD viewset for reference and inventory data.
+
+        - Deny by default: authenticated read access, staff-only writes
+          (override `permission_classes` or `get_permissions` explicitly).
+        - Server-assigned provenance (ProvenanceMixin).
+        - Every request runs in a database transaction (ATOMIC_REQUESTS).
+      tags:
+      - units
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Unit'
+          description: ''
+  /api/units/upload_csv/:
+    post:
+      operationId: units_upload_csv_create
+      description: |-
+        Standard CRUD viewset for reference and inventory data.
+
+        - Deny by default: authenticated read access, staff-only writes
+          (override `permission_classes` or `get_permissions` explicitly).
+        - Server-assigned provenance (ProvenanceMixin).
+        - Every request runs in a database transaction (ATOMIC_REQUESTS).
+      tags:
+      - units
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UnitRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/UnitRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/UnitRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Unit'
+          description: ''
+components:
+  schemas:
+    Attachment:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        experiment:
+          type: integer
+        entry:
+          type: integer
+          nullable: true
+        original_name:
+          type: string
+          readOnly: true
+        content_type:
+          type: string
+          readOnly: true
+        size:
+          type: integer
+          readOnly: true
+        sha256:
+          type: string
+          readOnly: true
+        description:
+          type: string
+          maxLength: 500
+        uploaded_at:
+          type: string
+          format: date-time
+          readOnly: true
+        uploaded_by:
+          type: integer
+          readOnly: true
+        download_url:
+          type: string
+          readOnly: true
+      required:
+      - content_type
+      - download_url
+      - experiment
+      - id
+      - original_name
+      - sha256
+      - size
+      - uploaded_at
+      - uploaded_by
+    AttachmentRequest:
+      type: object
+      properties:
+        experiment:
+          type: integer
+        entry:
+          type: integer
+          nullable: true
+        file:
+          type: string
+          format: binary
+          writeOnly: true
+        description:
+          type: string
+          maxLength: 500
+      required:
+      - experiment
+      - file
+    Building:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        name:
+          type: string
+          maxLength: 50
+        street:
+          type: string
+          maxLength: 100
+        city:
+          type: string
+          maxLength: 60
+        state:
+          type: string
+          maxLength: 60
+        zipcode:
+          type: string
+          maxLength: 10
+        country:
+          type: string
+          maxLength: 50
+      required:
+      - city
+      - id
+      - name
+      - street
+      - zipcode
+    BuildingRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 50
+        street:
+          type: string
+          minLength: 1
+          maxLength: 100
+        city:
+          type: string
+          minLength: 1
+          maxLength: 60
+        state:
+          type: string
+          maxLength: 60
+        zipcode:
+          type: string
+          minLength: 1
+          maxLength: 10
+        country:
+          type: string
+          minLength: 1
+          maxLength: 50
+      required:
+      - city
+      - name
+      - street
+      - zipcode
+    Component:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+        fraction:
+          type: number
+          format: double
+          maximum: 1.0
+          minimum: 0.0
+        type:
+          type: string
+          nullable: true
+          maxLength: 50
+        created_by:
+          type: integer
+          readOnly: true
+          nullable: true
+        updated_by:
+          type: integer
+          readOnly: true
+          nullable: true
+        substance:
+          type: integer
+      required:
+      - created_at
+      - created_by
+      - id
+      - substance
+      - updated_at
+      - updated_by
+    ComponentRequest:
+      type: object
+      properties:
+        fraction:
+          type: number
+          format: double
+          maximum: 1.0
+          minimum: 0.0
+        type:
+          type: string
+          nullable: true
+          maxLength: 50
+        substance:
+          type: integer
+      required:
+      - substance
+    Compound:
+      type: object
+      description: 'Write serializer: components and categories as primary-key lists.'
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+        name:
+          type: string
+          maxLength: 250
+        synonyms:
+          type: array
+          items:
+            type: string
+            maxLength: 250
+        label:
+          type: string
+          nullable: true
+          maxLength: 250
+        purity:
+          type: number
+          format: double
+          maximum: 1.0
+          minimum: 0.0
+        density:
+          type: number
+          format: double
+          nullable: true
+        color:
+          type: string
+          nullable: true
+          maxLength: 20
+        melting_point:
+          type: number
+          format: double
+          nullable: true
+        boiling_point:
+          type: number
+          format: double
+          nullable: true
+        flash_point:
+          type: number
+          format: double
+          nullable: true
+        created_by:
+          type: integer
+          readOnly: true
+          nullable: true
+        updated_by:
+          type: integer
+          readOnly: true
+          nullable: true
+        density_unit:
+          type: integer
+          nullable: true
+        melting_point_unit:
+          type: integer
+          nullable: true
+        boiling_point_unit:
+          type: integer
+          nullable: true
+        flash_point_unit:
+          type: integer
+          nullable: true
+        ghs:
+          type: integer
+          nullable: true
+        substances:
+          type: array
+          items:
+            type: integer
+        categories:
+          type: array
+          items:
+            type: integer
+      required:
+      - created_at
+      - created_by
+      - id
+      - name
+      - substances
+      - updated_at
+      - updated_by
+    CompoundDetail:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        substances:
+          type: array
+          items:
+            $ref: '#/components/schemas/Component'
+        containers:
+          type: array
+          items:
+            $ref: '#/components/schemas/Container'
+        ghs:
+          $ref: '#/components/schemas/GHS'
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+        name:
+          type: string
+          maxLength: 250
+        synonyms:
+          type: array
+          items:
+            type: string
+            maxLength: 250
+        label:
+          type: string
+          nullable: true
+          maxLength: 250
+        purity:
+          type: number
+          format: double
+          maximum: 1.0
+          minimum: 0.0
+        density:
+          type: number
+          format: double
+          nullable: true
+        color:
+          type: string
+          nullable: true
+          maxLength: 20
+        melting_point:
+          type: number
+          format: double
+          nullable: true
+        boiling_point:
+          type: number
+          format: double
+          nullable: true
+        flash_point:
+          type: number
+          format: double
+          nullable: true
+        created_by:
+          type: integer
+          readOnly: true
+          nullable: true
+        updated_by:
+          type: integer
+          readOnly: true
+          nullable: true
+        density_unit:
+          type: integer
+          nullable: true
+        melting_point_unit:
+          type: integer
+          nullable: true
+        boiling_point_unit:
+          type: integer
+          nullable: true
+        flash_point_unit:
+          type: integer
+          nullable: true
+        categories:
+          type: array
+          items:
+            type: integer
+      required:
+      - containers
+      - created_at
+      - created_by
+      - ghs
+      - id
+      - name
+      - substances
+      - updated_at
+      - updated_by
+    CompoundList:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        substances:
+          type: array
+          items:
+            $ref: '#/components/schemas/Component'
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+        name:
+          type: string
+          maxLength: 250
+        synonyms:
+          type: array
+          items:
+            type: string
+            maxLength: 250
+        label:
+          type: string
+          nullable: true
+          maxLength: 250
+        purity:
+          type: number
+          format: double
+          maximum: 1.0
+          minimum: 0.0
+        density:
+          type: number
+          format: double
+          nullable: true
+        color:
+          type: string
+          nullable: true
+          maxLength: 20
+        melting_point:
+          type: number
+          format: double
+          nullable: true
+        boiling_point:
+          type: number
+          format: double
+          nullable: true
+        flash_point:
+          type: number
+          format: double
+          nullable: true
+        created_by:
+          type: integer
+          readOnly: true
+          nullable: true
+        updated_by:
+          type: integer
+          readOnly: true
+          nullable: true
+        density_unit:
+          type: integer
+          nullable: true
+        melting_point_unit:
+          type: integer
+          nullable: true
+        boiling_point_unit:
+          type: integer
+          nullable: true
+        flash_point_unit:
+          type: integer
+          nullable: true
+        ghs:
+          type: integer
+          nullable: true
+        categories:
+          type: array
+          items:
+            type: integer
+      required:
+      - created_at
+      - created_by
+      - id
+      - name
+      - substances
+      - updated_at
+      - updated_by
+    CompoundRequest:
+      type: object
+      description: 'Write serializer: components and categories as primary-key lists.'
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 250
+        synonyms:
+          type: array
+          items:
+            type: string
+            minLength: 1
+            maxLength: 250
+        label:
+          type: string
+          nullable: true
+          maxLength: 250
+        purity:
+          type: number
+          format: double
+          maximum: 1.0
+          minimum: 0.0
+        density:
+          type: number
+          format: double
+          nullable: true
+        color:
+          type: string
+          nullable: true
+          maxLength: 20
+        melting_point:
+          type: number
+          format: double
+          nullable: true
+        boiling_point:
+          type: number
+          format: double
+          nullable: true
+        flash_point:
+          type: number
+          format: double
+          nullable: true
+        density_unit:
+          type: integer
+          nullable: true
+        melting_point_unit:
+          type: integer
+          nullable: true
+        boiling_point_unit:
+          type: integer
+          nullable: true
+        flash_point_unit:
+          type: integer
+          nullable: true
+        ghs:
+          type: integer
+          nullable: true
+        substances:
+          type: array
+          items:
+            type: integer
+        categories:
+          type: array
+          items:
+            type: integer
+      required:
+      - name
+      - substances
+    Container:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+        tara:
+          type: number
+          format: double
+          nullable: true
+        amount:
+          type: number
+          format: double
+          nullable: true
+        amount_left:
+          type: number
+          format: double
+          nullable: true
+        EAN:
+          type: string
+          nullable: true
+          maxLength: 13
+        product_number:
+          type: string
+          nullable: true
+          maxLength: 100
+        price:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+          nullable: true
+        description:
+          type: string
+          nullable: true
+          maxLength: 500
+        conditions:
+          type: string
+          nullable: true
+          maxLength: 50
+        opened:
+          type: string
+          format: date
+          nullable: true
+        last_used:
+          type: string
+          format: date
+          readOnly: true
+          nullable: true
+        created_by:
+          type: integer
+          readOnly: true
+          nullable: true
+        updated_by:
+          type: integer
+          readOnly: true
+          nullable: true
+        parent:
+          type: integer
+          nullable: true
+        compound:
+          type: integer
+          nullable: true
+        tara_unit:
+          type: integer
+          nullable: true
+        amount_unit:
+          type: integer
+          nullable: true
+        supplier:
+          type: integer
+        currency:
+          type: integer
+          nullable: true
+        location:
+          type: integer
+          nullable: true
+        owner:
+          type: integer
+          nullable: true
+        last_user:
+          type: integer
+          readOnly: true
+          nullable: true
+      required:
+      - created_at
+      - created_by
+      - id
+      - last_used
+      - last_user
+      - supplier
+      - updated_at
+      - updated_by
+    ContainerRequest:
+      type: object
+      properties:
+        tara:
+          type: number
+          format: double
+          nullable: true
+        amount:
+          type: number
+          format: double
+          nullable: true
+        amount_left:
+          type: number
+          format: double
+          nullable: true
+        EAN:
+          type: string
+          nullable: true
+          maxLength: 13
+        product_number:
+          type: string
+          nullable: true
+          maxLength: 100
+        price:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+          nullable: true
+        description:
+          type: string
+          nullable: true
+          maxLength: 500
+        conditions:
+          type: string
+          nullable: true
+          maxLength: 50
+        opened:
+          type: string
+          format: date
+          nullable: true
+        parent:
+          type: integer
+          nullable: true
+        compound:
+          type: integer
+          nullable: true
+        tara_unit:
+          type: integer
+          nullable: true
+        amount_unit:
+          type: integer
+          nullable: true
+        supplier:
+          type: integer
+        currency:
+          type: integer
+          nullable: true
+        location:
+          type: integer
+          nullable: true
+        owner:
+          type: integer
+          nullable: true
+      required:
+      - supplier
+    CustomTokenObtainPairRequest:
+      type: object
+      properties:
+        email:
+          type: string
+          writeOnly: true
+          minLength: 1
+        password:
+          type: string
+          writeOnly: true
+          minLength: 1
+      required:
+      - email
+      - password
+    Entry:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+        kind:
+          $ref: '#/components/schemas/KindEnum'
+        content:
+          type: string
+        reason:
+          type: string
+        created_by:
+          type: integer
+          readOnly: true
+          nullable: true
+        updated_by:
+          type: integer
+          readOnly: true
+          nullable: true
+        experiment:
+          type: integer
+        corrects:
+          type: integer
+          nullable: true
+      required:
+      - content
+      - created_at
+      - created_by
+      - experiment
+      - id
+      - kind
+      - updated_at
+      - updated_by
+    EntryRequest:
+      type: object
+      properties:
+        kind:
+          $ref: '#/components/schemas/KindEnum'
+        content:
+          type: string
+          minLength: 1
+        reason:
+          type: string
+        experiment:
+          type: integer
+        corrects:
+          type: integer
+          nullable: true
+      required:
+      - content
+      - experiment
+      - kind
+    Experiment:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        can_edit:
+          type: boolean
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+        title:
+          type: string
+          maxLength: 200
+        objective:
+          type: string
+        started_on:
+          type: string
+          format: date
+          nullable: true
+        status:
+          allOf:
+          - $ref: '#/components/schemas/StatusEnum'
+          readOnly: true
+        completed_at:
+          type: string
+          format: date-time
+          readOnly: true
+          nullable: true
+        created_by:
+          type: integer
+          readOnly: true
+          nullable: true
+        updated_by:
+          type: integer
+          readOnly: true
+          nullable: true
+        project:
+          type: integer
+        owner:
+          type: integer
+          readOnly: true
+        working_group:
+          type: integer
+          readOnly: true
+          nullable: true
+        completed_by:
+          type: integer
+          readOnly: true
+          nullable: true
+      required:
+      - can_edit
+      - completed_at
+      - completed_by
+      - created_at
+      - created_by
+      - id
+      - owner
+      - project
+      - status
+      - title
+      - updated_at
+      - updated_by
+      - working_group
+    ExperimentRequest:
+      type: object
+      properties:
+        title:
+          type: string
+          minLength: 1
+          maxLength: 200
+        objective:
+          type: string
+        started_on:
+          type: string
+          format: date
+          nullable: true
+        project:
+          type: integer
+      required:
+      - project
+      - title
+    ExperimentShare:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        level:
+          $ref: '#/components/schemas/LevelEnum'
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        experiment:
+          type: integer
+        member:
+          type: integer
+        created_by:
+          type: integer
+          readOnly: true
+          nullable: true
+      required:
+      - created_at
+      - created_by
+      - experiment
+      - id
+      - member
+    ExperimentShareRequest:
+      type: object
+      properties:
+        level:
+          $ref: '#/components/schemas/LevelEnum'
+        experiment:
+          type: integer
+        member:
+          type: integer
+      required:
+      - experiment
+      - member
+    GHS:
+      type: object
+      properties:
+        hazard_classes:
+          type: array
+          items:
+            $ref: '#/components/schemas/HazardClass'
+        H:
+          type: array
+          items:
+            $ref: '#/components/schemas/HazardStatement'
+        P:
+          type: array
+          items:
+            $ref: '#/components/schemas/PrecautionaryStatement'
+      required:
+      - H
+      - P
+      - hazard_classes
+    HazardClass:
+      type: object
+      properties:
+        pictogram:
+          $ref: '#/components/schemas/Pictogram'
+        code:
+          type: string
+          maxLength: 2
+          minLength: 2
+        name:
+          type: string
+          maxLength: 20
+      required:
+      - code
+      - name
+      - pictogram
+    HazardStatement:
+      type: object
+      properties:
+        code:
+          type: array
+          items:
+            type: string
+            maxLength: 5
+            minLength: 3
+        category:
+          $ref: '#/components/schemas/HazardStatementCategoryEnum'
+        statements:
+          type: array
+          items:
+            type: string
+        signal_word:
+          $ref: '#/components/schemas/SignalWordEnum'
+      required:
+      - category
+      - signal_word
+    HazardStatementCategoryEnum:
+      enum:
+      - physical
+      - health
+      - environmental
+      - disposal
+      type: string
+      description: |-
+        * `physical` - physical
+        * `health` - health
+        * `environmental` - environmental
+        * `disposal` - disposal
+    KindEnum:
+      enum:
+      - procedure
+      - observation
+      - result
+      - note
+      - correction
+      type: string
+      description: |-
+        * `procedure` - procedure
+        * `observation` - observation
+        * `result` - result
+        * `note` - note
+        * `correction` - correction
+    LevelEnum:
+      enum:
+      - read
+      - edit
+      type: string
+      description: |-
+        * `read` - read
+        * `edit` - edit
+    MaterialUsage:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+        amount:
+          type: number
+          format: double
+        note:
+          type: string
+          maxLength: 500
+        created_by:
+          type: integer
+          readOnly: true
+          nullable: true
+        updated_by:
+          type: integer
+          readOnly: true
+          nullable: true
+        experiment:
+          type: integer
+        container:
+          type: integer
+        unit:
+          type: integer
+      required:
+      - amount
+      - container
+      - created_at
+      - created_by
+      - experiment
+      - id
+      - unit
+      - updated_at
+      - updated_by
+    MaterialUsageRequest:
+      type: object
+      properties:
+        amount:
+          type: number
+          format: double
+        note:
+          type: string
+          maxLength: 500
+        experiment:
+          type: integer
+        container:
+          type: integer
+        unit:
+          type: integer
+      required:
+      - amount
+      - container
+      - experiment
+      - unit
+    Member:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        first_name:
+          type: string
+          maxLength: 50
+        last_name:
+          type: string
+          maxLength: 50
+        email:
+          type: string
+          format: email
+          title: Email address
+          maxLength: 254
+        working_group:
+          type: integer
+          nullable: true
+        roles:
+          type: array
+          items:
+            type: integer
+      required:
+      - email
+      - first_name
+      - id
+      - last_name
+    MemberDirectory:
+      type: object
+      description: 'Public-within-the-app member listing: names and group only, no
+        contact data.'
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        first_name:
+          type: string
+          readOnly: true
+        last_name:
+          type: string
+          readOnly: true
+        working_group:
+          type: integer
+          readOnly: true
+          nullable: true
+      required:
+      - first_name
+      - id
+      - last_name
+      - working_group
+    MemberRequest:
+      type: object
+      properties:
+        first_name:
+          type: string
+          minLength: 1
+          maxLength: 50
+        last_name:
+          type: string
+          minLength: 1
+          maxLength: 50
+        email:
+          type: string
+          format: email
+          minLength: 1
+          title: Email address
+          maxLength: 254
+        password:
+          type: string
+          writeOnly: true
+          minLength: 1
+          maxLength: 128
+        working_group:
+          type: integer
+          nullable: true
+        roles:
+          type: array
+          items:
+            type: integer
+      required:
+      - email
+      - first_name
+      - last_name
+      - password
+    PatchedBuildingRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 50
+        street:
+          type: string
+          minLength: 1
+          maxLength: 100
+        city:
+          type: string
+          minLength: 1
+          maxLength: 60
+        state:
+          type: string
+          maxLength: 60
+        zipcode:
+          type: string
+          minLength: 1
+          maxLength: 10
+        country:
+          type: string
+          minLength: 1
+          maxLength: 50
+    PatchedComponentRequest:
+      type: object
+      properties:
+        fraction:
+          type: number
+          format: double
+          maximum: 1.0
+          minimum: 0.0
+        type:
+          type: string
+          nullable: true
+          maxLength: 50
+        substance:
+          type: integer
+    PatchedCompoundRequest:
+      type: object
+      description: 'Write serializer: components and categories as primary-key lists.'
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 250
+        synonyms:
+          type: array
+          items:
+            type: string
+            minLength: 1
+            maxLength: 250
+        label:
+          type: string
+          nullable: true
+          maxLength: 250
+        purity:
+          type: number
+          format: double
+          maximum: 1.0
+          minimum: 0.0
+        density:
+          type: number
+          format: double
+          nullable: true
+        color:
+          type: string
+          nullable: true
+          maxLength: 20
+        melting_point:
+          type: number
+          format: double
+          nullable: true
+        boiling_point:
+          type: number
+          format: double
+          nullable: true
+        flash_point:
+          type: number
+          format: double
+          nullable: true
+        density_unit:
+          type: integer
+          nullable: true
+        melting_point_unit:
+          type: integer
+          nullable: true
+        boiling_point_unit:
+          type: integer
+          nullable: true
+        flash_point_unit:
+          type: integer
+          nullable: true
+        ghs:
+          type: integer
+          nullable: true
+        substances:
+          type: array
+          items:
+            type: integer
+        categories:
+          type: array
+          items:
+            type: integer
+    PatchedContainerRequest:
+      type: object
+      properties:
+        tara:
+          type: number
+          format: double
+          nullable: true
+        amount:
+          type: number
+          format: double
+          nullable: true
+        amount_left:
+          type: number
+          format: double
+          nullable: true
+        EAN:
+          type: string
+          nullable: true
+          maxLength: 13
+        product_number:
+          type: string
+          nullable: true
+          maxLength: 100
+        price:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+          nullable: true
+        description:
+          type: string
+          nullable: true
+          maxLength: 500
+        conditions:
+          type: string
+          nullable: true
+          maxLength: 50
+        opened:
+          type: string
+          format: date
+          nullable: true
+        parent:
+          type: integer
+          nullable: true
+        compound:
+          type: integer
+          nullable: true
+        tara_unit:
+          type: integer
+          nullable: true
+        amount_unit:
+          type: integer
+          nullable: true
+        supplier:
+          type: integer
+        currency:
+          type: integer
+          nullable: true
+        location:
+          type: integer
+          nullable: true
+        owner:
+          type: integer
+          nullable: true
+    PatchedEntryRequest:
+      type: object
+      properties:
+        kind:
+          $ref: '#/components/schemas/KindEnum'
+        content:
+          type: string
+          minLength: 1
+        reason:
+          type: string
+        experiment:
+          type: integer
+        corrects:
+          type: integer
+          nullable: true
+    PatchedExperimentRequest:
+      type: object
+      properties:
+        title:
+          type: string
+          minLength: 1
+          maxLength: 200
+        objective:
+          type: string
+        started_on:
+          type: string
+          format: date
+          nullable: true
+        project:
+          type: integer
+    PatchedExperimentShareRequest:
+      type: object
+      properties:
+        level:
+          $ref: '#/components/schemas/LevelEnum'
+        experiment:
+          type: integer
+        member:
+          type: integer
+    PatchedMemberRequest:
+      type: object
+      properties:
+        first_name:
+          type: string
+          minLength: 1
+          maxLength: 50
+        last_name:
+          type: string
+          minLength: 1
+          maxLength: 50
+        email:
+          type: string
+          format: email
+          minLength: 1
+          title: Email address
+          maxLength: 254
+        password:
+          type: string
+          writeOnly: true
+          minLength: 1
+          maxLength: 128
+        working_group:
+          type: integer
+          nullable: true
+        roles:
+          type: array
+          items:
+            type: integer
+    PatchedProjectRequest:
+      type: object
+      properties:
+        title:
+          type: string
+          minLength: 1
+          maxLength: 200
+        description:
+          type: string
+    PatchedProjectShareRequest:
+      type: object
+      properties:
+        level:
+          $ref: '#/components/schemas/LevelEnum'
+        project:
+          type: integer
+        member:
+          type: integer
+    PatchedRoleRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 150
+    PatchedStorageRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 50
+        compartment:
+          type: string
+          default: ''
+          maxLength: 50
+        room:
+          type: integer
+          nullable: true
+    PatchedSubstanceRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 250
+        synonyms:
+          type: array
+          items:
+            type: string
+            minLength: 1
+            maxLength: 250
+          nullable: true
+        label:
+          type: string
+          nullable: true
+          maxLength: 250
+        formula:
+          type: string
+          nullable: true
+          maxLength: 100
+        smiles:
+          type: string
+          nullable: true
+        inchi:
+          type: string
+          nullable: true
+        inchi_key:
+          type: string
+          nullable: true
+          maxLength: 27
+        cas:
+          type: string
+          nullable: true
+          maxLength: 12
+        pubchem_sid:
+          type: integer
+          maximum: 2147483647
+          minimum: -2147483648
+          nullable: true
+        pubchem_cid:
+          type: integer
+          maximum: 2147483647
+          minimum: -2147483648
+          nullable: true
+        molfile:
+          type: string
+        mol_weight:
+          type: number
+          format: double
+          nullable: true
+        exact_mass:
+          type: number
+          format: double
+          nullable: true
+        image:
+          type: string
+          format: binary
+          nullable: true
+        mol_weight_unit:
+          type: integer
+          nullable: true
+        exact_mass_unit:
+          type: integer
+          nullable: true
+    PatchedUnitRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 50
+        symbol:
+          type: string
+          minLength: 1
+          maxLength: 10
+    PatchedWorkingGroupRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 50
+    Pictogram:
+      type: object
+      properties:
+        description:
+          type: string
+          maxLength: 50
+        image:
+          type: string
+          format: uri
+          nullable: true
+    PrecautionaryStatement:
+      type: object
+      properties:
+        code:
+          type: array
+          items:
+            type: string
+            maxLength: 3
+            minLength: 3
+        category:
+          $ref: '#/components/schemas/PrecautionaryStatementCategoryEnum'
+        statements:
+          type: array
+          items:
+            type: string
+      required:
+      - category
+    PrecautionaryStatementCategoryEnum:
+      enum:
+      - prevention
+      - response
+      - storage
+      - disposal
+      type: string
+      description: |-
+        * `prevention` - prevention
+        * `response` - response
+        * `storage` - storage
+        * `disposal` - disposal
+    Project:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        can_edit:
+          type: boolean
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+        title:
+          type: string
+          maxLength: 200
+        description:
+          type: string
+        created_by:
+          type: integer
+          readOnly: true
+          nullable: true
+        updated_by:
+          type: integer
+          readOnly: true
+          nullable: true
+        owner:
+          type: integer
+          readOnly: true
+        working_group:
+          type: integer
+          readOnly: true
+          nullable: true
+      required:
+      - can_edit
+      - created_at
+      - created_by
+      - id
+      - owner
+      - title
+      - updated_at
+      - updated_by
+      - working_group
+    ProjectRequest:
+      type: object
+      properties:
+        title:
+          type: string
+          minLength: 1
+          maxLength: 200
+        description:
+          type: string
+      required:
+      - title
+    ProjectShare:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        level:
+          $ref: '#/components/schemas/LevelEnum'
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        project:
+          type: integer
+        member:
+          type: integer
+        created_by:
+          type: integer
+          readOnly: true
+          nullable: true
+      required:
+      - created_at
+      - created_by
+      - id
+      - member
+      - project
+    ProjectShareRequest:
+      type: object
+      properties:
+        level:
+          $ref: '#/components/schemas/LevelEnum'
+        project:
+          type: integer
+        member:
+          type: integer
+      required:
+      - member
+      - project
+    Registration:
+      type: object
+      description: |-
+        Public self-registration. Only personal fields are accepted: working group,
+        roles and staff flags are assigned by an admin. Accounts are created
+        inactive and must be activated by an admin before they can log in.
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        first_name:
+          type: string
+          maxLength: 50
+        last_name:
+          type: string
+          maxLength: 50
+        email:
+          type: string
+          format: email
+          title: Email address
+          maxLength: 254
+        is_active:
+          type: boolean
+          readOnly: true
+      required:
+      - email
+      - first_name
+      - id
+      - is_active
+      - last_name
+    RegistrationRequest:
+      type: object
+      description: |-
+        Public self-registration. Only personal fields are accepted: working group,
+        roles and staff flags are assigned by an admin. Accounts are created
+        inactive and must be activated by an admin before they can log in.
+      properties:
+        first_name:
+          type: string
+          minLength: 1
+          maxLength: 50
+        last_name:
+          type: string
+          minLength: 1
+          maxLength: 50
+        email:
+          type: string
+          format: email
+          minLength: 1
+          title: Email address
+          maxLength: 254
+        password:
+          type: string
+          writeOnly: true
+          minLength: 1
+          maxLength: 128
+      required:
+      - email
+      - first_name
+      - last_name
+      - password
+    Role:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        name:
+          type: string
+          maxLength: 150
+      required:
+      - id
+      - name
+    RoleRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 150
+      required:
+      - name
+    SignalWordEnum:
+      enum:
+      - danger
+      - warning
+      type: string
+      description: |-
+        * `danger` - danger
+        * `warning` - warning
+    StatusEnum:
+      enum:
+      - draft
+      - completed
+      type: string
+      description: |-
+        * `draft` - draft
+        * `completed` - completed
+    Storage:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        label:
+          type: string
+          readOnly: true
+        name:
+          type: string
+          maxLength: 50
+        compartment:
+          type: string
+          default: ''
+          maxLength: 50
+        room:
+          type: integer
+          nullable: true
+      required:
+      - id
+      - label
+      - name
+    StorageRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 50
+        compartment:
+          type: string
+          default: ''
+          maxLength: 50
+        room:
+          type: integer
+          nullable: true
+      required:
+      - name
+    Substance:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+        name:
+          type: string
+          maxLength: 250
+        synonyms:
+          type: array
+          items:
+            type: string
+            maxLength: 250
+          nullable: true
+        label:
+          type: string
+          nullable: true
+          maxLength: 250
+        formula:
+          type: string
+          nullable: true
+          maxLength: 100
+        smiles:
+          type: string
+          nullable: true
+        inchi:
+          type: string
+          nullable: true
+        inchi_key:
+          type: string
+          nullable: true
+          maxLength: 27
+        cas:
+          type: string
+          nullable: true
+          maxLength: 12
+        pubchem_sid:
+          type: integer
+          maximum: 2147483647
+          minimum: -2147483648
+          nullable: true
+        pubchem_cid:
+          type: integer
+          maximum: 2147483647
+          minimum: -2147483648
+          nullable: true
+        molfile:
+          type: string
+        mol_weight:
+          type: number
+          format: double
+          nullable: true
+        exact_mass:
+          type: number
+          format: double
+          nullable: true
+        image:
+          type: string
+          format: uri
+          nullable: true
+        created_by:
+          type: integer
+          readOnly: true
+          nullable: true
+        updated_by:
+          type: integer
+          readOnly: true
+          nullable: true
+        mol_weight_unit:
+          type: integer
+          nullable: true
+        exact_mass_unit:
+          type: integer
+          nullable: true
+      required:
+      - created_at
+      - created_by
+      - id
+      - name
+      - updated_at
+      - updated_by
+    SubstanceRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 250
+        synonyms:
+          type: array
+          items:
+            type: string
+            minLength: 1
+            maxLength: 250
+          nullable: true
+        label:
+          type: string
+          nullable: true
+          maxLength: 250
+        formula:
+          type: string
+          nullable: true
+          maxLength: 100
+        smiles:
+          type: string
+          nullable: true
+        inchi:
+          type: string
+          nullable: true
+        inchi_key:
+          type: string
+          nullable: true
+          maxLength: 27
+        cas:
+          type: string
+          nullable: true
+          maxLength: 12
+        pubchem_sid:
+          type: integer
+          maximum: 2147483647
+          minimum: -2147483648
+          nullable: true
+        pubchem_cid:
+          type: integer
+          maximum: 2147483647
+          minimum: -2147483648
+          nullable: true
+        molfile:
+          type: string
+        mol_weight:
+          type: number
+          format: double
+          nullable: true
+        exact_mass:
+          type: number
+          format: double
+          nullable: true
+        image:
+          type: string
+          format: binary
+          nullable: true
+        mol_weight_unit:
+          type: integer
+          nullable: true
+        exact_mass_unit:
+          type: integer
+          nullable: true
+      required:
+      - name
+    TokenRefresh:
+      type: object
+      properties:
+        access:
+          type: string
+          readOnly: true
+        refresh:
+          type: string
+      required:
+      - access
+      - refresh
+    TokenRefreshRequest:
+      type: object
+      properties:
+        refresh:
+          type: string
+          minLength: 1
+      required:
+      - refresh
+    Unit:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        name:
+          type: string
+          maxLength: 50
+        symbol:
+          type: string
+          maxLength: 10
+      required:
+      - id
+      - name
+      - symbol
+    UnitRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 50
+        symbol:
+          type: string
+          minLength: 1
+          maxLength: 10
+      required:
+      - name
+      - symbol
+    WorkingGroup:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        name:
+          type: string
+          maxLength: 50
+      required:
+      - id
+      - name
+    WorkingGroupRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 50
+      required:
+      - name
+  securitySchemes:
+    jwtAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

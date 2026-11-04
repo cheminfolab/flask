@@ -22,7 +22,6 @@ import {
   FieldLabel,
 } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
-// import type { Group } from "@/types/accounts"
 import AuthContext from "@/contexts/AuthContext"
 import type { 
     AuthContextType, 
@@ -55,6 +54,7 @@ const SignupForm = ({ ...props }: ComponentProps<typeof Card>) => {
     const [errors, setErrors] = useState<Errors>(emptyForm)
     const [form, setForm] = useState<RegistrationForm>(emptyForm)
     const [submitted, setSubmitted] = useState<boolean>(false)
+    const [pending, setPending] = useState<boolean>(false)
     // const [status, setStatus] = useState()
 
     // const api = useAxios()
@@ -109,22 +109,53 @@ const SignupForm = ({ ...props }: ComponentProps<typeof Card>) => {
     const handleSubmit: FormEventHandler<HTMLFormElement> = event => {
         event.preventDefault()
         const formErrors = validateForm()
-        if (Object.values(formErrors).filter(value => value !== undefined).length > 0) {
-            console.log("errors not empty:", formErrors)
-            setErrors(formErrors)
-        }
-        else {
-            console.log("registered user")
-            registerUser(event)
-        }
         setSubmitted(true)
-        // TODO: handle already registered user
+        if (Object.values(formErrors).filter(value => value !== undefined).length > 0) {
+            setErrors(formErrors)
+            return
+        }
+        setErrors({})
+        registerUser({
+            first_name: form.first_name ?? "",
+            last_name: form.last_name ?? "",
+            email: form.email ?? "",
+            password: form.password ?? "",
+        })
+            .then(() => setPending(true))
+            .catch(error => {
+                // the backend is authoritative: show its field errors (duplicate email, weak password, ...)
+                const data = error?.response?.data
+                if (data && typeof data === "object") {
+                    const serverErrors: Errors = {}
+                    for (const field of ["first_name", "last_name", "email", "password"] as const) {
+                        if (data[field]) serverErrors[field] = ([] as string[]).concat(data[field]).join(" ")
+                    }
+                    setErrors(serverErrors)
+                } else {
+                    setErrors({email: "Registration failed. Please try again later."})
+                }
+            })
     }
+
+    if (pending) return (
+        <Card {...props}>
+            <CardHeader>
+                <CardTitle>Account created</CardTitle>
+                <CardDescription>
+                    Your account is waiting for approval by an administrator.
+                    You can log in once it has been activated.
+                </CardDescription>
+            </CardHeader>
+            <CardContent>
+                <Link to="/login" className="underline underline-offset-4">Back to login</Link>
+            </CardContent>
+        </Card>
+    )
 
     const FieldFeedback = ({name}: {name: keyof RegistrationForm}) => {
         if (submitted){
-            if (!!errors[name]) return <FieldError>{errors[name]}</FieldError>
-            else if (!!form[name]) return <FieldDescription>Looks good!</FieldDescription>
+            if (errors[name]) return <FieldError>{errors[name]}</FieldError>
+            else if (form[name]) return <FieldDescription>Looks good!</FieldDescription>
         }
     }
 

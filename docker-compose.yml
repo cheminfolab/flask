@@ -10,8 +10,9 @@ services:
       - POSTGRES_PORT=5432
     volumes:
       - eln_db:/var/lib/postgresql/data/
+    # bound to localhost only: reachable from the host for development, not from the network
     ports:
-      - "5432:5432"
+      - "127.0.0.1:5432:5432"
     networks:
       - eln
 
@@ -42,15 +43,19 @@ services:
     env_file: .env
     environment:
       - POSTGRES_HOST=database
+      # attachments are streamed by nginx after Django's permission check
+      - ATTACHMENT_X_ACCEL_PREFIX=/protected-attachments/
       - POSTGRES_PORT=5432
+    # localhost only: external traffic must go through nginx
     ports:
-      - "8000:8000"
+      - "127.0.0.1:8000:8000"
     depends_on:
       - database
     volumes:
       - ./backend:/app
       - static:/app/static
       - media:/app/media
+      - private_media:/app/private_media
     networks:
       - eln
 
@@ -68,10 +73,11 @@ services:
       - build:/var/www/frontend
       - static:/static
       - media:/media
+      - private_media:/private_media:ro
     depends_on:
       - database
       - backend
-      - frontend
+      # - frontend
     networks:
       - eln
 
@@ -92,6 +98,7 @@ volumes:
   build:
   static:
   media:
+  private_media:
 
 networks:
   eln:

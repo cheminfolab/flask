@@ -1,40 +1,102 @@
 name: test
-on: [push]
+on:
+  push:
+  pull_request:
 
 jobs:
 
-  build:
-      runs-on: ${{ matrix.os }}
-      environment: development
-      strategy:
-        max-parallel: 4
-        matrix:
-          os: ["ubuntu-latest"]
-          python-version: ["3.13"]
-  
-      steps:
+  backend:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:15.1   # same as docker-compose.yml
+        env:
+          POSTGRES_USER: eln
+          POSTGRES_PASSWORD: eln-ci
+          POSTGRES_DB: eln
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U eln"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    env:
+      # throwaway values for the test run only; no repository secrets needed
+      SECRET_KEY: ci-only-insecure-key
+      DEBUG: "False"
+      ALLOWED_HOSTS: localhost
+      TIME_ZONE: Europe/Berlin
+      POSTGRES_HOST: localhost
+      POSTGRES_PORT: "5432"
+      POSTGRES_USER: eln
+      POSTGRES_PASSWORD: eln-ci
+      POSTGRES_DB: eln
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - uses: actions/checkout@v4
 
-        - name: checkout repository
-          uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"   # same as backend/Dockerfile
+          cache: pip
+          cache-dependency-path: backend/requirements.txt
 
-        - name: create .env file
-          shell: bash -l {0}
-          run: |
-            touch .env
-            echo SECRET_KEY=${{ secrets.DJANGO_SECRET_KEY }} >> backend/.env
-            echo DEBUG=True >> backend/.env
-            echo ALLOWED_HOSTS="*" >> backend/.env
-            echo TIME_ZONE='Europe/Berlin' >> backend/.env
-            echo POSTGRES_DB='flask_db' >> backend/.env
-            echo POSTGRES_USER=${{ secrets.POSTGRES_USER }} >> backend/.env
-            echo POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }} >> backend/.env
-            echo POSTGRES_HOST='localhost' >> backend/.env
-            echo POSTGRES_PORT='5432' >> backend/.env
-            echo CORS_ALLOW_ALL_ORIGINS=True >> backend/.env
+      - name: install system libraries for psycopg2
+        run: sudo apt-get update && sudo apt-get install -y libpq-dev
 
-        - name: build docker container
-          run: docker compose --env-file .env up -d --build
-        
-        - name: Django unit tests
-          run: docker exec -i eln_backend python3 manage.py test
+      - name: install dependencies
+        run: pip install -r requirements.txt
 
+      - name: system checks
+        run: python manage.py check --fail-level WARNING
+
+      # Migrations are generated, not committed (see backend/README.md). Generating
+      # them non-interactively here catches model changes that would make the
+      # container entrypoint fail.
+      - name: generate migrations
+        run: python manage.py makemigrations --noinput
+
+      - name: unit and API tests
+        run: python manage.py test --verbosity 2 --parallel auto
+
+      # The committed OpenAPI schema is the contract the frontend types are generated from.
+      - name: OpenAPI schema is valid and up to date
+        run: |
+          python manage.py spectacular --file ../openapi/schema.yml --validate --fail-on-warn
+          git diff --exit-code -- ../openapi/schema.yml || {
+            echo "::error::openapi/schema.yml is out of date: run 'python manage.py spectacular --file ../openapi/schema.yml' and commit it"; exit 1; }
+
+  frontend:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: frontend
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"   # LTS
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: install dependencies
+        run: npm ci
+
+      - name: generated API types are up to date
+        run: |
+          npm run gen:api
+          git diff --exit-code -- src/types/api.gen.ts || {
+            echo "::error::src/types/api.gen.ts is out of date: run 'npm run gen:api' and commit it"; exit 1; }
+
+      - name: lint
+        run: npm run lint
+
+      - name: unit tests
+        run: npm test
+
+      - name: type-check and build
+        run: npm run build

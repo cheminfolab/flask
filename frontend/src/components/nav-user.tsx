@@ -4,7 +4,6 @@ import {
   BadgeCheck,
   Bell,
   ChevronsUpDown,
-  CreditCard,
   LogOut,
   TriangleAlert,
 } from "lucide-react"
@@ -12,7 +11,6 @@ import {
 import {
   Avatar,
   AvatarFallback,
-  AvatarImage,
 } from "@/components/ui/avatar"
 import {
   DropdownMenu,
@@ -29,22 +27,30 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar"
-import { useContext } from "react"
+import { useContext, useEffect, useState } from "react"
 import AuthContext from "@/contexts/AuthContext"
-import type { AuthContextType } from "../types/authorization"
+import type { AuthContextType } from "@/types/authorization"
+import type { Member } from "@/types/api"
+import useAxios from "@/hooks/useAxios"
 
-interface User {
-    name: string
-    email: string
-    avatar: string
-}
+export const NavUser = () => {
+  const {isMobile} = useSidebar()
+  const {user, logoutUser} = useContext(AuthContext) as AuthContextType
+  const [member, setMember] = useState<Member|null>(null)
+  const api = useAxios()
 
-export const NavUser = ({user}: {user: User}) => {
-  const { isMobile } = useSidebar()
+  useEffect(() => {
+    api
+      .getAll<Member>("members/me")
+      .then(data => setMember(data))
+      .catch(() => setMember(null))
+  }, [api])
 
-  const {logoutUser} = useContext(AuthContext) as AuthContextType
+  const initials = member
+    ? `${member.first_name.charAt(0)}${member.last_name.charAt(0)}`.toUpperCase()
+    : (user?.email.charAt(0) ?? "?").toUpperCase()
 
-  return (
+  return(
     <SidebarMenu>
       <SidebarMenuItem>
         <DropdownMenu>
@@ -54,12 +60,11 @@ export const NavUser = ({user}: {user: User}) => {
               className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
             >
               <Avatar className="h-8 w-8 rounded-lg">
-                <AvatarImage src={user.avatar} alt={user.name} />
-                <AvatarFallback className="rounded-lg">CN</AvatarFallback>
+                <AvatarFallback className="rounded-lg">{initials}</AvatarFallback>
               </Avatar>
               <div className="grid flex-1 text-left text-sm leading-tight">
-                <span className="truncate font-medium">{user.name}</span>
-                <span className="truncate text-xs">{user.email}</span>
+                <span className="truncate font-medium">{member?.last_name}</span>
+                <span className="truncate text-xs">{user?.email}</span>
               </div>
               <ChevronsUpDown className="ml-auto size-4" />
             </SidebarMenuButton>
@@ -73,12 +78,11 @@ export const NavUser = ({user}: {user: User}) => {
             <DropdownMenuLabel className="p-0 font-normal">
               <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
                 <Avatar className="h-8 w-8 rounded-lg">
-                  <AvatarImage src={user.avatar} alt={user.name} />
-                  <AvatarFallback className="rounded-lg">CN</AvatarFallback>
+                  <AvatarFallback className="rounded-lg">{initials}</AvatarFallback>
                 </Avatar>
                 <div className="grid flex-1 text-left text-sm leading-tight">
-                  <span className="truncate font-medium">{user.name}</span>
-                  <span className="truncate text-xs">{user.email}</span>
+                  <span className="truncate font-medium">{member?.last_name}</span>
+                  <span className="truncate text-xs">{user?.email}</span>
                 </div>
               </div>
             </DropdownMenuLabel>
@@ -87,10 +91,6 @@ export const NavUser = ({user}: {user: User}) => {
               <DropdownMenuItem>
                 <BadgeCheck />
                 Account
-              </DropdownMenuItem>
-              <DropdownMenuItem>
-                <CreditCard />
-                Billing
               </DropdownMenuItem>
               <DropdownMenuItem>
                 <TriangleAlert />

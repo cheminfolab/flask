@@ -41,23 +41,26 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-
     'django.contrib.postgres',
 
     'rest_framework',
     'rest_framework_simplejwt.token_blacklist',
     'corsheaders',
+    'simple_history',
+    'drf_spectacular',
 
     # 'phonenumber_field',
     # 'barcode_field'
     # 'django_rdkit',
 
+    'api',
     'accounts',
+    'projects',
     'locations',
     'chemicals',
-    'ghs',
     'equipment',
-    'projects',
+    'references',
+    'ghs',
 ]
 
 REST_FRAMEWORK = {
@@ -66,7 +69,19 @@ REST_FRAMEWORK = {
     ],
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework_simplejwt.authentication.JWTAuthentication',
-    )
+    ),
+    # 409 for deletes blocked by PROTECT instead of a 500
+    'EXCEPTION_HANDLER': 'api.exceptions.exception_handler',
+    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
+}
+
+SPECTACULAR_SETTINGS = {
+    'TITLE': 'FLASK ELN API',
+    'DESCRIPTION': 'Electronic lab notebook and chemical inventory. '
+                   'The frontend TypeScript types are generated from this schema.',
+    'VERSION': '0.1.0',
+    'SERVE_INCLUDE_SCHEMA': False,
+    'COMPONENT_SPLIT_REQUEST': True,  # separate request/response shapes (read-only fields, file uploads)
 }
 
 SIMPLE_JWT = {
@@ -111,6 +126,8 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    # records the acting user on history rows (also for DRF/JWT requests)
+    'simple_history.middleware.HistoryRequestMiddleware',
 ]
 
 ROOT_URLCONF = 'api.urls'
@@ -138,11 +155,13 @@ WSGI_APPLICATION = 'api.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': config('POSTGRES_DB'),
-        'USER': config('POSTGRES_USER'),
-        'PASSWORD': config('POSTGRES_PASSWORD'),
-        'HOST': config('POSTGRES_HOST'),
-        'PORT': config('POSTGRES_PORT'),
+        'NAME': config('POSTGRES_DB', default='flask_database'),
+        'USER': config('POSTGRES_USER', default='admin'),
+        'PASSWORD': config('POSTGRES_PASSWORD'),  # required, no default
+        'HOST': config('POSTGRES_HOST', default='127.0.0.1'),
+        'PORT': config('POSTGRES_PORT', default='5432'),
+        # every request runs in one transaction: a failed request leaves no partial writes
+        'ATOMIC_REQUESTS': True,
     }
 }
 
@@ -183,14 +202,33 @@ USE_TZ = True
 STATIC_ROOT = Path(BASE_DIR, 'static')
 STATIC_URL = 'static/'
 
-# Media files
+# Media files (public: served directly by nginx, e.g. substance images)
 MEDIA_ROOT = Path(BASE_DIR, 'media')
 MEDIA_URL = 'media/'
+
+# Experiment attachments: private, never served by nginx directly. Downloads go
+# through the permission-checked API (projects.views.AttachmentViewSet.download).
+PRIVATE_MEDIA_ROOT = Path(config('PRIVATE_MEDIA_ROOT', default=str(Path(BASE_DIR, 'private_media'))))
+ATTACHMENT_MAX_SIZE = config('ATTACHMENT_MAX_SIZE_MB', default=100, cast=int) * 1024 * 1024
+# behind nginx: let nginx stream permitted downloads from an `internal` location
+ATTACHMENT_X_ACCEL_PREFIX = config('ATTACHMENT_X_ACCEL_PREFIX', default='')
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.0/ref/settings/#default-auto-field
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 CORS_ALLOW_ALL_ORIGINS = config('CORS_ALLOW_ALL_ORIGINS', default=False, cast=bool)
-# CORS_ALLOWED_ORIGINS = config('CORS_ALLOWED_ORIGINS', default='127.0.0.1', cast=Csv())
+if not CORS_ALLOW_ALL_ORIGINS:
+    # full origins including scheme, e.g. 'https://eln.example.org, http://localhost:3000'
+    CORS_ALLOWED_ORIGINS = config('CORS_ALLOWED_ORIGINS', default='', cast=Csv())
+
+# HTTPS hardening. Enable with HTTPS=True once nginx terminates TLS; it stays
+# off by default because enabling it without TLS would redirect to a dead port.
+# nginx sets X-Forwarded-Proto so Django can tell which requests arrived over HTTPS.
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+HTTPS = config('HTTPS', default=False, cast=bool)
+SECURE_SSL_REDIRECT = HTTPS
+SESSION_COOKIE_SECURE = HTTPS
+CSRF_COOKIE_SECURE = HTTPS
+SECURE_HSTS_SECONDS = config('SECURE_HSTS_SECONDS', default=0, cast=int) if HTTPS else 0
 
